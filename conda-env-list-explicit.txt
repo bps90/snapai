@@ -17,8 +17,12 @@ https://repo.anaconda.com/pkgs/main/osx-arm64/tk-8.6.14-h6ba3021_0.conda
 https://repo.anaconda.com/pkgs/main/osx-arm64/sqlite-3.45.3-h80987f9_0.conda
 https://repo.anaconda.com/pkgs/main/osx-arm64/python-3.12.4-h99e199e_1.conda
 https://repo.anaconda.com/pkgs/main/osx-arm64/asgiref-3.5.2-py312hca03da5_0.conda
+https://repo.anaconda.com/pkgs/main/osx-arm64/networkx-3.2.1-py312hca03da5_0.conda
+https://repo.anaconda.com/pkgs/main/osx-arm64/packaging-23.2-py312hca03da5_0.conda
 https://repo.anaconda.com/pkgs/main/osx-arm64/setuptools-69.5.1-py312hca03da5_0.conda
 https://repo.anaconda.com/pkgs/main/osx-arm64/sqlparse-0.4.4-py312hca03da5_0.conda
+https://repo.anaconda.com/pkgs/main/osx-arm64/tenacity-8.2.2-py312hca03da5_1.conda
 https://repo.anaconda.com/pkgs/main/osx-arm64/wheel-0.43.0-py312hca03da5_0.conda
 https://repo.anaconda.com/pkgs/main/osx-arm64/django-4.1-py312hca03da5_0.conda
 https://repo.anaconda.com/pkgs/main/osx-arm64/pip-24.0-py312hca03da5_0.conda
+https://repo.anaconda.com/pkgs/main/osx-arm64/plotly-5.22.0-py312h989b03a_0.conda
