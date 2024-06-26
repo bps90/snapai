@@ -2,6 +2,7 @@
 # $ conda create --name <env> --file <this file>
 # platform: osx-arm64
 @EXPLICIT
+https://repo.anaconda.com/pkgs/main/osx-arm64/yaml-0.2.5-h1a28f6b_0.conda
 https://repo.anaconda.com/pkgs/main/osx-arm64/blas-1.0-openblas.conda
 https://repo.anaconda.com/pkgs/main/osx-arm64/bzip2-1.0.8-h80987f9_6.conda
 https://repo.anaconda.com/pkgs/main/osx-arm64/ca-certificates-2024.3.11-hca03da5_0.conda
