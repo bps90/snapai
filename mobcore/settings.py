@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "apps.frontend",
-    "apps.mobnet",
+    "apps.mobsinet",
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+
+{% block title %} Graph Visualization {% endblock title %}
+
+{% block header %}<h1>Graph Visualization</h1>{% endblock header %}
+
+    
+
+{% block content %}
+
+<!-- <div id="graph">{% autoescape off %}{{ graph_div }}{% endautoescape %}</div> -->
+<div id="graph"></div>
+
+<script>
+    function updateGraph() {
+        $.ajax({
+            url: 'update_graph/',
+            type: 'GET',
+            success: function (data) {
+                $('#graph').html(data.graph_div);
+            },
+            error: function (xhr, status, error) {
+                console.error(error);
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        // Load initial graph
+        updateGraph();
+
+        // Set up interval to update the graph every 5 seconds
+        setInterval(updateGraph, 5000); // 5000 milliseconds = 5 seconds
+    });
+</script>
+
+{% endblock content %}
