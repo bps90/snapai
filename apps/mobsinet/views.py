@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
-from . import net
+from .sim.net import graph
 
 # Create your views here.
 def index(request):
@@ -9,13 +9,13 @@ def index(request):
 
 def graph_view(request):
 
-    graph_div = net.graph_view(request)
+    graph_div = graph.graph_view(request)
 
     return render(request, 'graph.html', {'graph_div': graph_div})
 
 
 def update_graph(request):
 
-    graph_div = net.update_graph()
+    graph_div = graph.update_graph()
 
     return JsonResponse({'graph_div': graph_div})

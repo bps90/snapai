@@ -1,0 +1,4 @@
+network_size: 100
+node_count: 50
+simulation_time: 1000
+transmission_range: 10.0
