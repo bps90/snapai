@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.conf import settings
 from ..tools.logl import LogL
 import json
 import os
@@ -26,6 +27,7 @@ class SimConfig:
             "dimZ": 500,
 
             # Simulation
+            "batchMode": False,
             "asynchronousMode": False, # TODO: implement the ability of 
             "mobility": True, # TODO: implement the ability of mobility
             "interference": True, # TODO: implement the ability of interference
@@ -105,7 +107,7 @@ class SimConfig:
         self.config = {}
         self.load_config()
 
-        #start the mobsinet logging 
+        #start the mobsinet logging  do not confuse with python logging
         self.log_sim = LogL(log_file=os.path.join(MOBSINET_LOG_DIR, self.config["logFileName"]))
 
 
@@ -115,6 +117,7 @@ class SimConfig:
                 self.config = json.load(f)
         except FileNotFoundError:
             print(f"Config file '{self.config_file}' not found.")
+            print(f"Using the default configuration.")
             self.config = self.default_config  # Load default config if file not found
         except json.JSONDecodeError:
             print(f"Error decoding JSON from '{self.config_file}'.")
