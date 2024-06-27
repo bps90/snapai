@@ -2,7 +2,6 @@ from django.http import JsonResponse
 from django.shortcuts import render
 import networkx as nx
 import plotly.graph_objects as go
-from ..config import simConfiguration
 
 def generate_graph():
     # Função para gerar o grafo (isso pode ser dinâmico conforme necessário)
@@ -20,7 +19,6 @@ def graph_view(request):
     return render(request, 'graph.html')
 
 def update_graph():
-    config = simConfiguration.Configuration()
 
     # Função para gerar e retornar o gráfico atualizado
     G = generate_graph()
@@ -93,9 +91,9 @@ def update_graph():
                            xref="paper", yref="paper"
                        )],
                        scene=dict(
-                            xaxis=dict(range=[0, config.dimX], title='X Axis'),
-                            yaxis=dict(range=[0, config.dimY], title='Y Axis'),
-                            zaxis=dict(range=[0, config.dimZ], title='Z Axis')
+                            xaxis=dict(range=[0, 500], title='X Axis'),
+                            yaxis=dict(range=[0, 500], title='Y Axis'),
+                            zaxis=dict(range=[0, 500], title='Z Axis')
                         )
                    )
     )

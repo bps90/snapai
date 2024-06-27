@@ -1,9 +1,13 @@
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse
 from .sim.net import graph
+from .sim.runsim import runsim
 
 # Create your views here.
 def index(request):
+
+    runsim()
+
     return render(request, "mobsinet_index.html")
 
 
