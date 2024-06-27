@@ -1,7 +1,22 @@
+from django.conf import settings
+from ..tools.logl import LogL
 import json
+import os
+import pathlib
+import logging
 
-class AppConfig:
-    def __init__(self, config_file):
+
+
+
+# Defining default dirs 
+MOBSINET_BASE_DIR = os.path.join(settings.BASE_DIR, "apps/mobsinet/")
+MOBSINET_LOG_DIR = os.path.join(MOBSINET_BASE_DIR, "log/")
+
+# Make dirs if it does not exist.
+pathlib.Path(MOBSINET_LOG_DIR).mkdir(parents=True, exist_ok=True)
+
+class SimConfig:
+    def __init__(self, config_file = ""):
         self.config_file = config_file
         self.default_config = {
             # Simulation Area
@@ -37,6 +52,7 @@ class AppConfig:
             "eagerFlush": False, # TODO: implement the ability of eagerFlush
 
             # GUI
+            "isGUIEnabled": True,
             "extendedControl": True, # TODO: implement the ability of extendedControl
             "drawArrows": False, # TODO: implement the ability of drawArrows
             "drawRulers": True, # TODO: implement the ability of drawRulers
@@ -87,6 +103,11 @@ class AppConfig:
             "defaultRoundNumber": 1 # TODO: implement the ability of defaultRoundNumber
         }
         self.config = {}
+        self.load_config()
+
+        #start the mobsinet logging 
+        self.log_sim = LogL(log_file=os.path.join(MOBSINET_LOG_DIR, self.config["logFileName"]))
+
 
     def load_config(self):
         try:
@@ -125,9 +146,9 @@ class AppConfig:
             json.dump(self.config, f, indent=4)
 
 # # Usage example
-# config = AppConfig('config.json')
+# config = SimConfig('config.json')
 # config.load_config()
-# config.export_config("exported_config.json")
+# config.export_config("./exported_config.json")
 
 # # Accessing values
 # dimensions = config.get_value('dimensions')
