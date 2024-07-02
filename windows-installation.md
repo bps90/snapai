@@ -2,7 +2,8 @@
 
 > ⚠️ These are a non-official tutorial for a installation on a 64-bit based Windows SO. Some dependencies from the project can't be installed on Windows, because it maybe some things don't work as expected.
 
-> ℹ️ These tutorial uses **conda** to create python environments, but you can use other environment manager such as "python venv" or install all dependencies listed on [conda-env-list-win64.yaml](./conda-env-list-win64.yaml) file directly. In these cases, you can jump to [Step five](#step-five).
+> ℹ️ These tutorial uses **conda** to create python environments and install dependencies, but you can try to use other environment manager such as "python venv" or install all dependencies listed on [conda-env-list-win64.yaml](./conda-env-list-win64.yaml) file directly, _**but isn't granted that you will can do it**_.
+> In these cases, you can jump to [Step five](#step-five).
 
 ### First step
 Install Anaconda or Miniconda on your machine.
