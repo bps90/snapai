@@ -19,5 +19,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include("apps.frontend.urls")),
-    path('mobsinet/', include("apps.mobsinet.urls"))
+    path('mobsinet/', include("apps.mobsinet.urls")),
+    path('mobgen/', include("apps.mobgen.urls")),
 ]

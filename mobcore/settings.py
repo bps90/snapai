@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "apps.frontend",
     "apps.mobsinet",
+    "apps.mobgen",
 ]
 
 MIDDLEWARE = [
