@@ -1,0 +1,11 @@
+{
+    "simulation_name": "My Network Simulation",
+    "simulation_steps": 2000,
+    "num_nodes": 100,
+    "dimX": 200,
+    "dimY": 200,
+    "dimZ": 100,
+    "network_parameters": {"type": "random_graph", "avg_degree": 6},
+    "distribution_model": "random",
+    "mobility_model": "random_walk"
+}
