@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RandomWalk</title>
+    <style>
+        html, body {
+            font-family: monospace;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div id="output"></div>
+
+    <script>
+        fetch('/mobgen/RandomWalk/streaming' + window.location.search)
+            .then(response => {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+                let isError = false;
+
+                reader.read().then(function process({ done, value }) {
+                    value = decoder.decode(value);
+
+                    console.log(value);
+                    if (value.startsWith('<!DOCTYPE html>')) isError = true;
+                        
+
+                    if (done && !isError) {
+                        var element = document.createElement('a');
+                        element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(document.getElementById('output').innerText));
+                        element.setAttribute('download', 'output.csv');
+                      
+                        element.style.display = 'none';
+                        document.body.appendChild(element);
+                      
+                        element.click();
+                      
+                        document.body.removeChild(element);
+
+                    } else if (isError) document.querySelector('html').innerHTML = value;
+                    else {
+                        document.getElementById('output').innerText += value;
+
+                        reader.read().then(process);
+                    }
+                })
+            })
+    </script>
+</body>
+</html>
