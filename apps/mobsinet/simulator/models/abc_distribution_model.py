@@ -8,5 +8,5 @@ class AbcDistributionModel(ABC):
     
     
     @abstractmethod
-    def get_next_position(self) -> Position:
+    def get_position(self) -> Position:
         pass

@@ -3,6 +3,7 @@ import json
 class SimulationConfig:
     def __init__(self, config_file=None):
         # Default values
+        self.PROJECT_DIR = "/Users/bps/Documents/playground/MobENV/apps/mobsinet/simulator/defaults/distribution_models/"
         self.simulation_name = "Network Simulation"
         self.simulation_steps = 1000
         self.num_nodes = 50
@@ -36,6 +37,9 @@ class SimulationConfig:
         self.set_message_protocol(config_data.get('message_protocol', self.message_protocol))
         self.set_verbose_logging(config_data.get('verbose_logging', self.verbose_logging))
 
+    def set_project_dir(self, dirname):
+        self.PROJECT_DIR = dirname 
+    
     def set_simulation_name(self, name):
         self.simulation_name = name
 
@@ -64,6 +68,9 @@ class SimulationConfig:
 
     def set_verbose_logging(self, verbose):
         self.verbose_logging = verbose
+
+    def get_project_dir(self):
+        return self.PROJECT_DIR
 
     def get_simulation_name(self):
         return self.simulation_name
@@ -104,6 +111,9 @@ class SimulationConfig:
         print(f"Verbose Logging: {self.get_verbose_logging()}")
 
 
+sim_config_env = SimulationConfig()
+
+#usage
 if __name__ == "__main__":
     # Example usage:
     config_file_path = '/Users/bps/Documents/playground/MobENV/apps/mobsinet/simulator/configuration/simulation_config.json'
