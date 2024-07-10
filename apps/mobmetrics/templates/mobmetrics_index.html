@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Home title{% endblock title %}
+
+{% block header %}<h1>Home header</h1>{% endblock header %}
+
+{% block content %}
+
+<div>
+  <form id="fileUploadForm" enctype="multipart/form-data">
+    <div>
+      <label for="file">Upload CSV file:</label>
+      <input type="file" id="file" name="file" accept=".csv">
+    </div>
+    <button type="submit">Upload</button>
+  </form>
+  <p id="message"></p>
+</div>
+
+<script>
+  document.getElementById('fileUploadForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    
+    const fileInput = document.getElementById('file');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+      alert('Please select a file to upload.');
+      return;
+    }
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      const response = await fetch('upload/', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        document.getElementById('message').textContent = 'File uploaded successfully';
+      } else {
+        throw new Error('Failed to upload file');
+      }
+    } catch (error) {
+      document.getElementById('message').textContent = error.message;
+    }
+  });
+</script>
+
+{% endblock content %}
+
+  

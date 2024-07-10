@@ -1,6 +1,13 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 
-# Create your views here.
 def index(request):
+    return render(request, "mobmetrics_index.html")
 
-    return render(request, "index_mobmetrics.html")
+def upload_file(request):
+  ''' Recive .csv file'''
+  if request.method == 'POST' and request.FILES.get('file'):
+      file = request.FILES['file']
+      
+      return JsonResponse({'message': 'File uploaded successfully'})
+  return JsonResponse({'message': 'Failed to upload file'}, status=400)
