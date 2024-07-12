@@ -1,5 +1,7 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+
+import pandas as pd
 
 from .process.main import main
 
