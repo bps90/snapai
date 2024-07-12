@@ -3,7 +3,7 @@ import json
 class SimulationConfig:
     def __init__(self, config_file=None):
         # Default values
-        self.PROJECT_DIR = "/Users/bps/Documents/playground/MobENV/apps/mobsinet/simulator/defaults/distribution_models/"
+        self.PROJECT_DIR = "apps/mobsinet/simulator/defaults/distribution_models/"
         self.simulation_name = "Network Simulation"
         self.simulation_steps = 1000
         self.num_nodes = 50
@@ -116,7 +116,7 @@ sim_config_env = SimulationConfig()
 #usage
 if __name__ == "__main__":
     # Example usage:
-    config_file_path = '/Users/bps/Documents/playground/MobENV/apps/mobsinet/simulator/configuration/simulation_config.json'
+    config_file_path = 'apps/mobsinet/simulator/configuration/simulation_config.json'
     # Example JSON content in simulation_config.json:
     # {
     #     "simulation_name": "My Network Simulation",
