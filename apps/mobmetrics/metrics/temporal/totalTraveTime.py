@@ -12,8 +12,7 @@ class TotalTravelTime():
         self.id = id
     
     def extract(self):
-        filtred_trace = self.trace[self.trace['id'] == self.id]
-        sorted_trace = filtred_trace.sort_values(by='time')
+        
 
         start_time = sorted_trace.iloc[0]['time']
         finish_time = sorted_trace.iloc[-1]['time']

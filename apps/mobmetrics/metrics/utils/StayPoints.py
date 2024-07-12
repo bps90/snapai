@@ -42,7 +42,14 @@ class StayPoints():
         stay_points.append({'lat' : lat/buffer, 'lgnt' : lgnt/buffer, 'arvT' : arvT, 'levT' : levT})
       
       m = i
-    return pd.DataFrame(stay_points)
+      
+
+    stay_points = pd.DataFrame(stay_points)
+    
+    if not stay_points.empty:
+      return stay_points
+    else:
+      return "no Stay Points"
   
 
   def distance(self, fpoint, spoint):
