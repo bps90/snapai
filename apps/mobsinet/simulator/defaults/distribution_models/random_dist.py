@@ -10,6 +10,9 @@ from ...configuration.sim_config import sim_config_env
 
 class RandomDist(AbcDistributionModel):
 
+    def __init__(self):
+        super().__init__("RandomDist")
+
     def get_position(self) -> Position:
         p = Position(x= random.randrange(0, sim_config_env.dimX),
                      y= random.randrange(0, sim_config_env.dimZ),
@@ -17,6 +20,7 @@ class RandomDist(AbcDistributionModel):
 
         return p
     
+model = RandomDist
 
 if __name__ == "__main__":
     # Create instances of the class
