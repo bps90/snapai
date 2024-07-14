@@ -3,7 +3,7 @@ import json
 class SimulationConfig:
     def __init__(self, config_file=None):
         # Default values
-        self.PROJECT_DIR = "apps/mobsinet/simulator/defaults/distribution_models/"
+        self.PROJECT_DIR = "apps/mobsinet/simulator/defaults/"
         self.simulation_name = "Network Simulation"
         self.simulation_steps = 1000
         self.num_nodes = 50
@@ -14,8 +14,12 @@ class SimulationConfig:
             'type': 'random_graph',
             'avg_degree': 4
         }
-        self.distribution_model = "random"
-        self.mobility_model = 'random_walk'
+        self.node = 'inert_node'
+        self.distribution_model = 'random_dist'
+        self.mobility_model = 'random_mob'
+        self.connectivity_model = 'no_connectivity'
+        self.reliability_model = 'no_reliability'
+        self.interference_model = 'no_interference'
         self.message_protocol = 'TCP'
         self.verbose_logging = False
         
