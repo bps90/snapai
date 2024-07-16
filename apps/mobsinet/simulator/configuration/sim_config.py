@@ -14,7 +14,7 @@ class SimulationConfig:
             'type': 'random_graph',
             'avg_degree': 4
         }
-        self.node = 'inert_node'
+        self.node_behavior = 'inert_node_behavior'
         self.distribution_model = 'random_dist'
         self.mobility_model = 'random_mob'
         self.connectivity_model = 'no_connectivity'

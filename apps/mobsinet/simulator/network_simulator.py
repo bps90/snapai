@@ -8,7 +8,7 @@ from .models.abc_mobility_model import AbcMobilityModel
 from .models.abc_connectivity_model import AbcConnectivityModel
 from .models.abc_interference_model import AbcInterferenceModel
 from .models.abc_reliability_model import AbcReliabilityModel
-from .nodes.abc_node import AbcNode
+from .nodes.abc_node_behavior import AbcNodeBehavior
 from .tools.position import Position
 from .configuration.sim_config import sim_config_env
 from typing import Type, Any
@@ -27,7 +27,7 @@ class NetworkSimulator(object):
         self,
         nodes: int | list[Any],
         distribution_model: Type[AbcDistributionModel] | AbcDistributionModel | str | None = None,
-        node_constructor: Type[AbcNode] | str | None = None,
+        node_behavior_constructor: Type[AbcNodeBehavior] | str | None = None,
         mobility_model: Type[AbcMobilityModel] | AbcMobilityModel | str | None = None,
         connectivity_model: Type[AbcConnectivityModel] | AbcConnectivityModel | str | None = None,
         interference_model: Type[AbcInterferenceModel] | AbcInterferenceModel | str | None = None,
@@ -43,7 +43,7 @@ class NetworkSimulator(object):
             self.add_node(
                 position=position,
                 node_id=id if type(nodes) is not int else None,
-                node_constructor=node_constructor,
+                node_behavior_constructor=node_behavior_constructor,
                 mobility_model=mobility_model,
                 connectivity_model=connectivity_model,
                 interference_model=interference_model,
@@ -54,18 +54,18 @@ class NetworkSimulator(object):
         self,
         position: Position,
         node_id=None,
-        node_constructor: Type[AbcNode] | str | None = None,
+        node_behavior_constructor: Type[AbcNodeBehavior] | str | None = None,
         mobility_model: Type[AbcMobilityModel] | AbcMobilityModel | str | None = None,
         connectivity_model: Type[AbcConnectivityModel] | AbcConnectivityModel | str | None = None,
         interference_model: Type[AbcInterferenceModel] | AbcInterferenceModel | str | None = None,
         reliability_model: Type[AbcReliabilityModel] | AbcReliabilityModel | str | None = None,
     ):
-
+       
         mobility_model = self._normalize_mobility_model(mobility_model)
         connectivity_model = self._normalize_connectivity_model(connectivity_model)
         interference_model = self._normalize_interference_model(interference_model)
         reliability_model = self._normalize_reliability_model(reliability_model)
-        node_constructor = self._normalize_node_constructor(node_constructor)
+        node_behavior_constructor = self._normalize_node_behavior_constructor(node_behavior_constructor)
         position: Position = position or importlib.import_module('apps.mobsinet.simulator.defaults.distribution_models.' + sim_config_env.distribution_model).model().get_position()
 
         if (not node_id):
@@ -74,7 +74,7 @@ class NetworkSimulator(object):
         if node_id not in self.graph.nodes():
             self.graph.add_node(
                 node_id,
-                node=node_constructor(
+                behavior=node_behavior_constructor(
                     node_id,
                     position=position,
                     mobility_model=mobility_model,
@@ -202,16 +202,16 @@ class NetworkSimulator(object):
 
         return distribution_model
 
-    def _normalize_node_constructor(self, node_constructor: Type[AbcNode] | str | None) -> Type[AbcNode]:
-        if (node_constructor is None):
-            node_constructor: Type[AbcNode] = importlib.import_module(
-                f'apps.mobsinet.simulator.defaults.nodes.{sim_config_env.node}').node
+    def _normalize_node_behavior_constructor(self, node_behavior_constructor: Type[AbcNodeBehavior] | str | None) -> Type[AbcNodeBehavior]:
+        if (node_behavior_constructor is None):
+            node_behavior_constructor: Type[AbcNodeBehavior] = importlib.import_module(
+                f'apps.mobsinet.simulator.defaults.nodes.{sim_config_env.node_behavior}').node_behavior
 
-        elif (type(node_constructor) is str):
-            node_constructor: Type[AbcNode] = importlib.import_module(
-                sim_config_env.PROJECT_DIR.replace('/', '.') + 'nodes.' + node_constructor).node
+        elif (type(node_behavior_constructor) is str):
+            node_behavior_constructor: Type[AbcNodeBehavior] = importlib.import_module(
+                sim_config_env.PROJECT_DIR.replace('/', '.') + 'nodes.' + node_behavior_constructor).node_behavior
 
-        return node_constructor
+        return node_behavior_constructor
 
     
 

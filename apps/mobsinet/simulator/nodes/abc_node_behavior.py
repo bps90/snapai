@@ -3,10 +3,10 @@ from ..models.abc_mobility_model import AbcMobilityModel
 from ..models.abc_connectivity_model import AbcConnectivityModel
 from ..models.abc_interference_model import AbcInterferenceModel
 from ..models.abc_reliability_model import AbcReliabilityModel
-from abc import ABC, abstractmethod
+from abc import ABC
 
 
-class AbcNode(ABC):
+class AbcNodeBehavior(ABC):
 
     def __init__(
             self,
