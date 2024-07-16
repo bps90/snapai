@@ -33,10 +33,57 @@ class NetworkSimulator(object):
         interference_model: Type[AbcInterferenceModel] | AbcInterferenceModel | str | None = None,
         reliability_model: Type[AbcReliabilityModel] | AbcReliabilityModel | str | None = None,
     ):
+        """Add a set of nodes to the network graph based on the distribution model.
+
+        Parameters
+        ----------
+        nodes : int | list[Any]
+            The number of nodes to add or a list of nodes to add
+        distribution_model : Type[AbcDistributionModel] | AbcDistributionModel | str, optional
+            The distribution model to distribute nodes in the graph.
+            If a class, it will be instantiated.
+            If a string, it will be imported from PROJECT_DIR and instantiated.
+            If None, the default distribution model will be used.
+        node_behavior_constructor : Type[AbcNodeBehavior] | str, optional
+            The class of the node_behavior to instantiate when nodes are created.
+            If a string, it will be imported from PROJECT_DIR.
+            If None, the default node_behavior will be used.
+        mobility_model : Type[AbcMobilityModel] | AbcMobilityModel | str, optional
+            The mobility model that will be used by these nodes.
+            If a class, it will be instantiated.
+            If a string, it will be imported from PROJECT_DIR and instantiated.
+            If None, the default mobility model will be used.
+        connectivity_model : Type[AbcConnectivityModel] | AbcConnectivityModel | str, optional
+            The connectivity model that will be used by these nodes.
+            If a class, it will be instantiated.
+            If a string, it will be imported from PROJECT_DIR and instantiated.
+            If None, the default connectivity model will be used. 
+        interference_model : Type[AbcInterferenceModel] | AbcInterferenceModel | str, optional
+            The interference model that will be used by these nodes.
+            If a class, it will be instantiated.
+            If a string, it will be imported from PROJECT_DIR and instantiated.
+            If None, the default interference model will be used.
+        reliability_model : Type[AbcReliabilityModel] | AbcReliabilityModel | str, optional
+            The reliability model that will be used by these nodes.
+            If a class, it will be instantiated.
+            If a string, it will be imported from PROJECT_DIR and instantiated.
+            If None, the default reliability model will be used.
+
+        Examples
+        --------
+        >>> network_simulator.add_nodes(100, distribution_model="uniform_dist") # Add 100 nodes with a uniform distribution
+        >>> network_simulator.add_nodes([1, 2, 3, 4, 5], distribution_model="random_dist") # Add 5 nodes with a uniform distribution
+        >>> network_simulator.add_nodes(1, node_behavior_constructor=SmartphoneNodeBehavior) # Add 1 node with the smartphone node behavior
+        >>> network_simulator.add_nodes([10, 20, 30], mobility_model="random_walk", distribution_model="random_dist") # Add 3 nodes with random walk mobility and a random distribution
+
+        Notes
+        -----
+        If you want to add a unique node with a defined position, use the `add_node` method.
+        """
         
         distribution_model = self._normalize_distribution_model(distribution_model)
 
-    
+
         for id in (range(nodes) if type(nodes) is int else nodes):
             position = distribution_model.get_position()
 
@@ -124,7 +171,7 @@ class NetworkSimulator(object):
         return str(self.graph)
 
     def _gen_node_id(self):
-        """ Generates a new node_id based on number of current nodes in the graph. """
+        """(private) Generates a new `node_id` based on number of current nodes in the graph."""
         node_id = self.graph.number_of_nodes() + 1
 
         while node_id in self.graph.nodes():
