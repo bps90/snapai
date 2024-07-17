@@ -8,7 +8,7 @@ from .models.abc_mobility_model import AbcMobilityModel
 from .models.abc_connectivity_model import AbcConnectivityModel
 from .models.abc_interference_model import AbcInterferenceModel
 from .models.abc_reliability_model import AbcReliabilityModel
-from .nodes.abc_node_behavior import AbcNodeBehavior
+from .models.nodes.abc_node_behavior import AbcNodeBehavior
 from .tools.position import Position
 from .tools.models_normalizer import ModelsNormalizer
 from .configuration.sim_config import sim_config_env

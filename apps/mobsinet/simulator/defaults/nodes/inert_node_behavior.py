@@ -1,4 +1,4 @@
-from ...nodes.abc_node_behavior import AbcNodeBehavior
+from ...models.nodes.abc_node_behavior import AbcNodeBehavior
 
 class InertNodeBehavior(AbcNodeBehavior):
     pass

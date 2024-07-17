@@ -1,8 +1,8 @@
-from ..tools.position import Position
-from ..models.abc_mobility_model import AbcMobilityModel
-from ..models.abc_connectivity_model import AbcConnectivityModel
-from ..models.abc_interference_model import AbcInterferenceModel
-from ..models.abc_reliability_model import AbcReliabilityModel
+from ...tools.position import Position
+from ..abc_mobility_model import AbcMobilityModel
+from ..abc_connectivity_model import AbcConnectivityModel
+from ..abc_interference_model import AbcInterferenceModel
+from ..abc_reliability_model import AbcReliabilityModel
 from abc import ABC
 
 
