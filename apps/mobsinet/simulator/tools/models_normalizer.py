@@ -11,7 +11,7 @@ from abc import ABCMeta
 
 class ModelsNormalizer:
     @staticmethod
-    def normalize_mobility_model(self, mobility_model: Type[AbcMobilityModel] | AbcMobilityModel | str | None) -> AbcMobilityModel:
+    def normalize_mobility_model(mobility_model: Type[AbcMobilityModel] | AbcMobilityModel | str | None) -> AbcMobilityModel:
         if (mobility_model is None):
             mobility_model: Type[AbcMobilityModel] = importlib.import_module(
                 f'apps.mobsinet.simulator.defaults.mobility_models.{sim_config_env.mobility_model}').model
@@ -26,7 +26,7 @@ class ModelsNormalizer:
         return mobility_model
 
     @staticmethod
-    def normalize_connectivity_model(self, connectivity_model: Type[AbcConnectivityModel] | AbcConnectivityModel | str | None) -> AbcConnectivityModel:
+    def normalize_connectivity_model(connectivity_model: Type[AbcConnectivityModel] | AbcConnectivityModel | str | None) -> AbcConnectivityModel:
         if (connectivity_model is None):
             connectivity_model: Type[AbcConnectivityModel] = importlib.import_module(
                 f'apps.mobsinet.simulator.defaults.connectivity_models.{sim_config_env.connectivity_model}').model
@@ -41,7 +41,7 @@ class ModelsNormalizer:
         return connectivity_model
     
     @staticmethod
-    def normalize_interference_model(self, interference_model: Type[AbcInterferenceModel] | AbcInterferenceModel | str | None) -> AbcInterferenceModel:
+    def normalize_interference_model(interference_model: Type[AbcInterferenceModel] | AbcInterferenceModel | str | None) -> AbcInterferenceModel:
         if (interference_model is None):
             interference_model: Type[AbcInterferenceModel] = importlib.import_module(
                 f'apps.mobsinet.simulator.defaults.interference_models.{sim_config_env.interference_model}').model
@@ -56,7 +56,7 @@ class ModelsNormalizer:
         return interference_model
     
     @staticmethod
-    def normalize_reliability_model(self, reliability_model: Type[AbcReliabilityModel] | AbcReliabilityModel | str | None) -> AbcReliabilityModel:
+    def normalize_reliability_model(reliability_model: Type[AbcReliabilityModel] | AbcReliabilityModel | str | None) -> AbcReliabilityModel:
         if (reliability_model is None):
             reliability_model: Type[AbcReliabilityModel] = importlib.import_module(
                 f'apps.mobsinet.simulator.defaults.reliability_models.{sim_config_env.reliability_model}').model
@@ -71,7 +71,7 @@ class ModelsNormalizer:
         return reliability_model
 
     @staticmethod
-    def normalize_distribution_model(self, distribution_model: Type[AbcDistributionModel] | AbcDistributionModel | str | None) -> AbcDistributionModel:
+    def normalize_distribution_model(distribution_model: Type[AbcDistributionModel] | AbcDistributionModel | str | None) -> AbcDistributionModel:
         if (distribution_model is None):
             distribution_model: Type[AbcDistributionModel] = importlib.import_module(
                 f'apps.mobsinet.simulator.defaults.distribution_models.{sim_config_env.distribution_model}').model
@@ -86,7 +86,7 @@ class ModelsNormalizer:
         return distribution_model
 
     @staticmethod
-    def normalize_node_behavior_constructor(self, node_behavior_constructor: Type[AbcNodeBehavior] | str | None) -> Type[AbcNodeBehavior]:
+    def normalize_node_behavior_constructor(node_behavior_constructor: Type[AbcNodeBehavior] | str | None) -> Type[AbcNodeBehavior]:
         if (node_behavior_constructor is None):
             node_behavior_constructor: Type[AbcNodeBehavior] = importlib.import_module(
                 f'apps.mobsinet.simulator.defaults.nodes.{sim_config_env.node_behavior}').node_behavior
