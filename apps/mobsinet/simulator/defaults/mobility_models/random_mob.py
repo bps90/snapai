@@ -1,3 +1,4 @@
+from apps.mobsinet.simulator.models.nodes.abc_node_behavior import AbcNodeBehavior
 from apps.mobsinet.simulator.tools.position import Position
 from ...models.abc_mobility_model import AbcMobilityModel
 from random import randint
@@ -10,7 +11,7 @@ class RandomMob(AbcMobilityModel):
     def __init__(self):
         super().__init__('RandomMob')
 
-    def get_next_position(self) -> Position:
+    def get_next_position(self, node_behavior: AbcNodeBehavior = None) -> Position:
         """
         Generate a random position within the given dimensions.
 

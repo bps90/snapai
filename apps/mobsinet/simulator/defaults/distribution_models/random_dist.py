@@ -1,4 +1,6 @@
 import random
+
+from apps.mobsinet.simulator.models.nodes.abc_node_behavior import AbcNodeBehavior
 from ...tools.position import Position
 from ...models.abc_distribution_model import AbcDistributionModel
 from ...configuration.sim_config import sim_config_env
@@ -14,7 +16,7 @@ class RandomDist(AbcDistributionModel):
     def __init__(self):
         super().__init__("RandomDist")
 
-    def get_position(self) -> Position:
+    def get_position(self, node_behavior: AbcNodeBehavior = None) -> Position:
         """
         Generate a random position within the given dimensions.
 
