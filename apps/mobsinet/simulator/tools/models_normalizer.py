@@ -9,9 +9,27 @@ from ..models.nodes.abc_node_behavior import AbcNodeBehavior
 from ..configuration.sim_config import sim_config_env
 from abc import ABCMeta
 
+
 class ModelsNormalizer:
     @staticmethod
     def normalize_mobility_model(mobility_model: Type[AbcMobilityModel] | AbcMobilityModel | str | None) -> AbcMobilityModel:
+        """(static) Normalizes the mobility model.
+
+        Parameters
+        ----------
+        mobility_model : Type[AbcMobilityModel] | AbcMobilityModel | str | None
+            The mobility model to normalize.
+            If a class, it will be instantiated.
+            If a string, it must be exactly the name of the file containing the model,
+            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            If None, the default mobility model will be returned.
+
+        Returns
+        -------
+        AbcMobilityModel
+            The normalized mobility model object.
+        """
+
         if (mobility_model is None):
             mobility_model: Type[AbcMobilityModel] = importlib.import_module(
                 f'apps.mobsinet.simulator.defaults.mobility_models.{sim_config_env.mobility_model}').model
@@ -27,6 +45,23 @@ class ModelsNormalizer:
 
     @staticmethod
     def normalize_connectivity_model(connectivity_model: Type[AbcConnectivityModel] | AbcConnectivityModel | str | None) -> AbcConnectivityModel:
+        """(static) Normalizes the connectivity model.
+
+        Parameters
+        ----------
+        connectivity_model : Type[AbcConnectivityModel] | AbcConnectivityModel | str | None
+            The connectivity model to normalize.
+            If a class, it will be instantiated.
+            If a string, it must be exactly the name of the file containing the model,
+            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            If None, the default connectivity model will be returned.
+
+        Returns
+        -------
+        AbcConnectivityModel
+            The normalized connectivity model object.
+        """
+
         if (connectivity_model is None):
             connectivity_model: Type[AbcConnectivityModel] = importlib.import_module(
                 f'apps.mobsinet.simulator.defaults.connectivity_models.{sim_config_env.connectivity_model}').model
@@ -39,9 +74,26 @@ class ModelsNormalizer:
             connectivity_model: AbcConnectivityModel = connectivity_model()
 
         return connectivity_model
-    
+
     @staticmethod
     def normalize_interference_model(interference_model: Type[AbcInterferenceModel] | AbcInterferenceModel | str | None) -> AbcInterferenceModel:
+        """(static) Normalizes the interference model.
+
+        Parameters
+        ----------
+        interference_model : Type[AbcInterferenceModel] | AbcInterferenceModel | str | None
+            The interference model to normalize.
+            If a class, it will be instantiated.
+            If a string, it must be exactly the name of the file containing the model,
+            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            If None, the default interference model will be returned.
+
+        Returns
+        -------
+        AbcInterferenceModel
+            The normalized interference model object.
+        """
+
         if (interference_model is None):
             interference_model: Type[AbcInterferenceModel] = importlib.import_module(
                 f'apps.mobsinet.simulator.defaults.interference_models.{sim_config_env.interference_model}').model
@@ -54,9 +106,26 @@ class ModelsNormalizer:
             interference_model: AbcInterferenceModel = interference_model()
 
         return interference_model
-    
+
     @staticmethod
     def normalize_reliability_model(reliability_model: Type[AbcReliabilityModel] | AbcReliabilityModel | str | None) -> AbcReliabilityModel:
+        """(static) Normalizes the reliability model.
+
+        Parameters
+        ----------
+        reliability_model : Type[AbcReliabilityModel] | AbcReliabilityModel | str | None
+            The reliability model to normalize.
+            If a class, it will be instantiated.
+            If a string, it must be exactly the name of the file containing the model,
+            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            If None, the default reliability model will be returned.
+
+        Returns
+        -------
+        AbcReliabilityModel
+            The normalized reliability model object.
+        """
+
         if (reliability_model is None):
             reliability_model: Type[AbcReliabilityModel] = importlib.import_module(
                 f'apps.mobsinet.simulator.defaults.reliability_models.{sim_config_env.reliability_model}').model
@@ -72,6 +141,23 @@ class ModelsNormalizer:
 
     @staticmethod
     def normalize_distribution_model(distribution_model: Type[AbcDistributionModel] | AbcDistributionModel | str | None) -> AbcDistributionModel:
+        """(static) Normalizes the distribution model.
+
+        Parameters
+        ----------
+        distribution_model : Type[AbcDistributionModel] | AbcDistributionModel | str | None
+            The distribution model to normalize.
+            If a class, it will be instantiated.
+            If a string, it must be exactly the name of the file containing the model,
+            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            If None, the default distribution model will be returned.
+
+        Returns
+        -------
+        AbcDistributionModel
+            The normalized distribution model object.
+        """
+
         if (distribution_model is None):
             distribution_model: Type[AbcDistributionModel] = importlib.import_module(
                 f'apps.mobsinet.simulator.defaults.distribution_models.{sim_config_env.distribution_model}').model
@@ -87,6 +173,22 @@ class ModelsNormalizer:
 
     @staticmethod
     def normalize_node_behavior_constructor(node_behavior_constructor: Type[AbcNodeBehavior] | str | None) -> Type[AbcNodeBehavior]:
+        """Normalizes the node behavior constructor.
+
+        Parameters
+        ----------
+        node_behavior_constructor : Type[AbcNodeBehavior] | str | None
+            The node behavior constructor to normalize.
+            If a string, it must be exactly the name of the file containing the node_behavior,
+            without the ".py" extension; it will be imported from PROJECT_DIR.
+            If None, the default node behavior constructor will be returned.
+
+        Returns
+        -------
+        Type[AbcNodeBehavior]
+            The normalized node behavior constructor.
+        """
+
         if (node_behavior_constructor is None):
             node_behavior_constructor: Type[AbcNodeBehavior] = importlib.import_module(
                 f'apps.mobsinet.simulator.defaults.nodes.{sim_config_env.node_behavior}').node_behavior
