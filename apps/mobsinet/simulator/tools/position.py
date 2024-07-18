@@ -1,6 +1,7 @@
 import math
 from copy import deepcopy
 
+
 class Position:
     def __init__(self, x=0, y=0, z=0):
         self.x = x
@@ -8,6 +9,8 @@ class Position:
         self.z = z
 
     def copy(self):
+        """Generate a deep copy of the position and return it."""
+
         return deepcopy(self)
 
     def get_coordinates(self):
@@ -23,9 +26,28 @@ class Position:
             return False
         return self.x == other.x and self.y == other.y and self.z == other.z
 
-    def euclidean_distance(self, other):
+    def euclidean_distance(self, other: 'Position'):
+        """Calculate the Euclidean distance between this position and another and return it.
+
+        Parameters
+        ----------
+        other : Position
+            The other position to calculate the distance to.
+
+        Returns
+        -------
+        float
+            The Euclidean distance between the two positions.
+
+        Raises
+        ------
+        ValueError
+            If the other position is not an instance of Position.
+        """
+
         if not isinstance(other, Position):
             raise ValueError("The argument must be an instance of Position")
+
         return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2)
 
     def __str__(self):
@@ -58,4 +80,5 @@ if __name__ == "__main__":
 
     # Calculate Euclidean distance
     distance = p1.euclidean_distance(p2)
-    print(f"Euclidean distance between Position 1 and Position 2: {distance:.2f}")
+    print(f"Euclidean distance between Position 1 and Position 2: {
+          distance:.2f}")
