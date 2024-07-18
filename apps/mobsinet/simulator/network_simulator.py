@@ -1,7 +1,7 @@
 import importlib.util
 import networkx as nx
 import importlib
-import sys
+
 
 from .models.abc_distribution_model import AbcDistributionModel
 from .models.abc_mobility_model import AbcMobilityModel
@@ -14,8 +14,6 @@ from .tools.models_normalizer import ModelsNormalizer
 from .configuration.sim_config import sim_config_env
 from typing import Type, Any
 
-from .defaults.mobility_models.random_mob import model
-from abc import ABCMeta
 
 class NetworkSimulator(object):
 
@@ -23,16 +21,15 @@ class NetworkSimulator(object):
         self.graph: nx.DiGraph = nx.DiGraph()
         self.dist_model = None
 
-    
     def add_nodes(
         self,
         nodes: int | list[Any],
-        distribution_model: Type[AbcDistributionModel] | AbcDistributionModel | str | None = None,
-        node_behavior_constructor: Type[AbcNodeBehavior] | str | None = None,
-        mobility_model: Type[AbcMobilityModel] | AbcMobilityModel | str | None = None,
-        connectivity_model: Type[AbcConnectivityModel] | AbcConnectivityModel | str | None = None,
-        interference_model: Type[AbcInterferenceModel] | AbcInterferenceModel | str | None = None,
-        reliability_model: Type[AbcReliabilityModel] | AbcReliabilityModel | str | None = None,
+        distribution_model: Type[AbcDistributionModel] | AbcDistributionModel | str = None,
+        node_behavior_constructor: Type[AbcNodeBehavior] | str = None,
+        mobility_model: Type[AbcMobilityModel] | AbcMobilityModel | str = None,
+        connectivity_model: Type[AbcConnectivityModel] | AbcConnectivityModel | str = None,
+        interference_model: Type[AbcInterferenceModel] | AbcInterferenceModel | str = None,
+        reliability_model: Type[AbcReliabilityModel] | AbcReliabilityModel | str = None
     ):
         """Add a set of nodes to the network graph based on the distribution model.
 
@@ -43,97 +40,116 @@ class NetworkSimulator(object):
         distribution_model : Type[AbcDistributionModel] | AbcDistributionModel | str, optional
             The distribution model to distribute nodes in the graph.
             If a class, it will be instantiated.
-            If a string, it will be imported from PROJECT_DIR and instantiated.
+            If a string, it must be exactly the name of the file containing the model,
+            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
             If None, the default distribution model will be used.
         node_behavior_constructor : Type[AbcNodeBehavior] | str, optional
             The class of the node_behavior to instantiate when nodes are created.
-            If a string, it will be imported from PROJECT_DIR.
+            If a string, it must be exactly the name of the file containing the node behavior,
+            without the ".py" extension; it will be imported from PROJECT_DIR.
             If None, the default node_behavior will be used.
         mobility_model : Type[AbcMobilityModel] | AbcMobilityModel | str, optional
             The mobility model that will be used by these nodes.
             If a class, it will be instantiated.
-            If a string, it will be imported from PROJECT_DIR and instantiated.
+            If a string, it must be exactly the name of the file containing the model, 
+            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
             If None, the default mobility model will be used.
         connectivity_model : Type[AbcConnectivityModel] | AbcConnectivityModel | str, optional
             The connectivity model that will be used by these nodes.
             If a class, it will be instantiated.
-            If a string, it will be imported from PROJECT_DIR and instantiated.
+            If a string, it must be exactly the name of the file containing the model,
+            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
             If None, the default connectivity model will be used. 
         interference_model : Type[AbcInterferenceModel] | AbcInterferenceModel | str, optional
             The interference model that will be used by these nodes.
             If a class, it will be instantiated.
-            If a string, it will be imported from PROJECT_DIR and instantiated.
+            If a string, it must be exactly the name of the file containing the model,
+            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
             If None, the default interference model will be used.
         reliability_model : Type[AbcReliabilityModel] | AbcReliabilityModel | str, optional
             The reliability model that will be used by these nodes.
             If a class, it will be instantiated.
-            If a string, it will be imported from PROJECT_DIR and instantiated.
+            If a string, it must be exactly the name of the file containing the model,
+            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
             If None, the default reliability model will be used.
 
         Examples
         --------
-        >>> network_simulator.add_nodes(100, distribution_model="uniform_dist") # Add 100 nodes with a uniform distribution
-        >>> network_simulator.add_nodes([1, 2, 3, 4, 5], distribution_model="random_dist") # Add 5 nodes with a uniform distribution
-        >>> network_simulator.add_nodes(1, node_behavior_constructor=SmartphoneNodeBehavior) # Add 1 node with the smartphone node behavior
-        >>> network_simulator.add_nodes([10, 20, 30], mobility_model="random_walk", distribution_model="random_dist") # Add 3 nodes with random walk mobility and a random distribution
+        ```python
+        # Add 100 nodes with a uniform distribution
+        >>> network_simulator.add_nodes(100, distribution_model="uniform_dist") 
+        # Add 5 nodes with a uniform distribution
+        >>> network_simulator.add_nodes([1, 2, 3, 4, 5], distribution_model="random_dist") 
+        # Add 1 node with the smartphone node behavior
+        >>> network_simulator.add_nodes(1, node_behavior_constructor=SmartphoneNodeBehavior) 
+        # Add 3 nodes with random walk mobility and a random distribution
+        >>> network_simulator.add_nodes([10, 20, 30], mobility_model="random_walk", distribution_model="random_dist") 
+        ```
 
         Notes
         -----
         If you want to add a unique node with a defined position, use the `add_node` method.
         """
-        
-        distribution_model: AbcDistributionModel = ModelsNormalizer.normalize_distribution_model(distribution_model)
 
+        distribution_model: AbcDistributionModel = ModelsNormalizer.normalize_distribution_model(
+            distribution_model)
+        node_behavior_constructor = ModelsNormalizer.normalize_node_behavior_constructor(
+            node_behavior_constructor)
 
         for id in (range(nodes) if type(nodes) is int else nodes):
-            position = distribution_model.get_position()
+            mobility_model = ModelsNormalizer.normalize_mobility_model(
+                mobility_model)
+            connectivity_model = ModelsNormalizer.normalize_connectivity_model(
+                connectivity_model)
+            interference_model = ModelsNormalizer.normalize_interference_model(
+                interference_model)
+            reliability_model = ModelsNormalizer.normalize_reliability_model(
+                reliability_model)
 
-            self.add_node(
-                position=position,
-                node_id=id if type(nodes) is not int else None,
-                node_behavior_constructor=node_behavior_constructor,
+            node_behavior = node_behavior_constructor(
+                id if type(nodes) is not int else self._gen_node_id(),
                 mobility_model=mobility_model,
                 connectivity_model=connectivity_model,
                 interference_model=interference_model,
                 reliability_model=reliability_model
             )
 
+            position = distribution_model.get_position(node_behavior)
+
+            node_behavior.set_position(position)
+
+            self.add_node(node_behavior)
+
     def add_node(
         self,
-        position: Position,
-        node_id=None,
-        node_behavior_constructor: Type[AbcNodeBehavior] | str | None = None,
-        mobility_model: Type[AbcMobilityModel] | AbcMobilityModel | str | None = None,
-        connectivity_model: Type[AbcConnectivityModel] | AbcConnectivityModel | str | None = None,
-        interference_model: Type[AbcInterferenceModel] | AbcInterferenceModel | str | None = None,
-        reliability_model: Type[AbcReliabilityModel] | AbcReliabilityModel | str | None = None,
+        node_behavior: AbcNodeBehavior,
     ):
-        mobility_model = ModelsNormalizer.normalize_mobility_model(mobility_model)
-        connectivity_model = ModelsNormalizer.normalize_connectivity_model(connectivity_model)
-        interference_model = ModelsNormalizer.normalize_interference_model(interference_model)
-        reliability_model = ModelsNormalizer.normalize_reliability_model(reliability_model)
-        node_behavior_constructor = ModelsNormalizer.normalize_node_behavior_constructor(node_behavior_constructor)
-        position: Position = position or importlib.import_module('apps.mobsinet.simulator.defaults.distribution_models.' + sim_config_env.distribution_model).model().get_position()
+        """Add a node to the network graph.
 
-        if (not node_id):
-            node_id = self._gen_node_id()
+        Parameters
+        ----------
+        node_behavior : AbcNodeBehavior
+            The node behavior object.
+        """
 
-        if node_id not in self.graph.nodes():
+        if node_behavior.id not in self.graph.nodes():
             self.graph.add_node(
-                node_id,
-                behavior=node_behavior_constructor(
-                    node_id,
-                    position=position,
-                    mobility_model=mobility_model,
-                    connectivity_model=connectivity_model,
-                    interference_model=interference_model,
-                    reliability_model=reliability_model),
+                node_behavior.id,
+                behavior=node_behavior
             )
         else:
-            raise ValueError(f"Node with ID {node_id} already exists.")
+            raise ValueError(
+                f"Node with ID {node_behavior.id} already exists.")
 
+    def remove_node(self, node_id: int):
+        """Remove a node from the network graph by their ID.
 
-    def remove_node(self, node_id):
+        Raises
+        ------
+        ValueError
+            If the node is not in the graph.
+        """
+
         if node_id in self.graph.nodes():
             self.graph.remove_node(node_id)
         else:
@@ -141,16 +157,40 @@ class NetworkSimulator(object):
                 f"Node with ID {node_id} already removed or do not exists.")
 
     def add_edge(self, from_id, to_id):
+        """Add an edge between two nodes in the network graph.
+
+        Parameters
+        ----------
+        from_id : int
+            The ID of the source node.
+        to_id : int
+            The ID of the destination node.
+        """
+
         self.graph.add_edge(from_id, to_id)
 
     def add_bi_directional_edge(self, id1, id2):
+        """Add a bi-directional edge between two nodes in the network graph."""
+
         self.add_edge(id1, id2)
         self.add_edge(id2, id1)
 
     def remove_edge(self,  from_id, to_id):
+        """Remove an edge between two nodes in the network graph.
+
+        Parameters
+        ----------
+        from_id : int
+            The ID of the source node.
+        to_id : int
+            The ID of the destination node.
+        """
+
         self.graph.remove_edge(from_id, to_id)
 
     def remove_bi_directional_edge(self, id1, id2):
+        """Remove a bi-directional edge between two nodes in the network graph."""
+
         self.remove_edge(id1, id2)
         self.remove_edge(id2, id1)
 
@@ -165,20 +205,27 @@ class NetworkSimulator(object):
         pass
 
     def run(self):
+        """Starts the simulation running."""
+
         pass
 
     def __str__(self) -> str:
         return str(self.graph)
 
     def _gen_node_id(self):
-        """(private) Generates a new `node_id` based on number of current nodes in the graph."""
+        """(private) Generates a new `node_id` based on number of current nodes in the graph.
+
+        Notes
+        -----
+        The generated id may have already been used by another node that is no longer in the graph
+        """
         node_id = self.graph.number_of_nodes() + 1
 
         while node_id in self.graph.nodes():
             node_id += 1
 
         return node_id
-    
+
 
 if __name__ == "__main__":
     # Create instances of the class
@@ -186,10 +233,10 @@ if __name__ == "__main__":
     # for i in range(1, 4):
     #     ns.add_node(i)
 
-    ns.add_nodes([1,2,3,4])
+    ns.add_nodes([1, 2, 3, 4])
 
     ns.add_bi_directional_edge(1, 4)
-    ns.add_edge(2,3)
+    ns.add_edge(2, 3)
     print(ns.graph.edges())
     ns.remove_bi_directional_edge(1, 4)
     print(ns.graph.edges())
