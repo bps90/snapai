@@ -1,4 +1,6 @@
 import json
+from math import pi, sqrt
+from statistics import mean
 
 
 class SimulationConfig:
@@ -18,6 +20,14 @@ class SimulationConfig:
         self.node_behavior = 'inert_node_behavior'
         self.distribution_model = 'random_dist'
         self.mobility_model = 'random_mob'
+        self.mobility_model_parameters = {
+            # TODO: maybe turn it dependent by the specific mobility model
+            'speed_range': [0, sqrt(self.dimX**2 + self.dimY**2)],
+            'direction_range': [0, 2 * pi],
+            'prioritize_speed': False,
+            'travel_distance': None,
+            'travel_time': self.simulation_steps * 0.1  # 10% of the simulation time
+        }
         self.connectivity_model = 'no_connectivity'
         self.reliability_model = 'no_reliability'
         self.interference_model = 'no_interference'
