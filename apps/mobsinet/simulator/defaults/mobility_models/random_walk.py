@@ -17,6 +17,10 @@ import matplotlib.pyplot as plt
 
 parameters = sim_config_env.mobility_model_parameters
 
+# REMOVE IT AFTER TESTING
+another_digraph = DiGraph()
+trace_graph = DiGraph()
+
 
 class RandomWalk(AbcMobilityModel):
 
@@ -84,6 +88,9 @@ class RandomWalk(AbcMobilityModel):
             current_coordinates[1] + direction_vector[1],
             current_coordinates[2] + direction_vector[2]
         )
+
+        # REMOVE IT AFTER TESTING
+        print(f'new coordinates: {new_coordinates}')
 
         # verify if next position is in the graph
         new_coordinates = self._check_boundary(
@@ -175,14 +182,100 @@ class RandomWalk(AbcMobilityModel):
             The calculated new coordinates to check and adjust.
         """
 
-        coordinates = self._check_left_boundary(
-            old_coordinates, new_coordinates)
-        coordinates = self._check_right_boundary(
-            old_coordinates, coordinates)
-        coordinates = self._check_top_boundary(
-            old_coordinates, coordinates)
-        coordinates = self._check_bottom_boundary(
-            old_coordinates, coordinates)
+        unit_vector = self._get_unit_vector(self._current_direction)
+
+        traveled_distance_to_left_boundary = (
+            - old_coordinates[0] / unit_vector[0])
+        traveled_distance_to_right_boundary = (sim_config_env.dimX -
+                                               old_coordinates[0]) / unit_vector[0]
+        traveled_distance_to_top_boundary = (
+            sim_config_env.dimY - old_coordinates[1]) / unit_vector[1]
+        traveled_distance_to_bottom_boundary = (
+            - old_coordinates[1] / unit_vector[1])
+
+        on_range_direction = self._current_direction % (2 * pi)
+
+        coordinates = new_coordinates
+
+        # If the node is in right direction
+        if (on_range_direction == 0):
+            coordinates = self._check_right_boundary(
+                old_coordinates, new_coordinates)
+
+        # If the direction vector is in first quadrant
+        elif (on_range_direction < (pi / 2) and on_range_direction > 0):
+            less_traveled_distance = min(
+                traveled_distance_to_right_boundary if traveled_distance_to_right_boundary >= 0 else Infinity,
+                traveled_distance_to_top_boundary if traveled_distance_to_top_boundary >= 0 else Infinity,
+            )
+
+            if (traveled_distance_to_right_boundary == less_traveled_distance):
+                coordinates = self._check_right_boundary(
+                    old_coordinates, new_coordinates)
+
+            if (traveled_distance_to_top_boundary == less_traveled_distance):
+                coordinates = self._check_top_boundary(
+                    old_coordinates, new_coordinates)
+
+        # If the node is in top direction
+        elif (on_range_direction == (pi / 2)):
+            coordinates = self._check_top_boundary(
+                old_coordinates, new_coordinates)
+
+        # If the direction vector is in second quadrant
+        elif (on_range_direction < pi and on_range_direction > (pi / 2)):
+            less_traveled_distance = min(
+                traveled_distance_to_left_boundary if traveled_distance_to_left_boundary >= 0 else Infinity,
+                traveled_distance_to_top_boundary if traveled_distance_to_top_boundary >= 0 else Infinity,
+            )
+
+            if (traveled_distance_to_left_boundary == less_traveled_distance):
+                coordinates = self._check_left_boundary(
+                    old_coordinates, new_coordinates)
+
+            if (traveled_distance_to_top_boundary == less_traveled_distance):
+                coordinates = self._check_top_boundary(
+                    old_coordinates, new_coordinates)
+
+        # If the node is in left direction
+        elif (on_range_direction == pi):
+            coordinates = self._check_left_boundary(
+                old_coordinates, new_coordinates)
+
+        # If the direction vector is in third quadrant
+        elif (on_range_direction < (3 * pi / 2) and on_range_direction > pi):
+            less_traveled_distance = min(
+                traveled_distance_to_left_boundary if traveled_distance_to_left_boundary >= 0 else Infinity,
+                traveled_distance_to_bottom_boundary if traveled_distance_to_bottom_boundary >= 0 else Infinity,
+            )
+
+            if (traveled_distance_to_left_boundary == less_traveled_distance):
+                coordinates = self._check_left_boundary(
+                    old_coordinates, new_coordinates)
+
+            if (traveled_distance_to_bottom_boundary == less_traveled_distance):
+                coordinates = self._check_bottom_boundary(
+                    old_coordinates, new_coordinates)
+
+        # If the node is in bottom direction
+        elif (on_range_direction == (3 * pi / 2)):
+            coordinates = self._check_bottom_boundary(
+                old_coordinates, new_coordinates)
+
+        # If the direction vector is in fourth quadrant
+        elif (on_range_direction < 2 * pi and on_range_direction > (3 * pi / 2)):
+            less_traveled_distance = min(
+                traveled_distance_to_right_boundary if traveled_distance_to_right_boundary >= 0 else Infinity,
+                traveled_distance_to_bottom_boundary if traveled_distance_to_bottom_boundary >= 0 else Infinity,
+            )
+
+            if (traveled_distance_to_right_boundary == less_traveled_distance):
+                coordinates = self._check_right_boundary(
+                    old_coordinates, new_coordinates)
+
+            if (traveled_distance_to_bottom_boundary == less_traveled_distance):
+                coordinates = self._check_bottom_boundary(
+                    old_coordinates, new_coordinates)
 
         return coordinates
 
@@ -231,7 +324,32 @@ class RandomWalk(AbcMobilityModel):
 
             # REMOVE IT AFTER TESTING
             print('Bateu borda esquerda', 'direction: ', rad2deg(self._current_direction), 'travel_distance_to_boundary: ',
-                  traveled_distance_to_boundary, 'limit_point: ', limit_point, 'coordinates: ', coordinates, sep='\n')
+                  traveled_distance_to_boundary, 'limit_point: ', limit_point, 'coordinates: ', coordinates, 'new_coordinates: ', new_coordinates, 'old_coordinates: ', old_coordinates, 'current_speed: ', current_speed, 'remaining_distance: ', remaining_distance, 'unit_vector: ', unit_vector, sep='\n')
+            another_digraph.add_node(
+                trace_graph.number_of_nodes() - 1, position=old_coordinates[0:2], color='#999999')
+
+            another_digraph.add_node(
+                f'{trace_graph.number_of_nodes() - 0.9:.1f}', position=limit_point[0:2], color='#f000f0')
+
+            another_digraph.add_node(
+                f'{trace_graph.number_of_nodes() - 0.8:.1f}', position=new_coordinates[0:2], color='#f00000')
+
+            another_digraph.add_node(
+                f'{trace_graph.number_of_nodes() - 0.7:.1f}', position=coordinates[0:2], color='#f000f0')
+
+            another_digraph.add_edge(
+                trace_graph.number_of_nodes() - 1,
+                f'{trace_graph.number_of_nodes() - 0.9:.1f}',
+                distance=f'{traveled_distance_to_boundary:.1f}')
+            another_digraph.add_edge(
+                f'{trace_graph.number_of_nodes(
+                ) - 0.9:.1f}',
+                f'{trace_graph.number_of_nodes() - 0.8:.1f}',
+                distance=f'{sqrt((new_coordinates[0] - limit_point[0])**2 + (new_coordinates[1] - limit_point[1])**2):.1f}')
+            another_digraph.add_edge(
+                f'{trace_graph.number_of_nodes(
+                ) - 0.9:.1f}', f'{trace_graph.number_of_nodes() - 0.7:.1f}',
+                distance=f'{remaining_distance:.1f}')
 
             return self._check_boundary(limit_point, coordinates)
         else:
@@ -261,11 +379,10 @@ class RandomWalk(AbcMobilityModel):
 
             self._current_direction = -self._current_direction + pi
 
-            traveled_distance_to_boundary = sim_config_env.dimX - \
-                old_coordinates[0] / \
-                unit_vector[0]
-            remaining_distance = current_speed - \
-                traveled_distance_to_boundary
+            traveled_distance_to_boundary = (
+                sim_config_env.dimX - old_coordinates[0]) / unit_vector[0]
+            remaining_distance = (
+                current_speed - traveled_distance_to_boundary)
 
             direction_vector = self._get_direction_vector(
                 remaining_distance, self._current_direction)
@@ -284,6 +401,30 @@ class RandomWalk(AbcMobilityModel):
             # REMOVE IT AFTER TESTING
             print('Bateu borda direita', 'direction: ', rad2deg(self._current_direction), 'travel_distance_to_boundary: ',
                   traveled_distance_to_boundary, 'limit_point: ', limit_point, 'coordinates: ', coordinates, sep='\n')
+            another_digraph.add_node(
+                trace_graph.number_of_nodes() - 1, position=old_coordinates[0:2], color='#999999')
+
+            another_digraph.add_node(
+                f'{trace_graph.number_of_nodes() - 0.9:.1f}', position=limit_point[0:2], color='#f000f0')
+
+            another_digraph.add_node(
+                f'{trace_graph.number_of_nodes() - 0.8:.1f}', position=new_coordinates[0:2], color='#f00000')
+
+            another_digraph.add_node(
+                f'{trace_graph.number_of_nodes() - 0.7:.1f}', position=coordinates[0:2], color='#f000f0')
+
+            another_digraph.add_edge(
+                trace_graph.number_of_nodes() - 1,
+                f'{trace_graph.number_of_nodes() - 0.9:.1f}',
+                distance=f'{traveled_distance_to_boundary:.1f}')
+            another_digraph.add_edge(
+                f'{trace_graph.number_of_nodes(
+                ) - 0.9:.1f}', f'{trace_graph.number_of_nodes() - 0.8:.1f}',
+                distance=f'{sqrt((new_coordinates[0] - limit_point[0])**2 + (new_coordinates[1] - limit_point[1])**2):.1f}')
+            another_digraph.add_edge(
+                f'{trace_graph.number_of_nodes(
+                ) - 0.9:.1f}', f'{trace_graph.number_of_nodes() - 0.7:.1f}',
+                distance=f'{remaining_distance:.1f}')
 
             return self._check_boundary(limit_point, coordinates)
         else:
@@ -313,9 +454,8 @@ class RandomWalk(AbcMobilityModel):
 
             self._current_direction = -self._current_direction
 
-            traveled_distance_to_boundary = sim_config_env.dimY - \
-                old_coordinates[1] / \
-                unit_vector[1]
+            traveled_distance_to_boundary = (
+                sim_config_env.dimY - old_coordinates[1]) / unit_vector[1]
             remaining_distance = current_speed - \
                 traveled_distance_to_boundary
 
@@ -336,6 +476,30 @@ class RandomWalk(AbcMobilityModel):
             # REMOVE IT AFTER TESTING
             print('Bateu borda topo', 'direction: ', rad2deg(self._current_direction), 'travel_distance_to_boundary: ',
                   traveled_distance_to_boundary, 'limit_point: ', limit_point, 'coordinates: ', coordinates, sep='\n')
+            another_digraph.add_node(
+                trace_graph.number_of_nodes() - 1, position=old_coordinates[0:2], color='#999999')
+
+            another_digraph.add_node(
+                f'{trace_graph.number_of_nodes() - 0.9:.1f}', position=limit_point[0:2], color='#f000f0')
+
+            another_digraph.add_node(
+                f'{trace_graph.number_of_nodes() - 0.8:.1f}', position=new_coordinates[0:2], color='#f00000')
+
+            another_digraph.add_node(
+                f'{trace_graph.number_of_nodes() - 0.7:.1f}', position=coordinates[0:2], color='#f000f0')
+
+            another_digraph.add_edge(
+                trace_graph.number_of_nodes() - 1,
+                f'{trace_graph.number_of_nodes() - 0.9:.1f}',
+                distance=f'{traveled_distance_to_boundary:.1f}')
+            another_digraph.add_edge(
+                f'{trace_graph.number_of_nodes(
+                ) - 0.9:.1f}', f'{trace_graph.number_of_nodes() - 0.8:.1f}',
+                distance=f'{sqrt((new_coordinates[0] - limit_point[0])**2 + (new_coordinates[1] - limit_point[1])**2):.1f}')
+            another_digraph.add_edge(
+                f'{trace_graph.number_of_nodes(
+                ) - 0.9:.1f}', f'{trace_graph.number_of_nodes() - 0.7:.1f}',
+                distance=f'{remaining_distance:.1f}')
 
             return self._check_boundary(limit_point, coordinates)
         else:
@@ -365,9 +529,8 @@ class RandomWalk(AbcMobilityModel):
 
             self._current_direction = -self._current_direction
 
-            traveled_distance_to_boundary = - \
-                old_coordinates[1] / \
-                unit_vector[1]
+            traveled_distance_to_boundary = (
+                - old_coordinates[1] / unit_vector[1])
             remaining_distance = current_speed - \
                 traveled_distance_to_boundary
 
@@ -388,6 +551,30 @@ class RandomWalk(AbcMobilityModel):
             # REMOVE IT AFTER TESTING
             print('Bateu borda baixo', 'direction: ', rad2deg(self._current_direction), 'travel_distance_to_boundary: ',
                   traveled_distance_to_boundary, 'limit_point: ', limit_point, 'coordinates: ', coordinates, sep='\n')
+            another_digraph.add_node(
+                trace_graph.number_of_nodes() - 1, position=old_coordinates[0:2], color='#999999')
+
+            another_digraph.add_node(
+                f'{trace_graph.number_of_nodes() - 0.9:.1f}', position=limit_point[0:2], color='#f000f0')
+
+            another_digraph.add_node(
+                f'{trace_graph.number_of_nodes() - 0.8:.1f}', position=new_coordinates[0:2], color='#f00000')
+
+            another_digraph.add_node(
+                f'{trace_graph.number_of_nodes() - 0.7:.1f}', position=coordinates[0:2], color='#f000f0')
+
+            another_digraph.add_edge(
+                trace_graph.number_of_nodes() - 1, f'{
+                    trace_graph.number_of_nodes() - 0.9:.1f}',
+                distance=f'{traveled_distance_to_boundary:.1f}')
+            another_digraph.add_edge(
+                f'{trace_graph.number_of_nodes(
+                ) - 0.9:.1f}', f'{trace_graph.number_of_nodes() - 0.8:.1f}',
+                distance=f'{sqrt((new_coordinates[0] - limit_point[0])**2 + (new_coordinates[1] - limit_point[1])**2):.1f}')
+            another_digraph.add_edge(
+                f'{trace_graph.number_of_nodes(
+                ) - 0.9:.1f}', f'{trace_graph.number_of_nodes() - 0.7:.1f}',
+                distance=f'{remaining_distance:.1f}')
 
             return self._check_boundary(limit_point, coordinates)
         else:
@@ -470,6 +657,7 @@ if __name__ == '__main__':
     random_walk = RandomWalk()
 
     random_walk.set_travel_time(5)
+    random_walk.set_direction_range((3 * pi) / 2, 2 * pi)
 
     node_behavior = InertNodeBehavior(
         1,
@@ -480,13 +668,11 @@ if __name__ == '__main__':
         NoReliability()
     )
 
-    trace_graph = DiGraph()
-
     trace_file = open('trace.csv', 'w')
 
     trace_file.write('t, x, y, z\n')
 
-    for step in range(50):
+    for step in range(10):
 
         print('\n', step, node_behavior.get_coordinates())
 
@@ -511,6 +697,7 @@ if __name__ == '__main__':
             node_behavior.mobility_model.get_next_position(node_behavior))
 
     trace_file.close()
+    print()
 
     border = Graph()
     border.add_node('A', position=(0, 0))
@@ -522,15 +709,66 @@ if __name__ == '__main__':
     border.add_edge('C', 'D')
     border.add_edge('D', 'A')
 
+    another_digraph_color_map = []
+    trace_graph_color_map = []
+
+    for node in another_digraph.nodes:
+        another_digraph_color_map.append(another_digraph.nodes[node]['color'])
+
+    for node in trace_graph.nodes:
+        trace_graph_color_map.append(trace_graph.nodes[node]['color'])
+
     draw(border,  pos=get_node_attributes(
         border, 'position'), node_size=0)
+    draw(another_digraph,
+         pos=get_node_attributes(another_digraph, 'position'),
+         node_size=80,
+         node_color=another_digraph_color_map,
+         with_labels=True,
+         font_size=6,
+         edge_color="#aaaaaa",
+         font_color="black")
 
+    # plt.show()
 
     draw(trace_graph, pos=get_node_attributes(
-        trace_graph, 'position'), node_size=80, with_labels=True, font_size=7, font_color="white", node_color=[trace_graph.nodes[node]['color'] for node in trace_graph.nodes])
+        trace_graph, 'position'),
+        node_size=80, with_labels=True,
+        font_size=7,
+        font_color="white",
+        node_color=trace_graph_color_map
+    )
     draw_networkx_edge_labels(trace_graph, pos=get_node_attributes(
         trace_graph, 'position'), edge_labels=get_edge_attributes(
             trace_graph, 'distance'), font_size=7, font_family='sans-serif')
-    plt.gca().set_frame_on(True)
 
+    for node in another_digraph.nodes:
+        first_position = another_digraph.nodes[node]['position']
+
+        for another_node in another_digraph.nodes:
+            if another_node != node:
+                another_position = another_digraph.nodes[another_node]['position']
+
+                distance = sqrt(
+                    (first_position[0] - another_position[0])**2 +
+                    (first_position[1] - another_position[1])**2
+                )
+
+                if distance == 0:
+                    try:
+                        another_digraph.remove_edge(node, another_node)
+                    except:
+                        pass
+
+    draw_networkx_edge_labels(
+        another_digraph,
+        pos=get_node_attributes(another_digraph, 'position'),
+        font_size=7,
+        font_family='sans-serif',
+        edge_labels=get_edge_attributes(another_digraph, 'distance'),
+        connectionstyle='arc3, rad=0.1')
+
+    plt.gca().set_frame_on(True)
+    plt.axis('equal')
     plt.show()
+    print()
