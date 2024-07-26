@@ -1,7 +1,9 @@
 from math import cos, sin, sqrt
+import sys
+from time import sleep
 from turtle import position
 from typing import Tuple
-from networkx import DiGraph, Graph, draw, draw_networkx_edge_labels, draw_networkx_nodes, get_edge_attributes, get_node_attributes
+from networkx import DiGraph, Graph, draw, draw_networkx_edge_labels, draw_networkx_labels, draw_networkx_nodes, get_edge_attributes, get_node_attributes
 from numpy import Infinity, pi, rad2deg
 
 from apps.mobsinet.simulator.configuration.sim_config import sim_config_env
@@ -12,14 +14,73 @@ from apps.mobsinet.simulator.defaults.reliability_models.no_reliability import N
 from ...models.abc_mobility_model import AbcMobilityModel
 from ...models.nodes.abc_node_behavior import AbcNodeBehavior
 from ...tools.position import Position
-from random import random
+from random import randint, random
 import matplotlib.pyplot as plt
 
 parameters = sim_config_env.mobility_model_parameters
 
 # REMOVE IT AFTER TESTING
-another_digraph = DiGraph()
+colision_digraph = DiGraph()
 trace_graph = DiGraph()
+
+
+def add_colision(
+        old_coordinates: Tuple[float, float, float],
+        limit_point: Tuple[float, float, float],
+        new_coordinates: Tuple[float, float, float],
+        coordinates: Tuple[float, float, float],
+        traveled_distance_to_boundary: float,
+        remaining_distance: float):
+    old_node_id = f'{trace_graph.number_of_nodes() - 1.0:.1f}'
+    limit_node_id = f'{trace_graph.number_of_nodes() - 0.9:.1f}'
+    overmapped_node_id = f'{trace_graph.number_of_nodes() - 0.8:.1f}'
+    new_allocated_node_id = f'{
+        trace_graph.number_of_nodes() - 0.7:.1f}'
+
+    while (colision_digraph.has_node(old_node_id)):
+        old_node_id += '.0'
+
+    while (colision_digraph.has_node(limit_node_id)):
+        limit_node_id += '.1'
+
+    while (colision_digraph.has_node(overmapped_node_id)):
+        overmapped_node_id += '.2'
+
+    while (colision_digraph.has_node(new_allocated_node_id)):
+        new_allocated_node_id += '.3'
+
+    colision_digraph.add_node(
+        old_node_id,
+        position=old_coordinates[0:2],
+        color='#999999')
+
+    colision_digraph.add_node(
+        limit_node_id,
+        position=limit_point[0:2],
+        color='#f000f0')
+
+    colision_digraph.add_node(
+        overmapped_node_id,
+        position=new_coordinates[0:2],
+        color='#f00000')
+
+    colision_digraph.add_node(
+        new_allocated_node_id,
+        position=coordinates[0:2],
+        color='#f000f0')
+
+    colision_digraph.add_edge(
+        old_node_id,
+        limit_node_id,
+        distance=f'{traveled_distance_to_boundary:.1f}')
+    colision_digraph.add_edge(
+        limit_node_id,
+        overmapped_node_id,
+        distance=f'{sqrt((new_coordinates[0] - limit_point[0])**2 + (new_coordinates[1] - limit_point[1])**2):.1f}')
+    colision_digraph.add_edge(
+        limit_node_id,
+        new_allocated_node_id,
+        distance=f'{remaining_distance:.1f}')
 
 
 class RandomWalk(AbcMobilityModel):
@@ -53,10 +114,10 @@ class RandomWalk(AbcMobilityModel):
 
         Notes
         -----
-        If `prioritize_speed` is `True`, when calculates 
-        the next position it maybe exceed the chosen 
+        If `prioritize_speed` is `True`, when calculates
+        the next position it maybe exceed the chosen
         distance to maintain the previously chosen speed.
-        If `False`, the speed in the last step in one 
+        If `False`, the speed in the last step in one
         direction may be less than the speed of the
         rest of the trip.
         """
@@ -71,28 +132,19 @@ class RandomWalk(AbcMobilityModel):
             self._new_random_attributes()
 
         # calculates next position
+
         current_coordinates = current_position.get_coordinates()
-
-        # REMOVE IT AFTER TESTING
-        print(
-            f'remaining time: {self._remaining_time}, remaining distance: {self._remaining_distance}')
-
         used_speed = self._current_speed if self.prioritize_speed else min(
             self._remaining_distance, self._current_speed)
-
         direction_vector = self._get_direction_vector(
             used_speed, self._current_direction)
-
         new_coordinates = (
             current_coordinates[0] + direction_vector[0],
             current_coordinates[1] + direction_vector[1],
             current_coordinates[2] + direction_vector[2]
         )
 
-        # REMOVE IT AFTER TESTING
-        print(f'new coordinates: {new_coordinates}')
-
-        # verify if next position is in the graph
+        # verify if next position is in the simulation limits
         new_coordinates = self._check_boundary(
             current_coordinates,
             new_coordinates)
@@ -108,7 +160,12 @@ class RandomWalk(AbcMobilityModel):
         return position
 
     def _new_random_attributes(self):
-        """(private) Sets new random values for `current_speed` and `current_direction`."""
+        """(private) Sets new random values for `current_speed` and `current_direction`.
+
+        Notes
+        -----
+        Reset the remaining time and distance.
+        """
 
         min_speed, max_speed = self.speed_range
         min_direction, max_direction = self.direction_range
@@ -118,15 +175,11 @@ class RandomWalk(AbcMobilityModel):
         self._current_direction = (
             random() * (max_direction - min_direction)) + min_direction
 
-        # REMOVE IT AFTER TESTING
-        print(
-            f'Speed: {self._current_speed}, Direction: {rad2deg(self._current_direction)}')
-
         self._remaining_distance = self.travel_distance if self.travel_distance else Infinity
         self._remaining_time = self.travel_time if self.travel_time else Infinity
 
     def _get_direction_vector(self, speed: float, direction: float) -> Tuple[float, float, float]:
-        """Get the direction vector that can be used to calculate next position.
+        """(private) Get the direction vector that can be used to calculate next position.
 
         Parameters
         ----------
@@ -150,7 +203,7 @@ class RandomWalk(AbcMobilityModel):
         )
 
     def _get_unit_vector(self, direction: float) -> Tuple[float, float, float]:
-        """Get the unit vector that points to the indicated direction.
+        """(private) Get the unit vector that points to the indicated direction.
 
         Parameters
         ----------
@@ -172,7 +225,7 @@ class RandomWalk(AbcMobilityModel):
     def _check_boundary(self,
                         old_coordinates: Tuple[float, float, float],
                         new_coordinates: Tuple[float, float, float]):
-        """(private) Bounces the node off the boundary.
+        """(private) Bounces the node off the boundary if it is in the wrong direction.
 
         Parameters
         ----------
@@ -180,7 +233,14 @@ class RandomWalk(AbcMobilityModel):
             The old coordinates of the node.
         new_coordinates : Tuple[float, float, float]
             The calculated new coordinates to check and adjust.
+
+        Returns
+        -------
+        Tuple[float, float, float]
+            The adjusted coordinates of the node.
         """
+
+        # calculates the distance of the node from the boundary
 
         unit_vector = self._get_unit_vector(self._current_direction)
 
@@ -291,6 +351,10 @@ class RandomWalk(AbcMobilityModel):
         new_coordinates : Tuple[float, float, float]
             The calculated new coordinates to check and adjust.
 
+        Returns
+        -------
+        Tuple[float, float, float]
+            The adjusted coordinates.
         """
 
         if (new_coordinates[0] < 0):
@@ -322,34 +386,13 @@ class RandomWalk(AbcMobilityModel):
                 limit_point[2] + direction_vector[2]
             )
 
-            # REMOVE IT AFTER TESTING
-            print('Bateu borda esquerda', 'direction: ', rad2deg(self._current_direction), 'travel_distance_to_boundary: ',
-                  traveled_distance_to_boundary, 'limit_point: ', limit_point, 'coordinates: ', coordinates, 'new_coordinates: ', new_coordinates, 'old_coordinates: ', old_coordinates, 'current_speed: ', current_speed, 'remaining_distance: ', remaining_distance, 'unit_vector: ', unit_vector, sep='\n')
-            another_digraph.add_node(
-                trace_graph.number_of_nodes() - 1, position=old_coordinates[0:2], color='#999999')
-
-            another_digraph.add_node(
-                f'{trace_graph.number_of_nodes() - 0.9:.1f}', position=limit_point[0:2], color='#f000f0')
-
-            another_digraph.add_node(
-                f'{trace_graph.number_of_nodes() - 0.8:.1f}', position=new_coordinates[0:2], color='#f00000')
-
-            another_digraph.add_node(
-                f'{trace_graph.number_of_nodes() - 0.7:.1f}', position=coordinates[0:2], color='#f000f0')
-
-            another_digraph.add_edge(
-                trace_graph.number_of_nodes() - 1,
-                f'{trace_graph.number_of_nodes() - 0.9:.1f}',
-                distance=f'{traveled_distance_to_boundary:.1f}')
-            another_digraph.add_edge(
-                f'{trace_graph.number_of_nodes(
-                ) - 0.9:.1f}',
-                f'{trace_graph.number_of_nodes() - 0.8:.1f}',
-                distance=f'{sqrt((new_coordinates[0] - limit_point[0])**2 + (new_coordinates[1] - limit_point[1])**2):.1f}')
-            another_digraph.add_edge(
-                f'{trace_graph.number_of_nodes(
-                ) - 0.9:.1f}', f'{trace_graph.number_of_nodes() - 0.7:.1f}',
-                distance=f'{remaining_distance:.1f}')
+            if (__name__ == "__main__"):
+                add_colision(old_coordinates,
+                             limit_point,
+                             new_coordinates,
+                             coordinates,
+                             traveled_distance_to_boundary,
+                             remaining_distance)
 
             return self._check_boundary(limit_point, coordinates)
         else:
@@ -367,6 +410,10 @@ class RandomWalk(AbcMobilityModel):
         new_coordinates : Tuple[float, float, float]
             The calculated new coordinates to check and adjust.
 
+        Returns
+        -------
+        Tuple[float, float, float]
+            The adjusted coordinates.
         """
 
         if (new_coordinates[0] > sim_config_env.dimX):
@@ -398,33 +445,13 @@ class RandomWalk(AbcMobilityModel):
                 limit_point[2] + direction_vector[2]
             )
 
-            # REMOVE IT AFTER TESTING
-            print('Bateu borda direita', 'direction: ', rad2deg(self._current_direction), 'travel_distance_to_boundary: ',
-                  traveled_distance_to_boundary, 'limit_point: ', limit_point, 'coordinates: ', coordinates, sep='\n')
-            another_digraph.add_node(
-                trace_graph.number_of_nodes() - 1, position=old_coordinates[0:2], color='#999999')
-
-            another_digraph.add_node(
-                f'{trace_graph.number_of_nodes() - 0.9:.1f}', position=limit_point[0:2], color='#f000f0')
-
-            another_digraph.add_node(
-                f'{trace_graph.number_of_nodes() - 0.8:.1f}', position=new_coordinates[0:2], color='#f00000')
-
-            another_digraph.add_node(
-                f'{trace_graph.number_of_nodes() - 0.7:.1f}', position=coordinates[0:2], color='#f000f0')
-
-            another_digraph.add_edge(
-                trace_graph.number_of_nodes() - 1,
-                f'{trace_graph.number_of_nodes() - 0.9:.1f}',
-                distance=f'{traveled_distance_to_boundary:.1f}')
-            another_digraph.add_edge(
-                f'{trace_graph.number_of_nodes(
-                ) - 0.9:.1f}', f'{trace_graph.number_of_nodes() - 0.8:.1f}',
-                distance=f'{sqrt((new_coordinates[0] - limit_point[0])**2 + (new_coordinates[1] - limit_point[1])**2):.1f}')
-            another_digraph.add_edge(
-                f'{trace_graph.number_of_nodes(
-                ) - 0.9:.1f}', f'{trace_graph.number_of_nodes() - 0.7:.1f}',
-                distance=f'{remaining_distance:.1f}')
+            if (__name__ == "__main__"):
+                add_colision(old_coordinates,
+                             limit_point,
+                             new_coordinates,
+                             coordinates,
+                             traveled_distance_to_boundary,
+                             remaining_distance)
 
             return self._check_boundary(limit_point, coordinates)
         else:
@@ -442,6 +469,10 @@ class RandomWalk(AbcMobilityModel):
         new_coordinates : Tuple[float, float, float]
             The calculated new coordinates to check and adjust.
 
+        Returns
+        -------
+        Tuple[float, float, float]
+            The adjusted coordinates.
         """
 
         if (new_coordinates[1] > sim_config_env.dimY):
@@ -473,33 +504,13 @@ class RandomWalk(AbcMobilityModel):
                 limit_point[2] + direction_vector[2]
             )
 
-            # REMOVE IT AFTER TESTING
-            print('Bateu borda topo', 'direction: ', rad2deg(self._current_direction), 'travel_distance_to_boundary: ',
-                  traveled_distance_to_boundary, 'limit_point: ', limit_point, 'coordinates: ', coordinates, sep='\n')
-            another_digraph.add_node(
-                trace_graph.number_of_nodes() - 1, position=old_coordinates[0:2], color='#999999')
-
-            another_digraph.add_node(
-                f'{trace_graph.number_of_nodes() - 0.9:.1f}', position=limit_point[0:2], color='#f000f0')
-
-            another_digraph.add_node(
-                f'{trace_graph.number_of_nodes() - 0.8:.1f}', position=new_coordinates[0:2], color='#f00000')
-
-            another_digraph.add_node(
-                f'{trace_graph.number_of_nodes() - 0.7:.1f}', position=coordinates[0:2], color='#f000f0')
-
-            another_digraph.add_edge(
-                trace_graph.number_of_nodes() - 1,
-                f'{trace_graph.number_of_nodes() - 0.9:.1f}',
-                distance=f'{traveled_distance_to_boundary:.1f}')
-            another_digraph.add_edge(
-                f'{trace_graph.number_of_nodes(
-                ) - 0.9:.1f}', f'{trace_graph.number_of_nodes() - 0.8:.1f}',
-                distance=f'{sqrt((new_coordinates[0] - limit_point[0])**2 + (new_coordinates[1] - limit_point[1])**2):.1f}')
-            another_digraph.add_edge(
-                f'{trace_graph.number_of_nodes(
-                ) - 0.9:.1f}', f'{trace_graph.number_of_nodes() - 0.7:.1f}',
-                distance=f'{remaining_distance:.1f}')
+            if (__name__ == "__main__"):
+                add_colision(old_coordinates,
+                             limit_point,
+                             new_coordinates,
+                             coordinates,
+                             traveled_distance_to_boundary,
+                             remaining_distance)
 
             return self._check_boundary(limit_point, coordinates)
         else:
@@ -517,6 +528,10 @@ class RandomWalk(AbcMobilityModel):
         new_coordinates : Tuple[float, float, float]
             The calculated new coordinates to check and adjust.
 
+        Returns
+        -------
+        Tuple[float, float, float]
+            The adjusted coordinates.
         """
 
         if (new_coordinates[1] < 0):
@@ -548,33 +563,13 @@ class RandomWalk(AbcMobilityModel):
                 limit_point[2] + direction_vector[2]
             )
 
-            # REMOVE IT AFTER TESTING
-            print('Bateu borda baixo', 'direction: ', rad2deg(self._current_direction), 'travel_distance_to_boundary: ',
-                  traveled_distance_to_boundary, 'limit_point: ', limit_point, 'coordinates: ', coordinates, sep='\n')
-            another_digraph.add_node(
-                trace_graph.number_of_nodes() - 1, position=old_coordinates[0:2], color='#999999')
-
-            another_digraph.add_node(
-                f'{trace_graph.number_of_nodes() - 0.9:.1f}', position=limit_point[0:2], color='#f000f0')
-
-            another_digraph.add_node(
-                f'{trace_graph.number_of_nodes() - 0.8:.1f}', position=new_coordinates[0:2], color='#f00000')
-
-            another_digraph.add_node(
-                f'{trace_graph.number_of_nodes() - 0.7:.1f}', position=coordinates[0:2], color='#f000f0')
-
-            another_digraph.add_edge(
-                trace_graph.number_of_nodes() - 1, f'{
-                    trace_graph.number_of_nodes() - 0.9:.1f}',
-                distance=f'{traveled_distance_to_boundary:.1f}')
-            another_digraph.add_edge(
-                f'{trace_graph.number_of_nodes(
-                ) - 0.9:.1f}', f'{trace_graph.number_of_nodes() - 0.8:.1f}',
-                distance=f'{sqrt((new_coordinates[0] - limit_point[0])**2 + (new_coordinates[1] - limit_point[1])**2):.1f}')
-            another_digraph.add_edge(
-                f'{trace_graph.number_of_nodes(
-                ) - 0.9:.1f}', f'{trace_graph.number_of_nodes() - 0.7:.1f}',
-                distance=f'{remaining_distance:.1f}')
+            if (__name__ == "__main__"):
+                add_colision(old_coordinates,
+                             limit_point,
+                             new_coordinates,
+                             coordinates,
+                             traveled_distance_to_boundary,
+                             remaining_distance)
 
             return self._check_boundary(limit_point, coordinates)
         else:
@@ -615,11 +610,18 @@ class RandomWalk(AbcMobilityModel):
         ----------
         distance : float | int
             The travel distance in unit of length.
+
+        Notes
+        -----
+        If `prioritize_speed` is `True`, when calculates
+        the next position it maybe exceed the chosen
+        distance to maintain the previously chosen speed.
+
+        Reset the remaining distance.
         """
 
         self.travel_distance = distance
         self._remaining_distance = distance
-        self._new_random_attributes()
 
     def set_travel_time(self, time: float | int):
         """Set the travel time that the node should travel with same speed and direction.
@@ -628,19 +630,22 @@ class RandomWalk(AbcMobilityModel):
         ----------
         time : float | int
             The travel time in unit of time step.
+
+        Notes
+        -----
+        Reset the remaining time.
         """
 
         self.travel_time = time
         self._remaining_time = time
-        self._new_random_attributes()
 
     def set_prioritize_speed(self, prioritize_speed: bool):
         """Set whether prioritize speed or not.
 
-        If `prioritize_speed` is `True`, when calculates 
-        the next position it maybe exceed the chosen 
+        If `prioritize_speed` is `True`, when calculates
+        the next position it maybe exceed the chosen
         distance to maintain the previously chosen speed.
-        If `False`, the speed in the last step in one 
+        If `False`, the speed in the last step in one
         direction may be less than the speed of the
         rest of the trip.
 
@@ -656,35 +661,41 @@ class RandomWalk(AbcMobilityModel):
 if __name__ == '__main__':
     random_walk = RandomWalk()
 
-    random_walk.set_travel_time(5)
-    random_walk.set_direction_range((3 * pi) / 2, 2 * pi)
+    random_walk.set_travel_distance(70)
+    random_walk.set_speed_range(1, 50)
 
     node_behavior = InertNodeBehavior(
         1,
-        Position(),
+        Position(randint(0, sim_config_env.dimX),
+                 randint(0, sim_config_env.dimY),
+                 0),
         random_walk,
         NoConnectivity(),
         NoInterference(),
         NoReliability()
     )
 
-    trace_file = open('trace.csv', 'w')
-
+    trace_file = open('random_walk_example_trace.csv', 'w')
     trace_file.write('t, x, y, z\n')
 
-    for step in range(10):
-
-        print('\n', step, node_behavior.get_coordinates())
+    for step in range(50):
+        print(step, node_behavior.get_coordinates())
 
         trace_graph.add_node(
-            step, position=node_behavior.get_coordinates()[0:2], color='#303070')
+            step,
+            position=node_behavior.get_coordinates()[0:2],
+            color='#303070')
 
         if step > 0:
-            trace_graph.add_edge(step - 1, step, distance="{:.1f}".format(sqrt(
-                (node_behavior.get_coordinates()[0] - trace_graph.nodes[step - 1]['position'][0])**2 +
-                (node_behavior.get_coordinates()[
-                 1] - trace_graph.nodes[step - 1]['position'][1])**2
-            )))
+            current_coordinates = node_behavior.get_coordinates()
+            last_coordinates = trace_graph.nodes[step - 1]['position']
+
+            trace_graph.add_edge(step - 1,
+                                 step,
+                                 distance="{:.1f}".format(
+                                     sqrt(
+                                         (current_coordinates[0] - last_coordinates[0])**2 +
+                                         (current_coordinates[1] - last_coordinates[1])**2)))
 
         trace_file.write('{}, {}, {}, {}\n'.format(
             step,
@@ -697,8 +708,8 @@ if __name__ == '__main__':
             node_behavior.mobility_model.get_next_position(node_behavior))
 
     trace_file.close()
-    print()
 
+    # draw a graph of the borders
     border = Graph()
     border.add_node('A', position=(0, 0))
     border.add_node('B', position=(sim_config_env.dimX, 0))
@@ -708,67 +719,77 @@ if __name__ == '__main__':
     border.add_edge('B', 'C')
     border.add_edge('C', 'D')
     border.add_edge('D', 'A')
+    draw(border,
+         pos=get_node_attributes(
+             border, 'position'),
+         node_size=0)
 
+    another_digraph_labels = {}
     another_digraph_color_map = []
     trace_graph_color_map = []
 
-    for node in another_digraph.nodes:
-        another_digraph_color_map.append(another_digraph.nodes[node]['color'])
+    for node in colision_digraph.nodes:
+        another_digraph_color_map.append(colision_digraph.nodes[node]['color'])
+        another_digraph_labels[node] = str(node).split('.')[0]
+
+        first_position = colision_digraph.nodes[node]['position']
+
+        for another_node in colision_digraph.nodes:
+            if another_node != node:
+                another_position = colision_digraph.nodes[another_node]['position']
+
+                distance = sqrt(
+                    (first_position[0] - another_position[0])**2 +
+                    (first_position[1] - another_position[1])**2)
+
+                if distance == 0:
+                    try:
+                        colision_digraph.remove_edge(node, another_node)
+                    except:
+                        pass
 
     for node in trace_graph.nodes:
         trace_graph_color_map.append(trace_graph.nodes[node]['color'])
 
-    draw(border,  pos=get_node_attributes(
-        border, 'position'), node_size=0)
-    draw(another_digraph,
-         pos=get_node_attributes(another_digraph, 'position'),
+    draw(colision_digraph,
+         pos=get_node_attributes(colision_digraph, 'position'),
          node_size=80,
          node_color=another_digraph_color_map,
-         with_labels=True,
+         with_labels=False,
          font_size=6,
-         edge_color="#aaaaaa",
+         edge_color="#dddddd",
          font_color="black")
+    draw_networkx_labels(colision_digraph,
+                         pos=get_node_attributes(
+                             colision_digraph, 'position'),
+                         labels=another_digraph_labels,
+                         font_size=6,
+                         font_family='sans-serif')
 
-    # plt.show()
-
-    draw(trace_graph, pos=get_node_attributes(
-        trace_graph, 'position'),
-        node_size=80, with_labels=True,
-        font_size=7,
-        font_color="white",
-        node_color=trace_graph_color_map
-    )
-    draw_networkx_edge_labels(trace_graph, pos=get_node_attributes(
-        trace_graph, 'position'), edge_labels=get_edge_attributes(
-            trace_graph, 'distance'), font_size=7, font_family='sans-serif')
-
-    for node in another_digraph.nodes:
-        first_position = another_digraph.nodes[node]['position']
-
-        for another_node in another_digraph.nodes:
-            if another_node != node:
-                another_position = another_digraph.nodes[another_node]['position']
-
-                distance = sqrt(
-                    (first_position[0] - another_position[0])**2 +
-                    (first_position[1] - another_position[1])**2
-                )
-
-                if distance == 0:
-                    try:
-                        another_digraph.remove_edge(node, another_node)
-                    except:
-                        pass
+    draw(trace_graph,
+         pos=get_node_attributes(
+             trace_graph, 'position'),
+         node_size=80,
+         with_labels=True,
+         font_size=7,
+         font_color="white",
+         node_color=trace_graph_color_map)
+    draw_networkx_edge_labels(trace_graph,
+                              pos=get_node_attributes(
+                                  trace_graph, 'position'),
+                              edge_labels=get_edge_attributes(
+                                  trace_graph, 'distance'),
+                              font_size=5,
+                              font_family='sans-serif')
 
     draw_networkx_edge_labels(
-        another_digraph,
-        pos=get_node_attributes(another_digraph, 'position'),
-        font_size=7,
+        colision_digraph,
+        pos=get_node_attributes(colision_digraph, 'position'),
+        font_size=5,
         font_family='sans-serif',
-        edge_labels=get_edge_attributes(another_digraph, 'distance'),
+        font_color="#aaaaaa",
+        edge_labels=get_edge_attributes(colision_digraph, 'distance'),
         connectionstyle='arc3, rad=0.1')
 
-    plt.gca().set_frame_on(True)
     plt.axis('equal')
     plt.show()
-    print()
