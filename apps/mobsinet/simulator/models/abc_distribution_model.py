@@ -11,7 +11,7 @@ class AbcDistributionModel(AbcModel):
         super().__init__(name)
 
     @abstractmethod
-    def get_position(self, node_behavior: AbcNodeBehavior) -> Position:
+    def get_position(self) -> Position:
         """(abstract) This method should return a Position object that 
         represents the first position of the node."""
 

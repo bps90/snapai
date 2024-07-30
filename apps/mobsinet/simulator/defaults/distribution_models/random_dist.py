@@ -16,7 +16,7 @@ class RandomDist(AbcDistributionModel):
     def __init__(self):
         super().__init__("RandomDist")
 
-    def get_position(self, node_behavior: AbcNodeBehavior = None) -> Position:
+    def get_position(self) -> Position:
         """
         Generate a random position within the given dimensions.
 

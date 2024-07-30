@@ -114,7 +114,7 @@ class NetworkSimulator(object):
                 reliability_model=reliability_model
             )
 
-            position = distribution_model.get_position(node_behavior)
+            position = distribution_model.get_position()
 
             node_behavior.set_position(position)
 
