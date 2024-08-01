@@ -19,6 +19,10 @@ class SimulationConfig:
         }
         self.node_behavior = 'inert_node_behavior'
         self.distribution_model = 'random_dist'
+        self.distribution_model_parameters = {
+            'orientation': 'horizontal',  # 'horizontal' or 'vertical'
+            'line_position': None
+        }
         self.mobility_model = 'random_mob'
         self.mobility_model_parameters = {
             # TODO: maybe turn it dependent by the specific mobility model
@@ -168,8 +172,8 @@ class SimulationConfig:
         print(f"Simulation Name: {self.get_simulation_name()}")
         print(f"Simulation Steps: {self.get_simulation_steps()}")
         print(f"Number of Nodes: {self.get_num_nodes()}")
-        print(f"Network Dimensions (dimX, dimY, dimZ): {
-              self.get_network_dimensions()}")
+        print(
+            f"Network Dimensions(dimX, dimY, dimZ): {self.get_network_dimensions()}")
         print(f"Network Parameters: {self.get_network_parameters()}")
         print(f"Distribution Model: {self.get_distribution_model()}")
         print(f"Mobility Model: {self.get_mobility_model()}")

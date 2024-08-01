@@ -80,5 +80,5 @@ if __name__ == "__main__":
 
     # Calculate Euclidean distance
     distance = p1.euclidean_distance(p2)
-    print(f"Euclidean distance between Position 1 and Position 2: {
-          distance:.2f}")
+    print(
+        f"Euclidean distance between Position 1 and Position 2: {distance:.2f}")
