@@ -33,6 +33,11 @@ class SimulationConfig:
             'travel_time': self.simulation_steps * 0.1  # 10% of the simulation time
         }
         self.connectivity_model = 'no_connectivity'
+        self.connectivity_model_parameters = {
+            'max_radius': None,
+            'min_radius': None,
+            'big_radius_probability': None
+        }
         self.reliability_model = 'no_reliability'
         self.interference_model = 'no_interference'
         self.message_protocol = 'TCP'
