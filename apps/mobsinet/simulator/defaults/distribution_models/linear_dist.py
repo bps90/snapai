@@ -130,6 +130,8 @@ class LinearDist(AbcDistributionModel):
         self._separation = self.length / (self.number_of_nodes - 1)
 
 
+model = LinearDist
+
 if __name__ == '__main__':
     ld = LinearDist()
 

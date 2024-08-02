@@ -658,6 +658,8 @@ class RandomWalk(AbcMobilityModel):
         self.prioritize_speed = prioritize_speed
 
 
+model = RandomWalk
+
 if __name__ == '__main__':
     random_walk = RandomWalk()
 
