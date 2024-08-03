@@ -21,7 +21,13 @@ class LinearDist(AbcDistributionModel):
         self._separation: float = None
 
     def get_position(self):
-        """Get the next position for the node in the distribution."""
+        """Get the next position for the node in the distribution.
+
+        Raises
+        ------
+        Exception
+            If the number of nodes is not set.
+        """
 
         if not self.number_of_nodes:
             raise Exception(
