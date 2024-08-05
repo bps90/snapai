@@ -21,7 +21,11 @@ class SimulationConfig:
         self.distribution_model = 'random_dist'
         self.distribution_model_parameters = {
             'orientation': 'horizontal',  # 'horizontal' or 'vertical'
-            'line_position': None
+            'line_position': None,
+            'number_of_nodes': None,
+            'midpoint': (self.dimX / 2, self.dimY / 2),
+            'rotation_direction': 'anti-clockwise',
+            'radius': None,
         }
         self.mobility_model = 'random_mob'
         self.mobility_model_parameters = {

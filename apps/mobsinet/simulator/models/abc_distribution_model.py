@@ -1,6 +1,5 @@
 from abc import abstractmethod
 
-from ..models.nodes.abc_node_behavior import AbcNodeBehavior
 from ..tools.position import Position
 from .abc_model import AbcModel
 
