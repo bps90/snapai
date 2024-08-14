@@ -1,6 +1,6 @@
 from random import random
 from apps.mobsinet.simulator.configuration.sim_config import sim_config_env
-from apps.mobsinet.simulator.models.nodes.abc_node_behavior import AbcNodeBehavior
+from apps.mobsinet.simulator.models.nodes.abc_node_implementation import AbcNodeImplementation
 from ...models.abc_connectivity_model import AbcConnectivityModel
 
 parameters = sim_config_env.connectivity_model_parameters
@@ -14,7 +14,7 @@ class QUDGConnectivity(AbcConnectivityModel):
         self.max_radius = parameters['max_radius']
         self.big_radius_probability = parameters['big_radius_probability']
 
-    def is_connected(self, node_a: AbcNodeBehavior, node_b: AbcNodeBehavior) -> bool:
+    def is_connected(self, node_a: AbcNodeImplementation, node_b: AbcNodeImplementation) -> bool:
         """Check if the nodes are connected.
 
         Nodes are connected if their distance 

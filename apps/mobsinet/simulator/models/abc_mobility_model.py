@@ -11,13 +11,13 @@ class AbcMobilityModel(AbcModel):
         super().__init__(name)
 
     @abstractmethod
-    def get_next_position(self, node_behavior) -> Position:
+    def get_next_position(self, node_implementation) -> Position:
         """(abstract) This method should return the next position for the node.
 
         Parameters
         ----------
-        node_behavior : AbcNodeBehavior
-            The node behavior object.
+        node_implementation : AbcNodeImplementation
+            The node implementation object.
         """
 
         pass

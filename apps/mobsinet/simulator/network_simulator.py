@@ -8,7 +8,7 @@ from .models.abc_mobility_model import AbcMobilityModel
 from .models.abc_connectivity_model import AbcConnectivityModel
 from .models.abc_interference_model import AbcInterferenceModel
 from .models.abc_reliability_model import AbcReliabilityModel
-from .models.nodes.abc_node_behavior import AbcNodeBehavior
+from .models.nodes.abc_node_implementation import AbcNodeImplementation
 from .tools.position import Position
 from .tools.models_normalizer import ModelsNormalizer
 from .configuration.sim_config import sim_config_env
@@ -25,7 +25,7 @@ class NetworkSimulator(object):
         self,
         nodes: int | list[Any],
         distribution_model: Type[AbcDistributionModel] | AbcDistributionModel | str = None,
-        node_behavior_constructor: Type[AbcNodeBehavior] | str = None,
+        node_implementation_constructor: Type[AbcNodeImplementation] | str = None,
         mobility_model: Type[AbcMobilityModel] | AbcMobilityModel | str = None,
         connectivity_model: Type[AbcConnectivityModel] | AbcConnectivityModel | str = None,
         interference_model: Type[AbcInterferenceModel] | AbcInterferenceModel | str = None,
@@ -43,11 +43,11 @@ class NetworkSimulator(object):
             If a string, it must be exactly the name of the file containing the model,
             without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
             If None, the default distribution model will be used.
-        node_behavior_constructor : Type[AbcNodeBehavior] | str, optional
-            The class of the node_behavior to instantiate when nodes are created.
-            If a string, it must be exactly the name of the file containing the node behavior,
+        node_implementation_constructor : Type[AbcNodeImplementation] | str, optional
+            The class of the node_implementation to instantiate when nodes are created.
+            If a string, it must be exactly the name of the file containing the node implementation,
             without the ".py" extension; it will be imported from PROJECT_DIR.
-            If None, the default node_behavior will be used.
+            If None, the default node_implementation will be used.
         mobility_model : Type[AbcMobilityModel] | AbcMobilityModel | str, optional
             The mobility model that will be used by these nodes.
             If a class, it will be instantiated.
@@ -80,8 +80,8 @@ class NetworkSimulator(object):
         >>> network_simulator.add_nodes(100, distribution_model="uniform_dist") 
         # Add 5 nodes with a uniform distribution
         >>> network_simulator.add_nodes([1, 2, 3, 4, 5], distribution_model="random_dist") 
-        # Add 1 node with the smartphone node behavior
-        >>> network_simulator.add_nodes(1, node_behavior_constructor=SmartphoneNodeBehavior) 
+        # Add 1 node with the smartphone node implementation
+        >>> network_simulator.add_nodes(1, node_implementation_constructor=SmartphoneNodeImplementation) 
         # Add 3 nodes with random walk mobility and a random distribution
         >>> network_simulator.add_nodes([10, 20, 30], mobility_model="random_walk", distribution_model="random_dist") 
         ```
@@ -93,8 +93,8 @@ class NetworkSimulator(object):
 
         distribution_model: AbcDistributionModel = ModelsNormalizer.normalize_distribution_model(
             distribution_model)
-        node_behavior_constructor = ModelsNormalizer.normalize_node_behavior_constructor(
-            node_behavior_constructor)
+        node_implementation_constructor = ModelsNormalizer.normalize_node_implementation_constructor(
+            node_implementation_constructor)
 
         for id in (range(nodes) if type(nodes) is int else nodes):
             mobility_model = ModelsNormalizer.normalize_mobility_model(
@@ -106,7 +106,7 @@ class NetworkSimulator(object):
             reliability_model = ModelsNormalizer.normalize_reliability_model(
                 reliability_model)
 
-            node_behavior = node_behavior_constructor(
+            node_implementation = node_implementation_constructor(
                 id if type(nodes) is not int else self._gen_node_id(),
                 mobility_model=mobility_model,
                 connectivity_model=connectivity_model,
@@ -116,30 +116,30 @@ class NetworkSimulator(object):
 
             position = distribution_model.get_position()
 
-            node_behavior.set_position(position)
+            node_implementation.set_position(position)
 
-            self.add_node(node_behavior)
+            self.add_node(node_implementation)
 
     def add_node(
         self,
-        node_behavior: AbcNodeBehavior,
+        node_implementation: AbcNodeImplementation,
     ):
         """Add a node to the network graph.
 
         Parameters
         ----------
-        node_behavior : AbcNodeBehavior
-            The node behavior object.
+        node_implementation : AbcNodeImplementation
+            The node implementation object.
         """
 
-        if node_behavior.id not in self.graph.nodes():
+        if node_implementation.id not in self.graph.nodes():
             self.graph.add_node(
-                node_behavior.id,
-                behavior=node_behavior
+                node_implementation.id,
+                implementation=node_implementation
             )
         else:
             raise ValueError(
-                f"Node with ID {node_behavior.id} already exists.")
+                f"Node with ID {node_implementation.id} already exists.")
 
     def remove_node(self, node_id: int):
         """Remove a node from the network graph by their ID.

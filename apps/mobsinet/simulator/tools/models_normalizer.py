@@ -5,7 +5,7 @@ from ..models.abc_mobility_model import AbcMobilityModel
 from ..models.abc_interference_model import AbcInterferenceModel
 from ..models.abc_reliability_model import AbcReliabilityModel
 from ..models.abc_distribution_model import AbcDistributionModel
-from ..models.nodes.abc_node_behavior import AbcNodeBehavior
+from ..models.nodes.abc_node_implementation import AbcNodeImplementation
 from ..configuration.sim_config import sim_config_env
 from abc import ABCMeta
 
@@ -172,29 +172,29 @@ class ModelsNormalizer:
         return distribution_model
 
     @staticmethod
-    def normalize_node_behavior_constructor(node_behavior_constructor: Type[AbcNodeBehavior] | str | None) -> Type[AbcNodeBehavior]:
-        """Normalizes the node behavior constructor.
+    def normalize_node_implementation_constructor(node_implementation_constructor: Type[AbcNodeImplementation] | str | None) -> Type[AbcNodeImplementation]:
+        """Normalizes the node implementation constructor.
 
         Parameters
         ----------
-        node_behavior_constructor : Type[AbcNodeBehavior] | str | None
-            The node behavior constructor to normalize.
-            If a string, it must be exactly the name of the file containing the node_behavior,
+        node_implementation_constructor : Type[AbcNodeImplementation] | str | None
+            The node implementation constructor to normalize.
+            If a string, it must be exactly the name of the file containing the node_implementation,
             without the ".py" extension; it will be imported from PROJECT_DIR.
-            If None, the default node behavior constructor will be returned.
+            If None, the default node implementation constructor will be returned.
 
         Returns
         -------
-        Type[AbcNodeBehavior]
-            The normalized node behavior constructor.
+        Type[AbcNodeImplementation]
+            The normalized node implementation constructor.
         """
 
-        if (node_behavior_constructor is None):
-            node_behavior_constructor: Type[AbcNodeBehavior] = importlib.import_module(
-                f'apps.mobsinet.simulator.defaults.nodes.{sim_config_env.node_behavior}').node_behavior
+        if (node_implementation_constructor is None):
+            node_implementation_constructor: Type[AbcNodeImplementation] = importlib.import_module(
+                f'apps.mobsinet.simulator.defaults.nodes.{sim_config_env.node_implementation}').node_implementation
 
-        elif (type(node_behavior_constructor) is str):
-            node_behavior_constructor: Type[AbcNodeBehavior] = importlib.import_module(
-                sim_config_env.PROJECT_DIR.replace('/', '.') + 'nodes.' + node_behavior_constructor).node_behavior
+        elif (type(node_implementation_constructor) is str):
+            node_implementation_constructor: Type[AbcNodeImplementation] = importlib.import_module(
+                sim_config_env.PROJECT_DIR.replace('/', '.') + 'nodes.' + node_implementation_constructor).node_implementation
 
-        return node_behavior_constructor
+        return node_implementation_constructor

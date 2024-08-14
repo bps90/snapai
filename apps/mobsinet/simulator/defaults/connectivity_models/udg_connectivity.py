@@ -1,4 +1,4 @@
-from apps.mobsinet.simulator.models.nodes.abc_node_behavior import AbcNodeBehavior
+from apps.mobsinet.simulator.models.nodes.abc_node_implementation import AbcNodeImplementation
 from ...models.abc_connectivity_model import AbcConnectivityModel
 from ...configuration.sim_config import sim_config_env
 
@@ -11,7 +11,7 @@ class UDGConnectivity(AbcConnectivityModel):
 
         self.max_radius = parameters['max_radius']
 
-    def is_connected(self, node_a: AbcNodeBehavior, node_b: AbcNodeBehavior) -> bool:
+    def is_connected(self, node_a: AbcNodeImplementation, node_b: AbcNodeImplementation) -> bool:
         """Check if the nodes are connected.
         Nodes are connected if their distance is less than or equal to the maximum radius.
 

@@ -6,7 +6,7 @@ from ..abc_reliability_model import AbcReliabilityModel
 from abc import ABC
 
 
-class AbcNodeBehavior(ABC):
+class AbcNodeImplementation(ABC):
 
     def __init__(
             self,

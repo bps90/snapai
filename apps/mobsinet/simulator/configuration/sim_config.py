@@ -17,7 +17,7 @@ class SimulationConfig:
             'type': 'random_graph',
             'avg_degree': 4
         }
-        self.node_behavior = 'inert_node_behavior'
+        self.node_implementation = 'inert_node_implementation'
         self.distribution_model = 'random_dist'
         self.distribution_model_parameters = {
             'orientation': 'horizontal',  # 'horizontal' or 'vertical'
@@ -76,8 +76,8 @@ class SimulationConfig:
             'network_parameters', self.network_parameters))
         self.set_distribution_model(config_data.get(
             'distribution_model', self.distribution_model))
-        self.set_node_behavior(config_data.get(
-            'node_behavior', self.node_behavior))
+        self.set_node_implementation(config_data.get(
+            'node_implementation', self.node_implementation))
         self.set_connectivity_model(config_data.get(
             'connectivity_model', self.connectivity_model))
         self.set_reliability_model(config_data.get(
@@ -117,8 +117,8 @@ class SimulationConfig:
     def set_mobility_model(self, model):
         self.mobility_model = model
 
-    def set_node_behavior(self, behavior):
-        self.node_behavior = behavior
+    def set_node_implementation(self, implementation):
+        self.node_implementation = implementation
 
     def set_connectivity_model(self, model):
         self.connectivity_model = model
@@ -159,8 +159,8 @@ class SimulationConfig:
     def get_mobility_model(self):
         return self.mobility_model
 
-    def get_node_behavior(self):
-        return self.node_behavior
+    def get_node_implementation(self):
+        return self.node_implementation
 
     def get_connectivity_model(self):
         return self.connectivity_model
@@ -186,7 +186,7 @@ class SimulationConfig:
         print(f"Network Parameters: {self.get_network_parameters()}")
         print(f"Distribution Model: {self.get_distribution_model()}")
         print(f"Mobility Model: {self.get_mobility_model()}")
-        print(f"Node Behavior: {self.get_node_behavior()}")
+        print(f"Node Implementation: {self.get_node_implementation()}")
         print(f"Connectivity Model: {self.get_connectivity_model()}")
         print(f"Reliability Model: {self.get_reliability_model()}")
         print(f"Interference Model: {self.get_interference_model()}")
