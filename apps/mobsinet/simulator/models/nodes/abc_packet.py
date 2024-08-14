@@ -15,4 +15,6 @@ class AbcPacket(ABC):
         self.message = message
 
     def denyDelivery(self):
+        """Deny the delivery of the packet."""
+
         self.positiveDelivery = False

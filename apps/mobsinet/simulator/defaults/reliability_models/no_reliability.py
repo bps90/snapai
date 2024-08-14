@@ -8,6 +8,20 @@ class NoReliability(AbcReliabilityModel):
         super().__init__('NoReliability')
 
     def reaches_destination(self, packet: AbcPacket):
+        """Determines if the packet will reach the destination.
+        In this model, the packet will never reach the destination.
+
+        Parameters
+        ----------
+        packet : AbcPacket
+            The packet object.
+
+        Returns
+        -------
+        bool
+            `False` everywhere.
+        """
+
         return False
 
 

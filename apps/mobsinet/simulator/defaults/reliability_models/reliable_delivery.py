@@ -8,6 +8,20 @@ class ReliableDelivery(AbcReliabilityModel):
         super().__init__('ReliableDelivery')
 
     def reaches_destination(self, packet: AbcPacket):
+        """Determines if the packet will reach the destination.
+        In this model, the packet will always reach the destination.
+
+        Parameters
+        ----------
+        packet : AbcPacket
+            The packet object.
+
+        Returns
+        -------
+        bool
+            `True` everywhere.
+        """
+
         return True
 
 
