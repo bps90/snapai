@@ -42,6 +42,11 @@ class SimulationConfig:
             'min_radius': None,
             'big_radius_probability': None
         }
+        self.message_transmission_model_parameters = {
+            'constant_transmission_time': 1,
+            'random_transmission_min_time': 1,
+            'random_transmission_max_time': 10
+        }
         self.reliability_model = 'no_reliability'
         self.interference_model = 'no_interference'
         self.message_protocol = 'TCP'
