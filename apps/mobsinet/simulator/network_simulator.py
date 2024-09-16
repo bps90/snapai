@@ -1,7 +1,4 @@
-import importlib.util
 import networkx as nx
-import importlib
-
 
 from .models.abc_distribution_model import AbcDistributionModel
 from .models.abc_mobility_model import AbcMobilityModel
@@ -19,7 +16,7 @@ class NetworkSimulator(object):
 
     def __init__(self):
         self.graph: nx.DiGraph = nx.DiGraph()
-        self.dist_model = None
+        self.global_time = 0
 
     def add_nodes(
         self,
@@ -51,7 +48,7 @@ class NetworkSimulator(object):
         mobility_model : Type[AbcMobilityModel] | AbcMobilityModel | str, optional
             The mobility model that will be used by these nodes.
             If a class, it will be instantiated.
-            If a string, it must be exactly the name of the file containing the model, 
+            If a string, it must be exactly the name of the file containing the model,
             without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
             If None, the default mobility model will be used.
         connectivity_model : Type[AbcConnectivityModel] | AbcConnectivityModel | str, optional
@@ -59,7 +56,7 @@ class NetworkSimulator(object):
             If a class, it will be instantiated.
             If a string, it must be exactly the name of the file containing the model,
             without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
-            If None, the default connectivity model will be used. 
+            If None, the default connectivity model will be used.
         interference_model : Type[AbcInterferenceModel] | AbcInterferenceModel | str, optional
             The interference model that will be used by these nodes.
             If a class, it will be instantiated.
@@ -77,13 +74,13 @@ class NetworkSimulator(object):
         --------
         ```python
         # Add 100 nodes with a uniform distribution
-        >>> network_simulator.add_nodes(100, distribution_model="uniform_dist") 
+        >>> network_simulator.add_nodes(100, distribution_model="uniform_dist")
         # Add 5 nodes with a uniform distribution
-        >>> network_simulator.add_nodes([1, 2, 3, 4, 5], distribution_model="random_dist") 
+        >>> network_simulator.add_nodes([1, 2, 3, 4, 5], distribution_model="random_dist")
         # Add 1 node with the smartphone node implementation
-        >>> network_simulator.add_nodes(1, node_implementation_constructor=SmartphoneNodeImplementation) 
+        >>> network_simulator.add_nodes(1, node_implementation_constructor=SmartphoneNodeImplementation)
         # Add 3 nodes with random walk mobility and a random distribution
-        >>> network_simulator.add_nodes([10, 20, 30], mobility_model="random_walk", distribution_model="random_dist") 
+        >>> network_simulator.add_nodes([10, 20, 30], mobility_model="random_walk", distribution_model="random_dist")
         ```
 
         Notes
@@ -207,7 +204,61 @@ class NetworkSimulator(object):
     def run(self):
         """Starts the simulation running."""
 
-        pass
+        simulation_name = sim_config_env.simulation_name
+        simulation_steps = sim_config_env.simulation_steps
+        self.logs_file_w = open(f"logs-{simulation_name}.txt", "w")
+
+        for current_step in range(simulation_steps):
+            self.__step()
+
+        self.logs_file_w.close()
+
+    def __step(self):
+        """(private) Performs a single simulation step."""
+
+        self.__move_nodes()
+        self.__update_connections()
+
+    def __move_nodes(self):
+        """(private) Moves the nodes in the network graph."""
+
+        for node in self.graph.nodes():
+            node_implementation: AbcNodeImplementation = self.graph.nodes[node]["implementation"]
+
+            # move the node
+            node_implementation.set_position(
+                node_implementation.mobility_model.get_next_position(node_implementation))
+
+            self.logs_file_w.write(
+                f"Moved node {node_implementation.id} for position ({node_implementation.position.x},{node_implementation.position.y},{node_implementation.position.z})\n")
+
+    def __update_connections(self):
+        """(private) Updates the connections in the network graph."""
+
+        for node in self.graph.nodes():
+            node_implementation: AbcNodeImplementation = self.graph.nodes[node]["implementation"]
+
+            # update the connections
+            for possible_neighbor in self.graph.nodes():
+                if possible_neighbor == node:
+                    continue
+
+                possible_neighbor_implementation: AbcNodeImplementation = self.graph.nodes[
+                    possible_neighbor]["implementation"]
+
+                if (node_implementation.connectivity_model.is_connected(
+                        node_implementation, possible_neighbor_implementation) and not self.graph.has_edge(node, possible_neighbor)):
+
+                    self.add_edge(node, possible_neighbor)
+
+                    self.logs_file_w.write(
+                        f"Connected node {node_implementation.id} with node {possible_neighbor_implementation.id}\n")
+                elif (self.graph.has_edge(node, possible_neighbor)):
+
+                    self.remove_edge(node, possible_neighbor)
+
+                    self.logs_file_w.write(
+                        f"Disconnected node {node_implementation.id} with node {possible_neighbor_implementation.id}\n")
 
     def __str__(self) -> str:
         return str(self.graph)
