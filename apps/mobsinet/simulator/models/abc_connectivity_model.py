@@ -1,6 +1,5 @@
 from abc import abstractmethod
 
-from apps.mobsinet.simulator.models.nodes.abc_node_implementation import AbcNodeImplementation
 from .abc_model import AbcModel
 
 
@@ -10,6 +9,14 @@ class AbcConnectivityModel(AbcModel):
         super().__init__(name)
 
     @abstractmethod
-    def is_connected(self, node_a: AbcNodeImplementation, node_b: AbcNodeImplementation) -> bool:
-        """Check if the nodes are connected."""
+    def is_connected(self, node_a, node_b) -> bool:
+        """Check if the nodes are connected.
+
+        Parameters
+        ----------
+        node_a : AbcNodeImplementation
+            The first node.
+        node_b : AbcNodeImplementation
+            The second node.
+        """
         pass

@@ -245,13 +245,13 @@ class RandomWalk(AbcMobilityModel):
         unit_vector = self._get_unit_vector(self._current_direction)
 
         traveled_distance_to_left_boundary = (
-            - old_coordinates[0] / unit_vector[0])
-        traveled_distance_to_right_boundary = (sim_config_env.dimX -
-                                               old_coordinates[0]) / unit_vector[0]
-        traveled_distance_to_top_boundary = (
-            sim_config_env.dimY - old_coordinates[1]) / unit_vector[1]
+            - old_coordinates[0] / unit_vector[0]) if unit_vector[0] != 0 else Infinity
+        traveled_distance_to_right_boundary = ((sim_config_env.dimX -
+                                               old_coordinates[0]) / unit_vector[0]) if unit_vector[0] != 0 else Infinity
+        traveled_distance_to_top_boundary = ((
+            sim_config_env.dimY - old_coordinates[1]) / unit_vector[1]) if unit_vector[1] != 0 else Infinity
         traveled_distance_to_bottom_boundary = (
-            - old_coordinates[1] / unit_vector[1])
+            - old_coordinates[1] / unit_vector[1]) if unit_vector[1] != 0 else Infinity
 
         on_range_direction = self._current_direction % (2 * pi)
 
@@ -366,9 +366,9 @@ class RandomWalk(AbcMobilityModel):
 
             self._current_direction = -self._current_direction + pi
 
-            traveled_distance_to_boundary = - \
-                old_coordinates[0] / \
-                unit_vector[0]
+            traveled_distance_to_boundary = (-
+                                             old_coordinates[0] /
+                                             unit_vector[0]) if unit_vector[0] != 0 else Infinity
             remaining_distance = current_speed - \
                 traveled_distance_to_boundary
 
@@ -426,8 +426,8 @@ class RandomWalk(AbcMobilityModel):
 
             self._current_direction = -self._current_direction + pi
 
-            traveled_distance_to_boundary = (
-                sim_config_env.dimX - old_coordinates[0]) / unit_vector[0]
+            traveled_distance_to_boundary = ((
+                sim_config_env.dimX - old_coordinates[0]) / unit_vector[0]) if unit_vector[0] != 0 else Infinity
             remaining_distance = (
                 current_speed - traveled_distance_to_boundary)
 
@@ -485,8 +485,8 @@ class RandomWalk(AbcMobilityModel):
 
             self._current_direction = -self._current_direction
 
-            traveled_distance_to_boundary = (
-                sim_config_env.dimY - old_coordinates[1]) / unit_vector[1]
+            traveled_distance_to_boundary = ((
+                sim_config_env.dimY - old_coordinates[1]) / unit_vector[1]) if unit_vector[1] != 0 else Infinity
             remaining_distance = current_speed - \
                 traveled_distance_to_boundary
 
@@ -545,7 +545,7 @@ class RandomWalk(AbcMobilityModel):
             self._current_direction = -self._current_direction
 
             traveled_distance_to_boundary = (
-                - old_coordinates[1] / unit_vector[1])
+                - old_coordinates[1] / unit_vector[1]) if unit_vector[1] != 0 else Infinity
             remaining_distance = current_speed - \
                 traveled_distance_to_boundary
 

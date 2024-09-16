@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from apps.mobsinet.simulator.models.nodes.abc_message import AbcMessage
 
@@ -18,3 +18,14 @@ class AbcPacket(ABC):
         """Deny the delivery of the packet."""
 
         self.positiveDelivery = False
+
+    @abstractmethod
+    def clone(self):
+        """Create a copy of the object.
+
+        Returns
+        -------
+        AbcPacket
+            A copy of the object.
+        """
+        pass

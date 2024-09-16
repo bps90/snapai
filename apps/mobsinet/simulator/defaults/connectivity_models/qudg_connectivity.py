@@ -1,4 +1,4 @@
-from random import random
+import random
 from apps.mobsinet.simulator.configuration.sim_config import sim_config_env
 from apps.mobsinet.simulator.models.nodes.abc_node_implementation import AbcNodeImplementation
 from ...models.abc_connectivity_model import AbcConnectivityModel
