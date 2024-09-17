@@ -9,8 +9,6 @@ class AbcPacket(ABC):
         self.message: AbcMessage = message
         self.positiveDelivery: bool = True
 
-        pass
-
     def set_message(self, message: AbcMessage):
         self.message = message
 
