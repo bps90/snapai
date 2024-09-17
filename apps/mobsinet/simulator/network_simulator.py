@@ -1,5 +1,8 @@
 import networkx as nx
 
+from apps.mobsinet.simulator.models.nodes.abc_packet import AbcPacket
+from apps.mobsinet.simulator.models.nodes.abc_timer import AbcTimer
+
 from .models.abc_distribution_model import AbcDistributionModel
 from .models.abc_mobility_model import AbcMobilityModel
 from .models.abc_connectivity_model import AbcConnectivityModel
@@ -17,6 +20,9 @@ class NetworkSimulator(object):
     def __init__(self):
         self.graph: nx.DiGraph = nx.DiGraph()
         self.global_time = 0
+        self.global_timers: list[AbcTimer] = []
+        self.packets_in_the_air: list[AbcPacket] = []
+        self.arrived_packets: list[AbcPacket] = []
 
     def add_nodes(
         self,
@@ -138,6 +144,17 @@ class NetworkSimulator(object):
             raise ValueError(
                 f"Node with ID {node_implementation.id} already exists.")
 
+    def add_global_timer(self, timer: AbcTimer):
+        """Add a global timer to the simulation.
+
+        Parameters
+        ----------
+        timer : AbcTimer
+            The timer object.
+        """
+
+        self.global_timers.append(timer)
+
     def remove_node(self, node_id: int):
         """Remove a node from the network graph by their ID.
 
@@ -206,9 +223,12 @@ class NetworkSimulator(object):
 
         simulation_name = sim_config_env.simulation_name
         simulation_steps = sim_config_env.simulation_steps
+
         self.logs_file_w = open(f"logs-{simulation_name}.txt", "w")
 
         for current_step in range(simulation_steps):
+            self.global_time = current_step + 1
+
             self.__step()
 
         self.logs_file_w.close()
@@ -216,8 +236,18 @@ class NetworkSimulator(object):
     def __step(self):
         """(private) Performs a single simulation step."""
 
+        # pre_step()
+        self.__handle_global_timers()
         self.__move_nodes()
         self.__update_connections()
+        self.__test_interference()
+
+    def __handle_global_timers(self):
+        """(private) Handles the global timers in the simulation."""
+
+        for timer in self.global_timers:
+            if (timer.fire_time == simulation.global_time):
+                timer.fire()
 
     def __move_nodes(self):
         """(private) Moves the nodes in the network graph."""
@@ -278,22 +308,22 @@ class NetworkSimulator(object):
         return node_id
 
 
+simulation = NetworkSimulator()
+
 if __name__ == "__main__":
-    # Create instances of the class
-    ns = NetworkSimulator()
     # for i in range(1, 4):
     #     ns.add_node(i)
 
-    ns.add_nodes([1, 2, 3, 4])
+    simulation.add_nodes([1, 2, 3, 4])
 
-    ns.add_bi_directional_edge(1, 4)
-    ns.add_edge(2, 3)
-    print(ns.graph.edges())
-    ns.remove_bi_directional_edge(1, 4)
-    print(ns.graph.edges())
-    print(ns)
-    print(ns.graph.nodes())
-    ns.init_net_models()
+    simulation.add_bi_directional_edge(1, 4)
+    simulation.add_edge(2, 3)
+    print(simulation.graph.edges())
+    simulation.remove_bi_directional_edge(1, 4)
+    print(simulation.graph.edges())
+    print(simulation)
+    print(simulation.graph.nodes())
+    simulation.init_net_models()
 
     # dist_model  = importlib.util.spec_from_file_location("random_dist", "apps/mobsinet/simulator/defaults/distribution_models/random_dist.py")
     # foo = importlib.util.module_from_spec(dist_model)
@@ -308,4 +338,4 @@ if __name__ == "__main__":
     # print(randomDistModule.model())
 
     print('\nGraph nodes with his attributes')
-    print(ns.graph.nodes(data=True))
+    print(simulation.graph.nodes(data=True))
