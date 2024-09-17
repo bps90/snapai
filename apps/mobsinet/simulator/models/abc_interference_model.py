@@ -1,4 +1,25 @@
+from abc import abstractmethod
+
+from apps.mobsinet.simulator.models.nodes.abc_packet import AbcPacket
 from .abc_model import AbcModel
 
+
 class AbcInterferenceModel(AbcModel):
-    pass
+
+    @abstractmethod
+    def is_disturbed(self, packet: AbcPacket) -> bool:
+        """Checks if the interference model dirtubed the packet.
+
+        Parameters
+        ----------
+        packet : AbcPacket
+            The packet to check.
+
+        Returns
+        -------
+        bool
+            True if the interference model dirtubed the packet, False otherwise.
+
+        """
+
+        pass
