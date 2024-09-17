@@ -199,7 +199,8 @@ class SimulationConfig:
         print(f"Verbose Logging: {self.get_verbose_logging()}")
 
 
-sim_config_env = SimulationConfig()
+config_file_path = 'apps/mobsinet/simulator/configuration/simulation_config.json'
+sim_config_env = SimulationConfig(config_file_path)
 
 # usage
 if __name__ == "__main__":
