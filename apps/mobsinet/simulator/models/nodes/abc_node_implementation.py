@@ -1,3 +1,4 @@
+from apps.mobsinet.simulator.models.nodes.abc_timer import AbcTimer
 from ...tools.position import Position
 from ..abc_mobility_model import AbcMobilityModel
 from ..abc_connectivity_model import AbcConnectivityModel
@@ -22,6 +23,8 @@ class AbcNodeImplementation(ABC):
         self.connectivity_model: AbcConnectivityModel = connectivity_model
         self.interference_model: AbcInterferenceModel = interference_model
         self.reliability_model: AbcReliabilityModel = reliability_model
+
+        self.timers: list[AbcTimer] = []
 
     def __str__(self):
         return f"""
@@ -56,3 +59,14 @@ Reliability Model: {self.reliability_model.name}
 
     def set_coordinates(self, x: int, y: int, z: int):
         return self.position.set_coordinates(x, y, z)
+
+    def add_timer(self, timer: AbcTimer):
+        """Adds a timer to the node.
+
+        Parameters
+        ----------
+        timer : AbcTimer
+            The timer object.
+        """
+
+        self.timers.append(timer)
