@@ -8,7 +8,7 @@ class SimulationConfig:
         # Default values
         self.PROJECT_DIR = "apps/mobsinet/simulator/defaults/"
         self.simulation_name = "Network Simulation"
-        self.simulation_steps = 1000
+        self.simulation_rounds = 1000
         self.num_nodes = 50
         self.dimX = 100
         self.dimY = 100
@@ -34,7 +34,7 @@ class SimulationConfig:
             'direction_range': [0, 2 * pi],
             'prioritize_speed': False,
             'travel_distance': None,
-            'travel_time': self.simulation_steps * 0.1  # 10% of the simulation time
+            'travel_time': self.simulation_rounds * 0.1  # 10% of the simulation time
         }
         self.connectivity_model = 'no_connectivity'
         self.connectivity_model_parameters = {
@@ -71,8 +71,8 @@ class SimulationConfig:
         self.set_project_dir(config_data.get('PROJECT_DIR', self.PROJECT_DIR))
         self.set_simulation_name(config_data.get(
             'simulation_name', self.simulation_name))
-        self.set_simulation_steps(config_data.get(
-            'simulation_steps', self.simulation_steps))
+        self.set_simulation_rounds(config_data.get(
+            'simulation_rounds', self.simulation_rounds))
         self.set_num_nodes(config_data.get('num_nodes', self.num_nodes))
         self.set_network_dimensions(config_data.get('dimX', self.dimX),
                                     config_data.get('dimY', self.dimY),
@@ -102,8 +102,8 @@ class SimulationConfig:
     def set_simulation_name(self, name):
         self.simulation_name = name
 
-    def set_simulation_steps(self, steps):
-        self.simulation_steps = steps
+    def set_simulation_rounds(self, rounds):
+        self.simulation_rounds = rounds
 
     def set_num_nodes(self, num_nodes):
         self.num_nodes = num_nodes
@@ -146,8 +146,8 @@ class SimulationConfig:
     def get_simulation_name(self):
         return self.simulation_name
 
-    def get_simulation_steps(self):
-        return self.simulation_steps
+    def get_simulation_rounds(self):
+        return self.simulation_rounds
 
     def get_num_nodes(self):
         return self.num_nodes
@@ -184,7 +184,7 @@ class SimulationConfig:
 
     def print_config(self):
         print(f"Simulation Name: {self.get_simulation_name()}")
-        print(f"Simulation Steps: {self.get_simulation_steps()}")
+        print(f"Simulation Rounds: {self.get_simulation_rounds()}")
         print(f"Number of Nodes: {self.get_num_nodes()}")
         print(
             f"Network Dimensions(dimX, dimY, dimZ): {self.get_network_dimensions()}")
@@ -209,7 +209,7 @@ if __name__ == "__main__":
     # Example JSON content in simulation_config.json:
     # {
     #     "simulation_name": "My Network Simulation",
-    #     "simulation_steps": 2000,
+    #     "simulation_rounds": 2000,
     #     "num_nodes": 100,
     #     "dimX": 200,
     #     "dimY": 200,

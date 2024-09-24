@@ -1,8 +1,6 @@
-from networkx import Graph, draw, get_node_attributes
 from apps.mobsinet.simulator.models.abc_distribution_model import AbcDistributionModel
 from apps.mobsinet.simulator.tools.position import Position
 from ...configuration.sim_config import sim_config_env
-from matplotlib import pyplot as plt
 
 parameters = sim_config_env.distribution_model_parameters
 

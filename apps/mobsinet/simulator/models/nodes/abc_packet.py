@@ -1,12 +1,18 @@
 from abc import ABC, abstractmethod
 
 from apps.mobsinet.simulator.models.nodes.abc_message import AbcMessage
+from apps.mobsinet.simulator.models.nodes.abc_node_implementation import AbcNodeImplementation
 
 
 class AbcPacket(ABC):
 
-    def __init__(self, message: AbcMessage = None):
-        self.message: AbcMessage = message
+    def __init__(self,
+                 message: AbcMessage,
+                 origin: AbcNodeImplementation,
+                 destination: AbcNodeImplementation):
+        self.message = message
+        self.origin = origin
+        self.destination = destination
         self.positiveDelivery: bool = True
 
     def set_message(self, message: AbcMessage):

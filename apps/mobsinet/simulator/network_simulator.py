@@ -2,6 +2,7 @@ import networkx as nx
 
 from apps.mobsinet.simulator.models.nodes.abc_packet import AbcPacket
 from apps.mobsinet.simulator.models.nodes.abc_timer import AbcTimer
+from apps.mobsinet.simulator.tools.packets_in_the_air_buffer import PacketsInTheAirBuffer
 
 from .models.abc_distribution_model import AbcDistributionModel
 from .models.abc_mobility_model import AbcMobilityModel
@@ -21,7 +22,7 @@ class NetworkSimulator(object):
         self.graph: nx.DiGraph = nx.DiGraph()
         self.global_time = 0
         self.global_timers: list[AbcTimer] = []
-        self.packets_in_the_air: list[AbcPacket] = []
+        self.packets_in_the_air = PacketsInTheAirBuffer()
         self.arrived_packets: list[AbcPacket] = []
 
     def add_nodes(
@@ -222,25 +223,25 @@ class NetworkSimulator(object):
         """Starts the simulation running."""
 
         simulation_name = sim_config_env.simulation_name
-        simulation_steps = sim_config_env.simulation_steps
+        simulation_rounds = sim_config_env.simulation_rounds
 
         self.logs_file_w = open(f"logs-{simulation_name}.txt", "w")
 
-        for current_step in range(simulation_steps):
-            self.global_time = current_step + 1
+        for current_round in range(simulation_rounds):
+            self.global_time = current_round + 1
 
-            self.__step()
+            self.__round()
 
         self.logs_file_w.close()
 
-    def __step(self):
-        """(private) Performs a single simulation step."""
+    def __round(self):
+        """(private) Performs a single simulation round."""
 
-        # pre_step()
+        # pre_round()
         self.__handle_global_timers()
         self.__move_nodes()
         self.__update_connections()
-        self.__test_interference()
+        self.packets_in_the_air.test_interference()
 
     def __handle_global_timers(self):
         """(private) Handles the global timers in the simulation."""
@@ -248,6 +249,7 @@ class NetworkSimulator(object):
         for timer in self.global_timers:
             if (timer.fire_time == simulation.global_time):
                 timer.fire()
+                self.global_timers.remove(timer)
 
     def __move_nodes(self):
         """(private) Moves the nodes in the network graph."""
