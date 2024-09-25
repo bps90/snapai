@@ -1,5 +1,5 @@
-from copy import copy, deepcopy
-from apps.mobsinet.simulator.models.nodes.abc_message import AbcMessage
+from copy import deepcopy
+from ...models.nodes.abc_message import AbcMessage
 
 
 class NoContentMessage(AbcMessage):

@@ -1,5 +1,5 @@
-from apps.mobsinet.simulator.models.nodes.abc_node_implementation import AbcNodeImplementation
-from apps.mobsinet.simulator.tools.position import Position
+from ...models.nodes.abc_node_implementation import AbcNodeImplementation
+from ...tools.position import Position
 from ...models.abc_mobility_model import AbcMobilityModel
 from random import randint
 from ...configuration.sim_config import sim_config_env

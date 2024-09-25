@@ -1,7 +1,7 @@
 import random
-from apps.mobsinet.simulator.models.abc_message_transmission_model import AbcMessageTransmissionModel
-from apps.mobsinet.simulator.models.nodes.abc_node_implementation import AbcNodeImplementation
-from apps.mobsinet.simulator.models.nodes.abc_packet import AbcPacket
+from ...models.abc_message_transmission_model import AbcMessageTransmissionModel
+from ...models.nodes.abc_node_implementation import AbcNodeImplementation
+from ...models.nodes.abc_packet import AbcPacket
 from ...configuration.sim_config import sim_config_env
 
 parameters = sim_config_env.message_transmission_model_parameters

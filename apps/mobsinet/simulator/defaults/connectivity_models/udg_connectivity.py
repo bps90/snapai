@@ -1,4 +1,4 @@
-from apps.mobsinet.simulator.models.nodes.abc_node_implementation import AbcNodeImplementation
+from ...models.nodes.abc_node_implementation import AbcNodeImplementation
 from ...models.abc_connectivity_model import AbcConnectivityModel
 from ...configuration.sim_config import sim_config_env
 

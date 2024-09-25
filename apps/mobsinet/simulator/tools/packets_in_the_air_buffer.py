@@ -1,4 +1,4 @@
-from apps.mobsinet.simulator.models.nodes.abc_packet import AbcPacket
+from ..models.nodes.abc_packet import AbcPacket
 
 
 class PacketsInTheAirBuffer(object):

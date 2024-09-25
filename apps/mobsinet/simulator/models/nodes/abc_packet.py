@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 
-from apps.mobsinet.simulator.models.nodes.abc_message import AbcMessage
-from apps.mobsinet.simulator.models.nodes.abc_node_implementation import AbcNodeImplementation
+from .abc_message import AbcMessage
 
 
 class AbcPacket(ABC):
+    from .abc_node_implementation import AbcNodeImplementation
 
     def __init__(self,
                  message: AbcMessage,

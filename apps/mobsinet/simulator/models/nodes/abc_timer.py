@@ -1,13 +1,16 @@
+from typing import TYPE_CHECKING
 from abc import ABC, abstractmethod
 
-from apps.mobsinet.simulator.models.nodes.abc_node_implementation import AbcNodeImplementation
-from apps.mobsinet.simulator.network_simulator import simulation
+from ...network_simulator import simulation
+
+if TYPE_CHECKING:
+    from .abc_node_implementation import AbcNodeImplementation
 
 
 class AbcTimer(ABC):
 
     def __init__(self):
-        self.node_implementation: AbcNodeImplementation | None = None
+        self.node_implementation: 'AbcNodeImplementation' | None = None
         self.fire_time: int | None = None
 
     def start_global_timer(self, time: int):

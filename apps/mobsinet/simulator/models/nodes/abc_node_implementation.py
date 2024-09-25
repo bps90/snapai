@@ -1,10 +1,13 @@
-from apps.mobsinet.simulator.models.nodes.abc_timer import AbcTimer
-from ...tools.position import Position
-from ..abc_mobility_model import AbcMobilityModel
-from ..abc_connectivity_model import AbcConnectivityModel
-from ..abc_interference_model import AbcInterferenceModel
-from ..abc_reliability_model import AbcReliabilityModel
+from typing import TYPE_CHECKING
 from abc import ABC
+
+if TYPE_CHECKING:
+    from .abc_timer import AbcTimer
+    from ...tools.position import Position
+    from ..abc_mobility_model import AbcMobilityModel
+    from ..abc_connectivity_model import AbcConnectivityModel
+    from ..abc_interference_model import AbcInterferenceModel
+    from ..abc_reliability_model import AbcReliabilityModel
 
 
 class AbcNodeImplementation(ABC):
@@ -12,11 +15,11 @@ class AbcNodeImplementation(ABC):
     def __init__(
             self,
             id: int,
-            position: Position = None,
-            mobility_model: AbcMobilityModel = None,
-            connectivity_model: AbcConnectivityModel = None,
-            interference_model: AbcInterferenceModel = None,
-            reliability_model: AbcReliabilityModel = None):
+            position: 'Position' = None,
+            mobility_model: 'AbcMobilityModel' = None,
+            connectivity_model: 'AbcConnectivityModel' = None,
+            interference_model: 'AbcInterferenceModel' = None,
+            reliability_model: 'AbcReliabilityModel' = None):
         self.id = id
         self.position: Position = position
         self.mobility_model: AbcMobilityModel = mobility_model
@@ -39,19 +42,19 @@ Reliability Model: {self.reliability_model.name}
     def __repr__(self) -> str:
         return self.__str__()
 
-    def set_position(self, position: Position):
+    def set_position(self, position: 'Position'):
         self.position = position
 
-    def set_mobility_model(self, mobility_model: AbcMobilityModel):
+    def set_mobility_model(self, mobility_model: 'AbcMobilityModel'):
         self.mobility_model = mobility_model
 
-    def set_connectivity_model(self, connectivity_model: AbcConnectivityModel):
+    def set_connectivity_model(self, connectivity_model: 'AbcConnectivityModel'):
         self.connectivity_model = connectivity_model
 
-    def set_interference_model(self, interference_model: AbcInterferenceModel):
+    def set_interference_model(self, interference_model: 'AbcInterferenceModel'):
         self.interference_model = interference_model
 
-    def set_reliability_model(self, reliability_model: AbcReliabilityModel):
+    def set_reliability_model(self, reliability_model: 'AbcReliabilityModel'):
         self.reliability_model = reliability_model
 
     def get_coordinates(self):
@@ -60,7 +63,7 @@ Reliability Model: {self.reliability_model.name}
     def set_coordinates(self, x: int, y: int, z: int):
         return self.position.set_coordinates(x, y, z)
 
-    def add_timer(self, timer: AbcTimer):
+    def add_timer(self, timer: 'AbcTimer'):
         """Adds a timer to the node.
 
         Parameters

@@ -1,6 +1,6 @@
-from apps.mobsinet.simulator.models.abc_model import AbcModel
-from apps.mobsinet.simulator.models.nodes.abc_node_implementation import AbcNodeImplementation
-from apps.mobsinet.simulator.models.nodes.abc_packet import AbcPacket
+from .abc_model import AbcModel
+from .nodes.abc_node_implementation import AbcNodeImplementation
+from .nodes.abc_packet import AbcPacket
 
 
 class AbcMessageTransmissionModel(AbcModel):

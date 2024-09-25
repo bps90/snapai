@@ -1,5 +1,5 @@
-from apps.mobsinet.simulator.models.abc_distribution_model import AbcDistributionModel
-from apps.mobsinet.simulator.tools.position import Position
+from ...models.abc_distribution_model import AbcDistributionModel
+from ...tools.position import Position
 from ...configuration.sim_config import sim_config_env
 
 parameters = sim_config_env.distribution_model_parameters

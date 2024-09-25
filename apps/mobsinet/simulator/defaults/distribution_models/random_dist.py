@@ -1,6 +1,5 @@
 import random
 
-from apps.mobsinet.simulator.models.nodes.abc_node_implementation import AbcNodeImplementation
 from ...tools.position import Position
 from ...models.abc_distribution_model import AbcDistributionModel
 from ...configuration.sim_config import sim_config_env

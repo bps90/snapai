@@ -1,6 +1,5 @@
 import json
 from math import pi, sqrt
-from statistics import mean
 
 
 class SimulationConfig:

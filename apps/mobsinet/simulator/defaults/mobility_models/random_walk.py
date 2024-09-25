@@ -1,16 +1,13 @@
 from math import cos, sin, sqrt
-import sys
-from time import sleep
-from turtle import position
 from typing import Tuple
-from networkx import DiGraph, Graph, draw, draw_networkx_edge_labels, draw_networkx_labels, draw_networkx_nodes, get_edge_attributes, get_node_attributes
-from numpy import Infinity, pi, rad2deg
+from networkx import DiGraph, Graph, draw, draw_networkx_edge_labels, draw_networkx_labels, get_edge_attributes, get_node_attributes
+from numpy import Infinity, pi
 
-from apps.mobsinet.simulator.configuration.sim_config import sim_config_env
-from apps.mobsinet.simulator.defaults.connectivity_models.no_connectivity import NoConnectivity
-from apps.mobsinet.simulator.defaults.interference_models.no_interference import NoInterference
-from apps.mobsinet.simulator.defaults.nodes.inert_node_implementation import InertNodeImplementation
-from apps.mobsinet.simulator.defaults.reliability_models.no_reliability import NoReliability
+from ...configuration.sim_config import sim_config_env
+from ..connectivity_models.no_connectivity import NoConnectivity
+from ..interference_models.no_interference import NoInterference
+from ..nodes.inert_node_implementation import InertNodeImplementation
+from ..reliability_models.no_reliability import NoReliability
 from ...models.abc_mobility_model import AbcMobilityModel
 from ...models.nodes.abc_node_implementation import AbcNodeImplementation
 from ...tools.position import Position
