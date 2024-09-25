@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING
-from abc import ABC
+from abc import ABC, abstractmethod
 
 if TYPE_CHECKING:
     from .abc_timer import AbcTimer
@@ -28,6 +28,7 @@ class AbcNodeImplementation(ABC):
         self.reliability_model: AbcReliabilityModel = reliability_model
 
         self.timers: list[AbcTimer] = []
+        self.neighboorhood_changed: bool = False
 
     def __str__(self):
         return f"""
@@ -73,3 +74,34 @@ Reliability Model: {self.reliability_model.name}
         """
 
         self.timers.append(timer)
+
+    @abstractmethod
+    def pre_step(self):
+        """Action to be performed before the node performs a step.
+
+        Can be implemented by subclasses.
+        """
+        pass
+
+    @abstractmethod
+    def on_neighboorhood_change(self):
+        """Action to be performed when the node's neighboorhood changes.
+
+        Can be implemented by subclasses.
+        """
+        pass
+
+    def step(self):
+        """Performs a step for the node.
+
+        Should not be overridden.
+        """
+
+        # update_messages()
+
+        self.pre_step()
+
+        if self.neighboorhood_changed:
+            self.on_neighboorhood_change()
+
+        # TODO: finish this method

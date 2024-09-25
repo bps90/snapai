@@ -1,9 +1,8 @@
 import networkx as nx
 
-from apps.mobsinet.simulator.models.nodes.abc_packet import AbcPacket
-from apps.mobsinet.simulator.models.nodes.abc_timer import AbcTimer
-from apps.mobsinet.simulator.tools.packets_in_the_air_buffer import PacketsInTheAirBuffer
+from .models.nodes.abc_packet import AbcPacket
 
+from .tools.packets_in_the_air_buffer import PacketsInTheAirBuffer
 from .models.abc_distribution_model import AbcDistributionModel
 from .models.abc_mobility_model import AbcMobilityModel
 from .models.abc_connectivity_model import AbcConnectivityModel
@@ -13,7 +12,10 @@ from .models.nodes.abc_node_implementation import AbcNodeImplementation
 from .tools.position import Position
 from .tools.models_normalizer import ModelsNormalizer
 from .configuration.sim_config import sim_config_env
-from typing import Type, Any
+from typing import Type, Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .models.nodes.abc_timer import AbcTimer
 
 
 class NetworkSimulator(object):
@@ -145,7 +147,7 @@ class NetworkSimulator(object):
             raise ValueError(
                 f"Node with ID {node_implementation.id} already exists.")
 
-    def add_global_timer(self, timer: AbcTimer):
+    def add_global_timer(self, timer: 'AbcTimer'):
         """Add a global timer to the simulation.
 
         Parameters
@@ -242,6 +244,7 @@ class NetworkSimulator(object):
         self.__move_nodes()
         self.__update_connections()
         self.packets_in_the_air.test_interference()
+        self.__step_nodes()
 
     def __handle_global_timers(self):
         """(private) Handles the global timers in the simulation."""
@@ -270,6 +273,9 @@ class NetworkSimulator(object):
         for node in self.graph.nodes():
             node_implementation: AbcNodeImplementation = self.graph.nodes[node]["implementation"]
 
+            # reset neighboorhood_changed flag
+            node_implementation.neighboorhood_changed = False
+
             # update the connections
             for possible_neighbor in self.graph.nodes():
                 if possible_neighbor == node:
@@ -278,19 +284,29 @@ class NetworkSimulator(object):
                 possible_neighbor_implementation: AbcNodeImplementation = self.graph.nodes[
                     possible_neighbor]["implementation"]
 
-                if (node_implementation.connectivity_model.is_connected(
-                        node_implementation, possible_neighbor_implementation) and not self.graph.has_edge(node, possible_neighbor)):
+                is_connected = node_implementation.connectivity_model.is_connected(node_implementation,
+                                                                                   possible_neighbor_implementation)
+                has_edge = self.graph.has_edge(node, possible_neighbor)
 
+                if (is_connected and not has_edge):
                     self.add_edge(node, possible_neighbor)
+                    node_implementation.neighboorhood_changed = True
 
                     self.logs_file_w.write(
                         f"Connected node {node_implementation.id} with node {possible_neighbor_implementation.id}\n")
-                elif (self.graph.has_edge(node, possible_neighbor)):
-
+                elif (not is_connected and has_edge):
                     self.remove_edge(node, possible_neighbor)
+                    node_implementation.neighboorhood_changed = True
 
                     self.logs_file_w.write(
                         f"Disconnected node {node_implementation.id} with node {possible_neighbor_implementation.id}\n")
+
+    def __step_nodes(self):
+        """(private) Performs a step for each node in the network graph."""
+
+        for node in self.graph.nodes():
+            node_implementation: 'AbcNodeImplementation' = self.graph.nodes[node]["implementation"]
+            node_implementation.step()
 
     def __str__(self) -> str:
         return str(self.graph)
