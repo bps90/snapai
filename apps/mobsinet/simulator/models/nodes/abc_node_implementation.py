@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
-from abc import ABC, abstractmethod
+from abc import ABC
+from ...network_simulator import simulation
 
 if TYPE_CHECKING:
     from .abc_timer import AbcTimer
@@ -11,6 +12,8 @@ if TYPE_CHECKING:
 
 
 class AbcNodeImplementation(ABC):
+
+    timersToHandle: list['AbcTimer'] = []
 
     def __init__(
             self,
@@ -75,7 +78,6 @@ Reliability Model: {self.reliability_model.name}
 
         self.timers.append(timer)
 
-    @abstractmethod
     def pre_step(self):
         """Action to be performed before the node performs a step.
 
@@ -83,7 +85,6 @@ Reliability Model: {self.reliability_model.name}
         """
         pass
 
-    @abstractmethod
     def on_neighboorhood_change(self):
         """Action to be performed when the node's neighboorhood changes.
 
@@ -104,4 +105,18 @@ Reliability Model: {self.reliability_model.name}
         if self.neighboorhood_changed:
             self.on_neighboorhood_change()
 
-        # TODO: finish this method
+        self.timersToHandle.clear()
+
+        if (len(self.timers) > 0):
+            for timer in self.timers:
+                if (timer.fire_time <= simulation.global_time):
+                    self.timers.remove(timer)
+                    self.timersToHandle.append(timer)
+
+            # sort timersToHandle
+            self.timersToHandle.sort(key=lambda timer: timer.fire_time)
+
+            for timer in self.timersToHandle:
+                timer.fire()
+
+            # TODO: finish this method
