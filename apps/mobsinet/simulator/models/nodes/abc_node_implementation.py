@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 from abc import ABC
 from ...network_simulator import simulation
+from ...tools.inbox_packet_buffer import InboxPacketBuffer
 
 if TYPE_CHECKING:
     from .abc_timer import AbcTimer
@@ -32,6 +33,7 @@ class AbcNodeImplementation(ABC):
 
         self.timers: list[AbcTimer] = []
         self.neighboorhood_changed: bool = False
+        self.packet_buffer = InboxPacketBuffer()
 
     def __str__(self):
         return f"""

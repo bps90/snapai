@@ -14,6 +14,12 @@ class PacketsInTheAirBuffer(object):
             self.__check_positive_delivery(packet)
 
     def __check_positive_delivery(self, packet: AbcPacket):
-        if packet.positiveDelivery:
-            packet.positiveDelivery = not packet.destination.interference_model.is_disturbed(
+        if packet.positive_delivery:
+            packet.positive_delivery = not packet.destination.interference_model.is_disturbed(
                 packet)
+
+    def remove(self, packet: AbcPacket):
+        try:
+            self.active_packets.remove(packet)
+        except ValueError:
+            self.passive_packets.remove(packet)

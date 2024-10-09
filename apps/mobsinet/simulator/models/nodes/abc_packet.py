@@ -13,7 +13,9 @@ class AbcPacket(ABC):
         self.message = message
         self.origin = origin
         self.destination = destination
-        self.positiveDelivery: bool = True
+        self.positive_delivery: bool = True
+        self.arriving_time: int = 0
+        self.sending_time: int = 0
 
     def set_message(self, message: AbcMessage):
         self.message = message
@@ -21,7 +23,7 @@ class AbcPacket(ABC):
     def denyDelivery(self):
         """Deny the delivery of the packet."""
 
-        self.positiveDelivery = False
+        self.positive_delivery = False
 
     @abstractmethod
     def clone(self):
