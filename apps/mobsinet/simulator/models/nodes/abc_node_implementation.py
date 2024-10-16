@@ -1,9 +1,10 @@
 from typing import TYPE_CHECKING
-from abc import ABC
+from abc import ABC, abstractmethod
 from ...network_simulator import simulation
 from ...tools.inbox_packet_buffer import InboxPacketBuffer
 from .abc_packet import AbcPacket
 from ...tools.packet_type import PacketType
+from ...tools.nack_box import NackBox
 
 if TYPE_CHECKING:
     from .abc_timer import AbcTimer
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
     from ..abc_connectivity_model import AbcConnectivityModel
     from ..abc_interference_model import AbcInterferenceModel
     from ..abc_reliability_model import AbcReliabilityModel
+    from ...tools.inbox import Inbox
 
 
 class AbcNodeImplementation(ABC):
@@ -36,7 +38,9 @@ class AbcNodeImplementation(ABC):
         self.timers: list[AbcTimer] = []
         self.neighboorhood_changed: bool = False
         self.packet_buffer = InboxPacketBuffer()
-        self.n_ack_buffer: list['AbcPacket'] = []
+        self.nack_buffer: list['AbcPacket'] = []
+        self.nack_box: 'NackBox' | None = None
+        self.inbox: 'Inbox' | None = None
 
     def __str__(self):
         return f"""
@@ -90,10 +94,39 @@ Reliability Model: {self.reliability_model.name}
         """
         pass
 
+    def post_step(self):
+        """Action to be performed at the end of the node step.
+
+        Can be implemented by subclasses.
+        """
+        pass
+
     def on_neighboorhood_change(self):
         """Action to be performed when the node's neighboorhood changes.
 
         Can be implemented by subclasses.
+        """
+        pass
+
+    def handle_nack_messages(nack_box: 'NackBox'):
+        """The user can override this method to handle nack messages.
+
+        Parameters
+        ----------
+        nack_box : NackBox
+            The nack box object.
+        """
+        pass
+
+    @abstractmethod
+    def handle_messages(inbox: 'Inbox'):
+        """This method is invoked after all the Messages are received. 
+        Overwrite it to specify what to do  with incoming messages.
+
+        Parameters
+        ----------
+        inbox : Inbox
+            The inbox object.
         """
         pass
 
@@ -103,7 +136,7 @@ Reliability Model: {self.reliability_model.name}
         Should not be overridden.
         """
 
-        # update_messages()
+        self.packet_buffer.update_message_buffer()
 
         self.pre_step()
 
@@ -124,7 +157,20 @@ Reliability Model: {self.reliability_model.name}
             for timer in self.timersToHandle:
                 timer.fire()
 
-            # TODO: finish this method
+        if (self.nack_box is None):
+            self.nack_box = NackBox(self.nack_buffer)
+        else:
+            self.nack_box.reset_for_list(self.nack_buffer)
+
+        self.handle_nack_messages(self.nack_box)
+
+        self.inbox = self.packet_buffer.get_inbox()
+        self.handle_messages(self.inbox)
+
+        self.post_step()
+
+        self.inbox.free_packets()
+        self.nack_box.free_packets()
 
     def add_nack_packet(self, packet: 'AbcPacket'):
         # Verifica se o tipo de pacote é UNICAST
@@ -132,4 +178,4 @@ Reliability Model: {self.reliability_model.name}
             return  # Somente reconhece pacotes UNICAST
 
         # Adiciona o pacote ao buffer
-        self.n_ack_buffer.append(packet)
+        self.nack_buffer.append(packet)
