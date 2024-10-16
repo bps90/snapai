@@ -2,6 +2,8 @@ from typing import TYPE_CHECKING
 from abc import ABC
 from ...network_simulator import simulation
 from ...tools.inbox_packet_buffer import InboxPacketBuffer
+from .abc_packet import AbcPacket
+from ...tools.packet_type import PacketType
 
 if TYPE_CHECKING:
     from .abc_timer import AbcTimer
@@ -34,6 +36,7 @@ class AbcNodeImplementation(ABC):
         self.timers: list[AbcTimer] = []
         self.neighboorhood_changed: bool = False
         self.packet_buffer = InboxPacketBuffer()
+        self.n_ack_buffer: list['AbcPacket'] = []
 
     def __str__(self):
         return f"""
@@ -122,3 +125,11 @@ Reliability Model: {self.reliability_model.name}
                 timer.fire()
 
             # TODO: finish this method
+
+    def add_nack_packet(self, packet: 'AbcPacket'):
+        # Verifica se o tipo de pacote é UNICAST
+        if packet.type != PacketType['UNICAST']:
+            return  # Somente reconhece pacotes UNICAST
+
+        # Adiciona o pacote ao buffer
+        self.n_ack_buffer.append(packet)
