@@ -8,7 +8,7 @@ from .inbox import Inbox
 class InboxPacketBuffer:
     def __init__(self, keep_finger=False):
         # Lista de pacotes que chegam neste round
-        self.arriving_packets = list['AbcPacket']
+        self.arriving_packets: list['AbcPacket'] = []
         self.buffer: list['AbcPacket'] = []
         self.inbox: 'Inbox' = None
         self.keep_finger = keep_finger

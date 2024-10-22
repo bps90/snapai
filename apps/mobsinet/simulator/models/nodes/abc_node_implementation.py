@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING
-from abc import ABC, abstractmethod
+from abc import ABC
 from ...network_simulator import simulation
 from ...tools.inbox_packet_buffer import InboxPacketBuffer
 from .abc_packet import AbcPacket
@@ -108,7 +108,7 @@ Reliability Model: {self.reliability_model.name}
         """
         pass
 
-    def handle_nack_messages(nack_box: 'NackBox'):
+    def handle_nack_messages(self, nack_box: 'NackBox'):
         """The user can override this method to handle nack messages.
 
         Parameters
@@ -118,8 +118,7 @@ Reliability Model: {self.reliability_model.name}
         """
         pass
 
-    @abstractmethod
-    def handle_messages(inbox: 'Inbox'):
+    def handle_messages(self, inbox: 'Inbox'):
         """This method is invoked after all the Messages are received. 
         Overwrite it to specify what to do  with incoming messages.
 

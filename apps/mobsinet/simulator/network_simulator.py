@@ -8,7 +8,7 @@ from .models.abc_mobility_model import AbcMobilityModel
 from .models.abc_connectivity_model import AbcConnectivityModel
 from .models.abc_interference_model import AbcInterferenceModel
 from .models.abc_reliability_model import AbcReliabilityModel
-from .models.nodes.abc_node_implementation import AbcNodeImplementation
+
 from .tools.position import Position
 from .tools.models_normalizer import ModelsNormalizer
 from .configuration.sim_config import sim_config_env
@@ -16,6 +16,7 @@ from typing import Type, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .models.nodes.abc_timer import AbcTimer
+    from .models.nodes.abc_node_implementation import AbcNodeImplementation
 
 
 class NetworkSimulator(object):
@@ -31,7 +32,7 @@ class NetworkSimulator(object):
         self,
         nodes: int | list[Any],
         distribution_model: Type[AbcDistributionModel] | AbcDistributionModel | str = None,
-        node_implementation_constructor: Type[AbcNodeImplementation] | str = None,
+        node_implementation_constructor: Type['AbcNodeImplementation'] | str = None,
         mobility_model: Type[AbcMobilityModel] | AbcMobilityModel | str = None,
         connectivity_model: Type[AbcConnectivityModel] | AbcConnectivityModel | str = None,
         interference_model: Type[AbcInterferenceModel] | AbcInterferenceModel | str = None,
@@ -128,7 +129,7 @@ class NetworkSimulator(object):
 
     def add_node(
         self,
-        node_implementation: AbcNodeImplementation,
+        node_implementation: 'AbcNodeImplementation',
     ):
         """Add a node to the network graph.
 
@@ -258,7 +259,7 @@ class NetworkSimulator(object):
         """(private) Moves the nodes in the network graph."""
 
         for node in self.graph.nodes():
-            node_implementation: AbcNodeImplementation = self.graph.nodes[node]["implementation"]
+            node_implementation: 'AbcNodeImplementation' = self.graph.nodes[node]["implementation"]
 
             # move the node
             node_implementation.set_position(
@@ -271,7 +272,7 @@ class NetworkSimulator(object):
         """(private) Updates the connections in the network graph."""
 
         for node in self.graph.nodes():
-            node_implementation: AbcNodeImplementation = self.graph.nodes[node]["implementation"]
+            node_implementation: 'AbcNodeImplementation' = self.graph.nodes[node]["implementation"]
 
             # reset neighboorhood_changed flag
             node_implementation.neighboorhood_changed = False
@@ -281,7 +282,7 @@ class NetworkSimulator(object):
                 if possible_neighbor == node:
                     continue
 
-                possible_neighbor_implementation: AbcNodeImplementation = self.graph.nodes[
+                possible_neighbor_implementation: 'AbcNodeImplementation' = self.graph.nodes[
                     possible_neighbor]["implementation"]
 
                 is_connected = node_implementation.connectivity_model.is_connected(node_implementation,

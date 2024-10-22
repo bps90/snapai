@@ -2,6 +2,7 @@
 
 from .inbox import Inbox
 from ..models.nodes.abc_packet import AbcPacket
+from typing import Union
 
 
 class NackBox(Inbox):
@@ -17,7 +18,7 @@ class NackBox(Inbox):
     para economizar poder computacional.
     """
 
-    def __init__(self, packets: 'AbcPacket' | list['AbcPacket'] = None):
+    def __init__(self, packets: Union['AbcPacket', list['AbcPacket']] = None):
         """
         Construtor para criar um NackBox contendo uma lista de pacotes ou um único pacote.
 

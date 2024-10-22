@@ -1,21 +1,22 @@
 import threading
 from abc import ABC, abstractmethod
-
+from typing import TYPE_CHECKING
 from .abc_message import AbcMessage
+
+if TYPE_CHECKING:
+    from .abc_node_implementation import AbcNodeImplementation
 
 
 class AbcPacket(ABC):
-    from .abc_node_implementation import AbcNodeImplementation
-
     issued_packets = set()  # Usamos um conjunto para armazenar os pacotes emitidos
     free_packets = []  # Pilha para armazenar pacotes livres
     num_packets_on_the_fly = 0  # Contador de pacotes em uso
     lock = threading.Lock()  # Lock para controle de concorrência
 
     def __init__(self,
-                 message: AbcMessage,
-                 origin: AbcNodeImplementation,
-                 destination: AbcNodeImplementation,
+                 message: 'AbcMessage',
+                 origin: 'AbcNodeImplementation',
+                 destination: 'AbcNodeImplementation',
                  type: str):
         self.message = message
         self.origin = origin
@@ -25,7 +26,7 @@ class AbcPacket(ABC):
         self.arriving_time: int = 0
         self.sending_time: int = 0
 
-    def set_message(self, message: AbcMessage):
+    def set_message(self, message: 'AbcMessage'):
         self.message = message
 
     def denyDelivery(self):

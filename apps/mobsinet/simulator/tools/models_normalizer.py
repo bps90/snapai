@@ -1,13 +1,16 @@
-from typing import Type, Any
+from typing import Type, Any, TYPE_CHECKING
 import importlib
 from ..models.abc_connectivity_model import AbcConnectivityModel
 from ..models.abc_mobility_model import AbcMobilityModel
 from ..models.abc_interference_model import AbcInterferenceModel
 from ..models.abc_reliability_model import AbcReliabilityModel
 from ..models.abc_distribution_model import AbcDistributionModel
-from ..models.nodes.abc_node_implementation import AbcNodeImplementation
+
 from ..configuration.sim_config import sim_config_env
 from abc import ABCMeta
+
+if TYPE_CHECKING:
+    from ..models.nodes.abc_node_implementation import AbcNodeImplementation
 
 
 class ModelsNormalizer:
@@ -172,7 +175,7 @@ class ModelsNormalizer:
         return distribution_model
 
     @staticmethod
-    def normalize_node_implementation_constructor(node_implementation_constructor: Type[AbcNodeImplementation] | str | None) -> Type[AbcNodeImplementation]:
+    def normalize_node_implementation_constructor(node_implementation_constructor: Type['AbcNodeImplementation'] | str | None) -> Type['AbcNodeImplementation']:
         """Normalizes the node implementation constructor.
 
         Parameters
@@ -190,11 +193,11 @@ class ModelsNormalizer:
         """
 
         if (node_implementation_constructor is None):
-            node_implementation_constructor: Type[AbcNodeImplementation] = importlib.import_module(
+            node_implementation_constructor: Type['AbcNodeImplementation'] = importlib.import_module(
                 f'apps.mobsinet.simulator.defaults.nodes.{sim_config_env.node_implementation}').node_implementation
 
         elif (type(node_implementation_constructor) is str):
-            node_implementation_constructor: Type[AbcNodeImplementation] = importlib.import_module(
+            node_implementation_constructor: Type['AbcNodeImplementation'] = importlib.import_module(
                 sim_config_env.PROJECT_DIR.replace('/', '.') + 'nodes.' + node_implementation_constructor).node_implementation
 
         return node_implementation_constructor
