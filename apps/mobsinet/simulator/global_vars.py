@@ -13,7 +13,7 @@ class Global:
     start_time_of_round: datetime = None
     # log: Logging = None # TODO: Implementar Logging
     number_of_messages_in_this_round: int = 0
-    numer_of_messages_over_all: int = 0
+    number_of_messages_over_all: int = 0
     current_time: int = 0
     message_transmission_model: AbcMessageTransmissionModel = None
     custom_global: 'AbcCustomGlobal' = DefaultCustomGlobal()
