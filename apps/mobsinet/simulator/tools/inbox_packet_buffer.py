@@ -1,23 +1,23 @@
 # GENERATED WITH HELP FROM CHATGPT
 
 from ..network_simulator import simulation
-from ..models.nodes.abc_packet import AbcPacket
+from ..models.nodes.packet import Packet
 from .inbox import Inbox
 
 
 class InboxPacketBuffer:
     def __init__(self, keep_finger=False):
         # Lista de pacotes que chegam neste round
-        self.arriving_packets: list['AbcPacket'] = []
-        self.buffer: list['AbcPacket'] = []
+        self.arriving_packets: list['Packet'] = []
+        self.buffer: list['Packet'] = []
         self.inbox: 'Inbox' = None
         self.keep_finger = keep_finger
 
-    def add_packet(self, p: 'AbcPacket'):
+    def add_packet(self, p: 'Packet'):
         """Adiciona um pacote à lista."""
         self.buffer.append(p)
 
-    def remove_packet(self, p: 'AbcPacket'):
+    def remove_packet(self, p: 'Packet'):
         """Remove um pacote da lista."""
         try:
             self.buffer.remove(p)

@@ -1,13 +1,13 @@
 from abc import abstractmethod
 
-from .nodes.abc_packet import AbcPacket
+from .nodes.packet import Packet
 from .abc_model import AbcModel
 
 
 class AbcReliabilityModel(AbcModel):
 
     @abstractmethod
-    def reaches_destination(self, packet: AbcPacket) -> bool:
+    def reaches_destination(self, packet: Packet) -> bool:
         """Determines if the packet will reach the destination.
 
         Parameters

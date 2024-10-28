@@ -1,6 +1,6 @@
 # GENERATED WITH HELP FROM CHATGPT
 
-from ..models.nodes.abc_packet import AbcPacket
+from ..models.nodes.packet import Packet
 
 
 class Inbox:
@@ -159,9 +159,9 @@ class Inbox:
         self.active_packet = None
         if self.packet_list:
             for packet in self.packet_list:
-                AbcPacket.free(packet)
+                Packet.free(packet)
             self.packet_list.clear()
         else:
             if self.single_packet:
-                AbcPacket.free(self.single_packet)
+                Packet.free(self.single_packet)
                 self.single_packet = None

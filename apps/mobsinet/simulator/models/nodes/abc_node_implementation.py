@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from abc import ABC
 from ...network_simulator import simulation
 from ...tools.inbox_packet_buffer import InboxPacketBuffer
-from .abc_packet import AbcPacket
+from .packet import Packet
 from ...tools.packet_type import PacketType
 from ...tools.nack_box import NackBox
 
@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from ..abc_interference_model import AbcInterferenceModel
     from ..abc_reliability_model import AbcReliabilityModel
     from ...tools.inbox import Inbox
+    from .edge_implementation import EdgeImplementation
 
 
 class AbcNodeImplementation(ABC):
@@ -38,9 +39,10 @@ class AbcNodeImplementation(ABC):
         self.timers: list[AbcTimer] = []
         self.neighboorhood_changed: bool = False
         self.packet_buffer = InboxPacketBuffer()
-        self.nack_buffer: list['AbcPacket'] = []
+        self.nack_buffer: list['Packet'] = []
         self.nack_box: 'NackBox' | None = None
         self.inbox: 'Inbox' | None = None
+        self.outgoing_connections: list['EdgeImplementation'] = []
 
     def __str__(self):
         return f"""
@@ -171,7 +173,7 @@ Reliability Model: {self.reliability_model.name}
         self.inbox.free_packets()
         self.nack_box.free_packets()
 
-    def add_nack_packet(self, packet: 'AbcPacket'):
+    def add_nack_packet(self, packet: 'Packet'):
         # Verifica se o tipo de pacote é UNICAST
         if packet.type != PacketType['UNICAST']:
             return  # Somente reconhece pacotes UNICAST

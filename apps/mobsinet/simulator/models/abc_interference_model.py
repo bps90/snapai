@@ -1,13 +1,13 @@
 from abc import abstractmethod
 
-from .nodes.abc_packet import AbcPacket
+from .nodes.packet import Packet
 from .abc_model import AbcModel
 
 
 class AbcInterferenceModel(AbcModel):
 
     @abstractmethod
-    def is_disturbed(self, packet: AbcPacket) -> bool:
+    def is_disturbed(self, packet: Packet) -> bool:
         """Checks if the interference model dirtubed the packet.
 
         Parameters

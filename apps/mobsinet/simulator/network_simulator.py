@@ -1,6 +1,6 @@
 import networkx as nx
 
-from .models.nodes.abc_packet import AbcPacket
+from .models.nodes.packet import Packet
 
 from .tools.packets_in_the_air_buffer import PacketsInTheAirBuffer
 from .models.abc_distribution_model import AbcDistributionModel
@@ -26,7 +26,7 @@ class NetworkSimulator(object):
         self.global_time = 0
         self.global_timers: list[AbcTimer] = []
         self.packets_in_the_air = PacketsInTheAirBuffer()
-        self.arrived_packets: list[AbcPacket] = []
+        self.arrived_packets: list[Packet] = []
 
     def add_nodes(
         self,
@@ -222,92 +222,7 @@ class NetworkSimulator(object):
         # print(foo.RandomDist())
         pass
 
-    def run(self):
-        """Starts the simulation running."""
 
-        simulation_name = sim_config_env.simulation_name
-        simulation_rounds = sim_config_env.simulation_rounds
-
-        self.logs_file_w = open(f"logs-{simulation_name}.txt", "w")
-
-        for current_round in range(simulation_rounds):
-            self.global_time = current_round + 1
-
-            self.__round()
-
-        self.logs_file_w.close()
-
-    def __round(self):
-        """(private) Performs a single simulation round."""
-
-        # pre_round()
-        self.__handle_global_timers()
-        self.__move_nodes()
-        self.__update_connections()
-        self.packets_in_the_air.test_interference()
-        self.__step_nodes()
-
-    def __handle_global_timers(self):
-        """(private) Handles the global timers in the simulation."""
-
-        for timer in self.global_timers:
-            if (timer.fire_time == simulation.global_time):
-                timer.fire()
-                self.global_timers.remove(timer)
-
-    def __move_nodes(self):
-        """(private) Moves the nodes in the network graph."""
-
-        for node in self.graph.nodes():
-            node_implementation: 'AbcNodeImplementation' = self.graph.nodes[node]["implementation"]
-
-            # move the node
-            node_implementation.set_position(
-                node_implementation.mobility_model.get_next_position(node_implementation))
-
-            self.logs_file_w.write(
-                f"Moved node {node_implementation.id} for position ({node_implementation.position.x},{node_implementation.position.y},{node_implementation.position.z})\n")
-
-    def __update_connections(self):
-        """(private) Updates the connections in the network graph."""
-
-        for node in self.graph.nodes():
-            node_implementation: 'AbcNodeImplementation' = self.graph.nodes[node]["implementation"]
-
-            # reset neighboorhood_changed flag
-            node_implementation.neighboorhood_changed = False
-
-            # update the connections
-            for possible_neighbor in self.graph.nodes():
-                if possible_neighbor == node:
-                    continue
-
-                possible_neighbor_implementation: 'AbcNodeImplementation' = self.graph.nodes[
-                    possible_neighbor]["implementation"]
-
-                is_connected = node_implementation.connectivity_model.is_connected(node_implementation,
-                                                                                   possible_neighbor_implementation)
-                has_edge = self.graph.has_edge(node, possible_neighbor)
-
-                if (is_connected and not has_edge):
-                    self.add_edge(node, possible_neighbor)
-                    node_implementation.neighboorhood_changed = True
-
-                    self.logs_file_w.write(
-                        f"Connected node {node_implementation.id} with node {possible_neighbor_implementation.id}\n")
-                elif (not is_connected and has_edge):
-                    self.remove_edge(node, possible_neighbor)
-                    node_implementation.neighboorhood_changed = True
-
-                    self.logs_file_w.write(
-                        f"Disconnected node {node_implementation.id} with node {possible_neighbor_implementation.id}\n")
-
-    def __step_nodes(self):
-        """(private) Performs a step for each node in the network graph."""
-
-        for node in self.graph.nodes():
-            node_implementation: 'AbcNodeImplementation' = self.graph.nodes[node]["implementation"]
-            node_implementation.step()
 
     def __str__(self) -> str:
         return str(self.graph)

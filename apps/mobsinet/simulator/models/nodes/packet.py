@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from .abc_node_implementation import AbcNodeImplementation
 
 
-class AbcPacket(ABC):
+class Packet(ABC):
     issued_packets = set()  # Usamos um conjunto para armazenar os pacotes emitidos
     free_packets = []  # Pilha para armazenar pacotes livres
     num_packets_on_the_fly = 0  # Contador de pacotes em uso
@@ -47,7 +47,7 @@ class AbcPacket(ABC):
         pass
 
     @staticmethod
-    def free(packet: 'AbcPacket'):
+    def free(packet: 'Packet'):
         """This method marks this packet as unused. 
         This means that it adds itself to the packet 
         pool and can thus be recycled by the 
@@ -60,16 +60,16 @@ class AbcPacket(ABC):
         """
         # GENERATED WITH HELP FROM CHATGPT
 
-        with AbcPacket.lock:
+        with Packet.lock:
             # Remove o pacote da lista de pacotes emitidos
-            if packet not in AbcPacket.issued_packets:
+            if packet not in Packet.issued_packets:
                 print(
                     "Erro na fábrica de pacotes. Por favor, relate este erro se você vir esta mensagem.")
             else:
-                AbcPacket.issued_packets.remove(packet)
+                Packet.issued_packets.remove(packet)
 
             # Reduz o contador de pacotes em uso
-            AbcPacket.num_packets_on_the_fly -= 1
+            Packet.num_packets_on_the_fly -= 1
 
             # Limpa as informações do pacote
             packet.destination = None
@@ -77,4 +77,4 @@ class AbcPacket(ABC):
             packet.message = None
 
             # Adiciona o pacote à pilha de pacotes livres
-            AbcPacket.free_packets.append(packet)
+            Packet.free_packets.append(packet)

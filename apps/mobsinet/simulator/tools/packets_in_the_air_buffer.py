@@ -1,10 +1,10 @@
-from ..models.nodes.abc_packet import AbcPacket
+from ..models.nodes.packet import Packet
 
 
 class PacketsInTheAirBuffer(object):
     def __init__(self) -> None:
-        self.active_packets: list[AbcPacket] = []
-        self.passive_packets: list[AbcPacket] = []
+        self.active_packets: list[Packet] = []
+        self.passive_packets: list[Packet] = []
 
     def test_interference(self):
         for packet in self.active_packets:
@@ -13,12 +13,12 @@ class PacketsInTheAirBuffer(object):
         for packet in self.passive_packets:
             self.__check_positive_delivery(packet)
 
-    def __check_positive_delivery(self, packet: AbcPacket):
+    def __check_positive_delivery(self, packet: Packet):
         if packet.positive_delivery:
             packet.positive_delivery = not packet.destination.interference_model.is_disturbed(
                 packet)
 
-    def remove(self, packet: AbcPacket):
+    def remove(self, packet: Packet):
         try:
             self.active_packets.remove(packet)
         except ValueError:

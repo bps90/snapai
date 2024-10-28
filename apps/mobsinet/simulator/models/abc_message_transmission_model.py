@@ -1,11 +1,11 @@
 from .abc_model import AbcModel
 from .nodes.abc_node_implementation import AbcNodeImplementation
-from .nodes.abc_packet import AbcPacket
+from .nodes.packet import Packet
 
 
 class AbcMessageTransmissionModel(AbcModel):
     def time_to_reach(self,
-                      packet: AbcPacket,
+                      packet: Packet,
                       origin_node: AbcNodeImplementation,
                       destination_node: AbcNodeImplementation) -> int:
         """Determines the time that the packet will take to reach the destination node.
