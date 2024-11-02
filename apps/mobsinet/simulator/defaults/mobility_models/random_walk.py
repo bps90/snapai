@@ -3,7 +3,7 @@ from typing import Tuple
 from networkx import DiGraph, Graph, draw, draw_networkx_edge_labels, draw_networkx_labels, get_edge_attributes, get_node_attributes
 from numpy import Infinity, pi
 
-from ...configuration.sim_config import sim_config_env
+from ...configuration.sim_config import config
 from ..connectivity_models.no_connectivity import NoConnectivity
 from ..interference_models.no_interference import NoInterference
 from ..nodes.inert_node_implementation import InertNodeImplementation
@@ -14,7 +14,7 @@ from ...tools.position import Position
 from random import randint, random
 import matplotlib.pyplot as plt
 
-parameters = sim_config_env.mobility_model_parameters
+parameters = config.mobility_model_parameters
 
 # REMOVE IT AFTER TESTING
 colision_digraph = DiGraph()
@@ -243,10 +243,10 @@ class RandomWalk(AbcMobilityModel):
 
         traveled_distance_to_left_boundary = (
             - old_coordinates[0] / unit_vector[0]) if unit_vector[0] != 0 else Infinity
-        traveled_distance_to_right_boundary = ((sim_config_env.dimX -
+        traveled_distance_to_right_boundary = ((config.dimX -
                                                old_coordinates[0]) / unit_vector[0]) if unit_vector[0] != 0 else Infinity
         traveled_distance_to_top_boundary = ((
-            sim_config_env.dimY - old_coordinates[1]) / unit_vector[1]) if unit_vector[1] != 0 else Infinity
+            config.dimY - old_coordinates[1]) / unit_vector[1]) if unit_vector[1] != 0 else Infinity
         traveled_distance_to_bottom_boundary = (
             - old_coordinates[1] / unit_vector[1]) if unit_vector[1] != 0 else Infinity
 
@@ -413,7 +413,7 @@ class RandomWalk(AbcMobilityModel):
             The adjusted coordinates.
         """
 
-        if (new_coordinates[0] > sim_config_env.dimX):
+        if (new_coordinates[0] > config.dimX):
 
             unit_vector = self._get_unit_vector(self._current_direction)
             current_speed = sqrt(
@@ -424,14 +424,14 @@ class RandomWalk(AbcMobilityModel):
             self._current_direction = -self._current_direction + pi
 
             traveled_distance_to_boundary = ((
-                sim_config_env.dimX - old_coordinates[0]) / unit_vector[0]) if unit_vector[0] != 0 else Infinity
+                config.dimX - old_coordinates[0]) / unit_vector[0]) if unit_vector[0] != 0 else Infinity
             remaining_distance = (
                 current_speed - traveled_distance_to_boundary)
 
             direction_vector = self._get_direction_vector(
                 remaining_distance, self._current_direction)
 
-            limit_point = (sim_config_env.dimX,
+            limit_point = (config.dimX,
                            traveled_distance_to_boundary *
                            unit_vector[1] + old_coordinates[1],
                            0)
@@ -472,7 +472,7 @@ class RandomWalk(AbcMobilityModel):
             The adjusted coordinates.
         """
 
-        if (new_coordinates[1] > sim_config_env.dimY):
+        if (new_coordinates[1] > config.dimY):
 
             unit_vector = self._get_unit_vector(self._current_direction)
             current_speed = sqrt(
@@ -483,7 +483,7 @@ class RandomWalk(AbcMobilityModel):
             self._current_direction = -self._current_direction
 
             traveled_distance_to_boundary = ((
-                sim_config_env.dimY - old_coordinates[1]) / unit_vector[1]) if unit_vector[1] != 0 else Infinity
+                config.dimY - old_coordinates[1]) / unit_vector[1]) if unit_vector[1] != 0 else Infinity
             remaining_distance = current_speed - \
                 traveled_distance_to_boundary
 
@@ -492,7 +492,7 @@ class RandomWalk(AbcMobilityModel):
 
             limit_point = (traveled_distance_to_boundary *
                            unit_vector[0] + old_coordinates[0],
-                           sim_config_env.dimY,
+                           config.dimY,
                            0)
 
             coordinates = (
@@ -665,8 +665,8 @@ if __name__ == '__main__':
 
     node_implementation = InertNodeImplementation(
         1,
-        Position(randint(0, sim_config_env.dimX),
-                 randint(0, sim_config_env.dimY),
+        Position(randint(0, config.dimX),
+                 randint(0, config.dimY),
                  0),
         random_walk,
         NoConnectivity(),
@@ -711,9 +711,9 @@ if __name__ == '__main__':
     # draw a graph of the borders
     border = Graph()
     border.add_node('A', position=(0, 0))
-    border.add_node('B', position=(sim_config_env.dimX, 0))
-    border.add_node('D', position=(0, sim_config_env.dimY))
-    border.add_node('C', position=(sim_config_env.dimX, sim_config_env.dimY))
+    border.add_node('B', position=(config.dimX, 0))
+    border.add_node('D', position=(0, config.dimY))
+    border.add_node('C', position=(config.dimX, config.dimY))
     border.add_edge('A', 'B')
     border.add_edge('B', 'C')
     border.add_edge('C', 'D')

@@ -2,9 +2,9 @@ import random
 from ...models.abc_message_transmission_model import AbcMessageTransmissionModel
 from ...models.nodes.abc_node_implementation import AbcNodeImplementation
 from ...models.nodes.packet import Packet
-from ...configuration.sim_config import sim_config_env
+from ...configuration.sim_config import config
 
-parameters = sim_config_env.message_transmission_model_parameters
+parameters = config.message_transmission_model_parameters
 
 
 class RandomTime(AbcMessageTransmissionModel):

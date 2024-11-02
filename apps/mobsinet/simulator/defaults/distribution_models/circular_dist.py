@@ -5,9 +5,9 @@ from matplotlib import pyplot as plt
 from networkx import Graph, draw, get_node_attributes
 from ...models.abc_distribution_model import AbcDistributionModel
 from ...tools.position import Position
-from ...configuration.sim_config import sim_config_env
+from ...configuration.sim_config import config
 
-parameters = sim_config_env.distribution_model_parameters
+parameters = config.distribution_model_parameters
 
 
 class CircularDist(AbcDistributionModel):
@@ -46,7 +46,7 @@ class CircularDist(AbcDistributionModel):
         if (self.midpoint is None):
             raise ValueError('The midpoint is not set.')
 
-        if (self.midpoint[0] - self.radius < 0 or self.midpoint[0] + self.radius > sim_config_env.dimX or self.midpoint[1] - self.radius < 0 or self.midpoint[1] + self.radius > sim_config_env.dimY):
+        if (self.midpoint[0] - self.radius < 0 or self.midpoint[0] + self.radius > config.dimX or self.midpoint[1] - self.radius < 0 or self.midpoint[1] + self.radius > config.dimY):
             raise ValueError('The radius is too large for the midpoint.')
 
         new_coordinates = self._get_new_coordinates()

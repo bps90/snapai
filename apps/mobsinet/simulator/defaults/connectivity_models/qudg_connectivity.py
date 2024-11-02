@@ -1,9 +1,9 @@
 import random
-from ...configuration.sim_config import sim_config_env
+from ...configuration.sim_config import config
 from ...models.nodes.abc_node_implementation import AbcNodeImplementation
 from ...models.abc_connectivity_model import AbcConnectivityModel
 
-parameters = sim_config_env.connectivity_model_parameters
+parameters = config.connectivity_model_parameters
 
 
 class QUDGConnectivity(AbcConnectivityModel):

@@ -1,8 +1,8 @@
 from ...models.nodes.abc_node_implementation import AbcNodeImplementation
 from ...models.abc_connectivity_model import AbcConnectivityModel
-from ...configuration.sim_config import sim_config_env
+from ...configuration.sim_config import config
 
-parameters = sim_config_env.connectivity_model_parameters
+parameters = config.connectivity_model_parameters
 
 
 class UDGConnectivity(AbcConnectivityModel):

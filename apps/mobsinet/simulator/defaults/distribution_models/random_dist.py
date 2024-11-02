@@ -2,7 +2,7 @@ import random
 
 from ...tools.position import Position
 from ...models.abc_distribution_model import AbcDistributionModel
-from ...configuration.sim_config import sim_config_env
+from ...configuration.sim_config import config
 
 # SEED such seed could be configured from config file to reproduce simulation.
 # seed_value = 10
@@ -24,9 +24,9 @@ class RandomDist(AbcDistributionModel):
         Position: The randomly generated position.
         """
 
-        p = Position(x=random.randrange(0, sim_config_env.dimX),
-                     y=random.randrange(0, sim_config_env.dimZ),
-                     z=random.randrange(0, sim_config_env.dimZ))
+        p = Position(x=random.randrange(0, config.dimX),
+                     y=random.randrange(0, config.dimZ),
+                     z=random.randrange(0, config.dimZ))
 
         return p
 

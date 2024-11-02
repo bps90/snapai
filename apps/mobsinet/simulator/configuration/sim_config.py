@@ -199,7 +199,7 @@ class SimulationConfig:
 
 
 config_file_path = 'apps/mobsinet/simulator/configuration/simulation_config.json'
-sim_config_env = SimulationConfig(config_file_path)
+config = SimulationConfig(config_file_path)
 
 # usage
 if __name__ == "__main__":

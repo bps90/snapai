@@ -1,17 +1,17 @@
 from ...models.abc_distribution_model import AbcDistributionModel
 from ...tools.position import Position
-from ...configuration.sim_config import sim_config_env
+from ...configuration.sim_config import config
 
-parameters = sim_config_env.distribution_model_parameters
+parameters = config.distribution_model_parameters
 
 
 class LinearDist(AbcDistributionModel):
     def __init__(self):
         super().__init__('LinearDist')
         self.orientation = parameters['orientation']
-        self.length = sim_config_env.dimX if self.orientation == 'horizontal' else sim_config_env.dimY
+        self.length = config.dimX if self.orientation == 'horizontal' else config.dimY
         self.line_position = parameters['line_position'] if 'line_position' in parameters and parameters['line_position'] is not None else (
-            sim_config_env.dimY / 2 if self.orientation == 'horizontal' else sim_config_env.dimX / 2
+            config.dimY / 2 if self.orientation == 'horizontal' else config.dimX / 2
         )
         self.number_of_nodes: int = None
 
@@ -32,9 +32,9 @@ class LinearDist(AbcDistributionModel):
                 'The number of nodes must be set before getting the position. Use the set_number_of_nodes() method.')
 
         if (self.orientation == 'horizontal'):
-            middle = sim_config_env.dimX / \
+            middle = config.dimX / \
                 2 if self.number_of_nodes % 2 != 0 else (
-                    sim_config_env.dimX / 2) - (self._separation / 2)
+                    config.dimX / 2) - (self._separation / 2)
 
             distance_from_middle = (
                 middle) - (self._last_position.x) if self._last_position is not None else None
@@ -48,8 +48,8 @@ class LinearDist(AbcDistributionModel):
 
             if (x < 0):
                 x = 0
-            if (x > sim_config_env.dimX):
-                x = sim_config_env.dimX
+            if (x > config.dimX):
+                x = config.dimX
 
             y = self.line_position
             z = 0
@@ -60,9 +60,9 @@ class LinearDist(AbcDistributionModel):
 
             return position
         else:
-            middle = sim_config_env.dimY / \
+            middle = config.dimY / \
                 2 if self.number_of_nodes % 2 != 0 else (
-                    sim_config_env.dimY / 2) - (self._separation / 2)
+                    config.dimY / 2) - (self._separation / 2)
 
             distance_from_middle = (
                 middle) - (self._last_position.y) if self._last_position is not None else None
@@ -76,8 +76,8 @@ class LinearDist(AbcDistributionModel):
 
             if (y < 0):
                 y = 0
-            if (y > sim_config_env.dimY):
-                y = sim_config_env.dimY
+            if (y > config.dimY):
+                y = config.dimY
 
             x = self.line_position
             z = 0
@@ -130,7 +130,7 @@ class LinearDist(AbcDistributionModel):
 
         self.length = min(
             length,
-            sim_config_env.dimX if self.orientation == 'horizontal' else sim_config_env.dimY)
+            config.dimX if self.orientation == 'horizontal' else config.dimY)
         self._separation = self.length / (self.number_of_nodes - 1)
 
 
