@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class AbcCustomGlobal(ABC):
-    global_timers: set['AbcTimer'] = set()
+    global_timers: list['AbcTimer'] = []
 
     @abstractmethod
     def has_terminated(self) -> bool:
@@ -73,9 +73,10 @@ class AbcCustomGlobal(ABC):
         """
         if not self.global_timers:
             return
-        while self.global_timers:
-            first_timer: 'AbcTimer' = min(self.global_timers, key=lambda t: t.fire_time) # TODO: Melhorar isso aqui, não é eficiente!
-            if first_timer.fire_time > Global.current_time:
-                break
-            self.global_timers.remove(first_timer)
-            first_timer.fire()
+        
+        self.global_timers.sort(key=lambda t: t.fire_time)
+        
+        while self.global_timers[0].fire_time <= Global.current_time:
+            timer = self.global_timers[0]
+            self.global_timers.remove(timer)
+            timer.fire()
