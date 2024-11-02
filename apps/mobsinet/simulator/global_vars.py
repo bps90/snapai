@@ -9,6 +9,7 @@ from .abc_custom_global import AbcCustomGlobal
 
 class Global:
     is_running = False
+    is_even_round = False
     start_time: datetime = None
     start_time_of_round: datetime = None
     # log: Logging = None # TODO: Implementar Logging

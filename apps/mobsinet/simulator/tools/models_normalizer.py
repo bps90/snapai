@@ -5,6 +5,7 @@ from ..models.abc_mobility_model import AbcMobilityModel
 from ..models.abc_interference_model import AbcInterferenceModel
 from ..models.abc_reliability_model import AbcReliabilityModel
 from ..models.abc_distribution_model import AbcDistributionModel
+from ..models.abc_message_transmission_model import AbcMessageTransmissionModel
 
 from ..configuration.sim_config import config
 from abc import ABCMeta
@@ -45,6 +46,38 @@ class ModelsNormalizer:
             mobility_model: AbcMobilityModel = mobility_model()
 
         return mobility_model
+    
+    @staticmethod
+    def normalize_message_transmission_model(message_transmission_model: Type[AbcMessageTransmissionModel] | AbcMessageTransmissionModel | str | None) -> AbcMessageTransmissionModel:
+        """(static) Normalizes the message transmission model.
+
+        Parameters
+        ----------
+        message_transmission_model : Type[AbcMessageTransmissionModel] | AbcMessageTransmissionModel | str | None
+            The message transmission model to normalize.
+            If a class, it will be instantiated.
+            If a string, it must be exactly the name of the file containing the model,
+            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            If None, the default message transmission model will be returned.
+
+        Returns
+        -------
+        AbcMessageTransmissionModel
+            The normalized message transmission model object.
+        """
+
+        if (message_transmission_model is None):
+            message_transmission_model: Type[AbcMessageTransmissionModel] = importlib.import_module(
+                f'apps.mobsinet.simulator.defaults.message_transmission_models.{config.message_transmission_model}').model
+
+        elif (type(message_transmission_model) is str):
+            message_transmission_model: Type[AbcMessageTransmissionModel] = importlib.import_module(
+                config.PROJECT_DIR.replace('/', '.') + 'message_transmission_models.' + message_transmission_model).model
+
+        if type(message_transmission_model) is type or type(message_transmission_model) is ABCMeta:
+            message_transmission_model: AbcMessageTransmissionModel = message_transmission_model()
+
+        return message_transmission_model
 
     @staticmethod
     def normalize_connectivity_model(connectivity_model: Type[AbcConnectivityModel] | AbcConnectivityModel | str | None) -> AbcConnectivityModel:

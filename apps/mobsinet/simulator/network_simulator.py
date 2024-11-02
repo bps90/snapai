@@ -8,10 +8,11 @@ from .models.abc_mobility_model import AbcMobilityModel
 from .models.abc_connectivity_model import AbcConnectivityModel
 from .models.abc_interference_model import AbcInterferenceModel
 from .models.abc_reliability_model import AbcReliabilityModel
+from .configuration.sim_config import config
+from .global_vars import Global
+from .synchronous_thread import SynchronousThread
 
-from .tools.position import Position
 from .tools.models_normalizer import ModelsNormalizer
-from .configuration.sim_config import sim_config_env
 from typing import Type, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -24,9 +25,51 @@ class NetworkSimulator(object):
     def __init__(self):
         self.graph: nx.DiGraph = nx.DiGraph()
         self.global_time = 0
-        self.global_timers: list[AbcTimer] = []
         self.packets_in_the_air = PacketsInTheAirBuffer()
         self.arrived_packets: list[Packet] = []
+
+    def init_simulator(self, parameters: dict[str, Any]):
+        """Initialize the simulator with the given parameters.
+        
+        Parameters
+        ----------
+        parameters : dict[str, Any]
+            A dictionary containing the parameters to initialize the simulator.
+            
+            refresh_rate: int
+                The refresh rate of the simulator.
+            
+            number_of_nodes: int
+                The number of nodes to add.
+            
+            distribution_model: Type[AbcDistributionModel] | AbcDistributionModel | str
+                The distribution model to distribute nodes in the graph.
+            
+            node_implementation_constructor: Type[AbcNodeImplementation] | str
+                The class of the node_implementation to instantiate when nodes are created.
+            
+            mobility_model: Type[AbcMobilityModel] | AbcMobilityModel | str
+                The mobility model that will be used by these nodes.
+            
+            connectivity_model: Type[AbcConnectivityModel] | AbcConnectivityModel | str
+                The connectivity model that will be used by these nodes.
+            
+            interference_model: Type[AbcInterferenceModel] | AbcInterferenceModel | str
+                The interference model that will be used by these nodes.
+            
+            reliability_model: Type[AbcReliabilityModel] | AbcReliabilityModel | str
+                The reliability model that will be used by these nodes.
+        """
+        
+        config.refresh_rate = parameters['refresh_rate']
+        
+        self.add_nodes(nodes=parameters['number_of_nodes'],
+                       distribution_model=parameters['distribution_model'],
+                       node_implementation_constructor=parameters['node_implementation_constructor'],
+                       mobility_model=parameters['mobility_model'],
+                       connectivity_model=parameters['connectivity_model'],
+                       interference_model=parameters['interference_model'],
+                       reliability_model=parameters['reliability_model'])
 
     def add_nodes(
         self,
@@ -148,17 +191,7 @@ class NetworkSimulator(object):
             raise ValueError(
                 f"Node with ID {node_implementation.id} already exists.")
 
-    def add_global_timer(self, timer: 'AbcTimer'):
-        """Add a global timer to the simulation.
-
-        Parameters
-        ----------
-        timer : AbcTimer
-            The timer object.
-        """
-
-        self.global_timers.append(timer)
-
+   
     def remove_node(self, node_id: int):
         """Remove a node from the network graph by their ID.
 
@@ -241,6 +274,20 @@ class NetworkSimulator(object):
 
         return node_id
 
+    def pre_run(self):
+        """Called before executing the first round of the simulation."""
+        
+        Global.custom_global.pre_run()
+        
+    def run(self):
+        if Global.is_running:
+            return
+        
+        thread = SynchronousThread(config.simulation_rounds, config.simulation_refresh_rate)
+        
+        thread.start()
+        
+        
 
 simulation = NetworkSimulator()
 

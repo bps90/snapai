@@ -9,11 +9,10 @@ from .network_simulator import simulation
 
 class SynchronousThread(Thread):
 
-    def __init__(self, runtime=None):
+    def __init__(self, number_of_rounds: int = 0, refresh_rate: int = 1):
         super().__init__()
-        self.number_of_rounds = 0  # Antes de iniciar, alguem deve definir esse valor
-        self.runtime = runtime  # Se estiver no modo GUI, mantém a referência ao GUIRuntime
-        self.refresh_rate = 1    # Taxa de atualização da GUI
+        self.number_of_rounds = number_of_rounds 
+        self.refresh_rate = refresh_rate    # Taxa de atualização da GUI
 
     def run(self):
         Global.is_running = True
@@ -22,7 +21,7 @@ class SynchronousThread(Thread):
         # TODO: Colocar código existente em network_simulator.py : run()
         for current_round in range(self.number_of_rounds):
             Global.current_time += 1
-            
+            Global.is_even_round = not Global.is_even_round
             Global.start_time_of_round = datetime.now()
             Global.number_of_messages_in_this_round = 0
 

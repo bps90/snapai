@@ -41,6 +41,7 @@ class SimulationConfig:
             'min_radius': None,
             'big_radius_probability': None
         }
+        self.message_transmission_model = 'constant_time'
         self.message_transmission_model_parameters = {
             'constant_transmission_time': 1,
             'random_transmission_min_time': 1,

@@ -3,6 +3,7 @@
 from ..network_simulator import simulation
 from ..models.nodes.packet import Packet
 from .inbox import Inbox
+from ..global_vars import Global
 
 
 class InboxPacketBuffer:
@@ -30,7 +31,7 @@ class InboxPacketBuffer:
 
         # Criando uma cópia para evitar modificação da lista durante iteração
         for p in self.buffer[:]:
-            if p.arriving_time <= simulation.global_time:
+            if p.arriving_time <= Global.current_time:
 
                 simulation.packets_in_the_air.remove(p)
 

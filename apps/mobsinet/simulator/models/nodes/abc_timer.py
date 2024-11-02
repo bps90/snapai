@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 from abc import ABC, abstractmethod
+from ...global_vars import Global
 
 from ...network_simulator import simulation
 
@@ -34,7 +35,7 @@ class AbcTimer(ABC):
         self.node_implementation = None
         self.fire_time = simulation.global_time + time
 
-        simulation.add_global_timer(self)
+        Global.custom_global.global_timers.append(self)
 
     def start_relative(self, time: int, node_implementation: AbcNodeImplementation):
         """Starts a relative timer.

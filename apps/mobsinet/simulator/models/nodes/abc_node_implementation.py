@@ -39,7 +39,7 @@ class AbcNodeImplementation(ABC):
         self.timers: list[AbcTimer] = []
         self.neighboorhood_changed: bool = False
         self.packet_buffer = InboxPacketBuffer()
-        self.nack_buffer: list['Packet'] = []
+        self.nack_buffer: list['Packet'] = [] # TODO: Criar um NackBuffer para rounds ímpares e pares
         self.nack_box: 'NackBox' | None = None
         self.inbox: 'Inbox' | None = None
         self.outgoing_connections: list['EdgeImplementation'] = []
@@ -59,6 +59,7 @@ Reliability Model: {self.reliability_model.name}
 
     def set_position(self, position: 'Position'):
         self.position = position
+        self.node_position_updated()
 
     def set_mobility_model(self, mobility_model: 'AbcMobilityModel'):
         self.mobility_model = mobility_model
@@ -77,6 +78,13 @@ Reliability Model: {self.reliability_model.name}
 
     def set_coordinates(self, x: int, y: int, z: int):
         return self.position.set_coordinates(x, y, z)
+
+    def node_position_updated(self):
+        """Action to be performed when the node's position is updated.
+
+        Can be implemented by subclasses.
+        """
+        pass
 
     def add_timer(self, timer: 'AbcTimer'):
         """Adds a timer to the node.
