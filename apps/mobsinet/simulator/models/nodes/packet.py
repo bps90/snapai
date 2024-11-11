@@ -4,27 +4,27 @@ from typing import TYPE_CHECKING
 from .abc_message import AbcMessage
 
 if TYPE_CHECKING:
-    from .abc_node_implementation import AbcNodeImplementation
+    from .abc_node import AbcNode
 
 
 class Packet(ABC):
-    issued_packets = set()  # Usamos um conjunto para armazenar os pacotes emitidos
-    free_packets = []  # Pilha para armazenar pacotes livres
-    num_packets_on_the_fly = 0  # Contador de pacotes em uso
-    lock = threading.Lock()  # Lock para controle de concorrência
-
+    
     def __init__(self,
                  message: 'AbcMessage',
-                 origin: 'AbcNodeImplementation',
-                 destination: 'AbcNodeImplementation',
+                 origin: 'AbcNode',
+                 destination: 'AbcNode',
                  type: str):
         self.message = message
         self.origin = origin
         self.destination = destination
         self.type = type
+        # self.edge: 'EdgeImplementation' = None
         self.positive_delivery: bool = True
         self.arriving_time: int = 0
         self.sending_time: int = 0
+        
+        Packet.issued_packets.add(self)
+        Packet.num_packets_on_the_fly += 1
 
     def set_message(self, message: 'AbcMessage'):
         self.message = message
@@ -45,36 +45,3 @@ class Packet(ABC):
         """
         # TODO: implement
         pass
-
-    @staticmethod
-    def free(packet: 'Packet'):
-        """This method marks this packet as unused. 
-        This means that it adds itself to the packet 
-        pool and can thus be recycled by the 
-        fabricatePacket-method.
-
-        Parameters
-        ----------
-        packet : AbcPacket
-            The packet to free.
-        """
-        # GENERATED WITH HELP FROM CHATGPT
-
-        with Packet.lock:
-            # Remove o pacote da lista de pacotes emitidos
-            if packet not in Packet.issued_packets:
-                print(
-                    "Erro na fábrica de pacotes. Por favor, relate este erro se você vir esta mensagem.")
-            else:
-                Packet.issued_packets.remove(packet)
-
-            # Reduz o contador de pacotes em uso
-            Packet.num_packets_on_the_fly -= 1
-
-            # Limpa as informações do pacote
-            packet.destination = None
-            packet.origin = None
-            packet.message = None
-
-            # Adiciona o pacote à pilha de pacotes livres
-            Packet.free_packets.append(packet)

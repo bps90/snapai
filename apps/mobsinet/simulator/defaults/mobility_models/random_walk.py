@@ -6,10 +6,10 @@ from numpy import Infinity, pi
 from ...configuration.sim_config import config
 from ..connectivity_models.no_connectivity import NoConnectivity
 from ..interference_models.no_interference import NoInterference
-from ..nodes.inert_node_implementation import InertNodeImplementation
+from ..nodes.inert_node import InertNode
 from ..reliability_models.no_reliability import NoReliability
 from ...models.abc_mobility_model import AbcMobilityModel
-from ...models.nodes.abc_node_implementation import AbcNodeImplementation
+from ...models.nodes.abc_node import AbcNode
 from ...tools.position import Position
 from random import randint, random
 import matplotlib.pyplot as plt
@@ -96,13 +96,13 @@ class RandomWalk(AbcMobilityModel):
         self._remaining_time = self.travel_time if self.travel_time else Infinity
         self._remaining_distance = self.travel_distance if self.travel_distance else Infinity
 
-    def get_next_position(self, node_implementation: AbcNodeImplementation) -> Position:
+    def get_next_position(self, node: AbcNode) -> Position:
         """Get the next position based on random directions and speeds.
 
         Parâmeters
         ----------
-        node_implementation : AbcNodeImplementation
-            The node implementation to calculates next position.
+        node : AbcNode
+            The node to calculates next position.
 
         Raises
         ------
@@ -122,7 +122,7 @@ class RandomWalk(AbcMobilityModel):
         if (not self.travel_distance and not self.travel_time):
             raise ValueError('travel_distance or travel_time must be set')
 
-        current_position = node_implementation.position
+        current_position = node.position
 
         # verify remaining time and distance
         if (self._remaining_distance <= 0 or self._remaining_time <= 0):
@@ -663,7 +663,7 @@ if __name__ == '__main__':
     random_walk.set_travel_distance(70)
     random_walk.set_speed_range(1, 50)
 
-    node_implementation = InertNodeImplementation(
+    node = InertNode(
         1,
         Position(randint(0, config.dimX),
                  randint(0, config.dimY),
@@ -678,15 +678,15 @@ if __name__ == '__main__':
     trace_file.write('t, x, y, z\n')
 
     for step in range(50):
-        print(step, node_implementation.get_coordinates())
+        print(step, node.get_coordinates())
 
         trace_graph.add_node(
             step,
-            position=node_implementation.get_coordinates()[0:2],
+            position=node.get_coordinates()[0:2],
             color='#303070')
 
         if step > 0:
-            current_coordinates = node_implementation.get_coordinates()
+            current_coordinates = node.get_coordinates()
             last_coordinates = trace_graph.nodes[step - 1]['position']
 
             trace_graph.add_edge(step - 1,
@@ -698,13 +698,13 @@ if __name__ == '__main__':
 
         trace_file.write('{}, {}, {}, {}\n'.format(
             step,
-            node_implementation.get_coordinates()[0],
-            node_implementation.get_coordinates()[1],
-            node_implementation.get_coordinates()[2]
+            node.get_coordinates()[0],
+            node.get_coordinates()[1],
+            node.get_coordinates()[2]
         ))
 
-        node_implementation.set_position(
-            node_implementation.mobility_model.get_next_position(node_implementation))
+        node.set_position(
+            node.mobility_model.get_next_position(node))
 
     trace_file.close()
 

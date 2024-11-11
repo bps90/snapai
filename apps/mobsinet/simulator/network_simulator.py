@@ -10,23 +10,28 @@ from .models.abc_interference_model import AbcInterferenceModel
 from .models.abc_reliability_model import AbcReliabilityModel
 from .configuration.sim_config import config
 from .global_vars import Global
-from .synchronous_thread import SynchronousThread
+
 
 from .tools.models_normalizer import ModelsNormalizer
 from typing import Type, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .models.nodes.abc_timer import AbcTimer
-    from .models.nodes.abc_node_implementation import AbcNodeImplementation
+    from .models.nodes.abc_node import AbcNode
 
 
 class NetworkSimulator(object):
+    last_id = 0
 
     def __init__(self):
-        self.graph: nx.DiGraph = nx.DiGraph()
-        self.global_time = 0
+        self.__graph: nx.DiGraph = nx.DiGraph()
         self.packets_in_the_air = PacketsInTheAirBuffer()
         self.arrived_packets: list[Packet] = []
+
+    def nodes(self):
+        return self.__graph.nodes()
+    
+    def has_edge(self, node_from: 'AbcNode', node_to: 'AbcNode'):
+        return self.__graph.has_edge(node_from, node_to)
 
     def init_simulator(self, parameters: dict[str, Any]):
         """Initialize the simulator with the given parameters.
@@ -45,8 +50,8 @@ class NetworkSimulator(object):
             distribution_model: Type[AbcDistributionModel] | AbcDistributionModel | str
                 The distribution model to distribute nodes in the graph.
             
-            node_implementation_constructor: Type[AbcNodeImplementation] | str
-                The class of the node_implementation to instantiate when nodes are created.
+            node_constructor: Type[AbcNode] | str
+                The class of the node to instantiate when nodes are created.
             
             mobility_model: Type[AbcMobilityModel] | AbcMobilityModel | str
                 The mobility model that will be used by these nodes.
@@ -63,9 +68,9 @@ class NetworkSimulator(object):
         
         config.refresh_rate = parameters['refresh_rate']
         
-        self.add_nodes(nodes=parameters['number_of_nodes'],
+        self.add_nodes(num_nodes=parameters['number_of_nodes'],
                        distribution_model=parameters['distribution_model'],
-                       node_implementation_constructor=parameters['node_implementation_constructor'],
+                       node_constructor=parameters['node_constructor'],
                        mobility_model=parameters['mobility_model'],
                        connectivity_model=parameters['connectivity_model'],
                        interference_model=parameters['interference_model'],
@@ -73,9 +78,9 @@ class NetworkSimulator(object):
 
     def add_nodes(
         self,
-        nodes: int | list[Any],
+        num_nodes: int,
         distribution_model: Type[AbcDistributionModel] | AbcDistributionModel | str = None,
-        node_implementation_constructor: Type['AbcNodeImplementation'] | str = None,
+        node_constructor: Type['AbcNode'] | str = None,
         mobility_model: Type[AbcMobilityModel] | AbcMobilityModel | str = None,
         connectivity_model: Type[AbcConnectivityModel] | AbcConnectivityModel | str = None,
         interference_model: Type[AbcInterferenceModel] | AbcInterferenceModel | str = None,
@@ -85,19 +90,19 @@ class NetworkSimulator(object):
 
         Parameters
         ----------
-        nodes : int | list[Any]
-            The number of nodes to add or a list of nodes to add
+        num_nodes : int
+            The number of nodes to add
         distribution_model : Type[AbcDistributionModel] | AbcDistributionModel | str, optional
             The distribution model to distribute nodes in the graph.
             If a class, it will be instantiated.
             If a string, it must be exactly the name of the file containing the model,
             without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
             If None, the default distribution model will be used.
-        node_implementation_constructor : Type[AbcNodeImplementation] | str, optional
-            The class of the node_implementation to instantiate when nodes are created.
+        node_constructor : Type[AbcNode] | str, optional
+            The class of the node to instantiate when nodes are created.
             If a string, it must be exactly the name of the file containing the node implementation,
             without the ".py" extension; it will be imported from PROJECT_DIR.
-            If None, the default node_implementation will be used.
+            If None, the default node will be used.
         mobility_model : Type[AbcMobilityModel] | AbcMobilityModel | str, optional
             The mobility model that will be used by these nodes.
             If a class, it will be instantiated.
@@ -131,7 +136,7 @@ class NetworkSimulator(object):
         # Add 5 nodes with a uniform distribution
         >>> network_simulator.add_nodes([1, 2, 3, 4, 5], distribution_model="random_dist")
         # Add 1 node with the smartphone node implementation
-        >>> network_simulator.add_nodes(1, node_implementation_constructor=SmartphoneNodeImplementation)
+        >>> network_simulator.add_nodes(1, node_constructor=SmartphoneNode)
         # Add 3 nodes with random walk mobility and a random distribution
         >>> network_simulator.add_nodes([10, 20, 30], mobility_model="random_walk", distribution_model="random_dist")
         ```
@@ -143,10 +148,10 @@ class NetworkSimulator(object):
 
         distribution_model: AbcDistributionModel = ModelsNormalizer.normalize_distribution_model(
             distribution_model)
-        node_implementation_constructor = ModelsNormalizer.normalize_node_implementation_constructor(
-            node_implementation_constructor)
+        node_constructor = ModelsNormalizer.normalize_node_constructor(
+            node_constructor)
 
-        for id in (range(nodes) if type(nodes) is int else nodes):
+        for _ in range(num_nodes):
             mobility_model = ModelsNormalizer.normalize_mobility_model(
                 mobility_model)
             connectivity_model = ModelsNormalizer.normalize_connectivity_model(
@@ -156,8 +161,8 @@ class NetworkSimulator(object):
             reliability_model = ModelsNormalizer.normalize_reliability_model(
                 reliability_model)
 
-            node_implementation = node_implementation_constructor(
-                id if type(nodes) is not int else self._gen_node_id(),
+            node = node_constructor(
+                self._gen_node_id(),
                 mobility_model=mobility_model,
                 connectivity_model=connectivity_model,
                 interference_model=interference_model,
@@ -166,30 +171,28 @@ class NetworkSimulator(object):
 
             position = distribution_model.get_position()
 
-            node_implementation.set_position(position)
+            node.set_position(position)
 
-            self.add_node(node_implementation)
+            self.add_node(node)
 
     def add_node(
         self,
-        node_implementation: 'AbcNodeImplementation',
+        node: 'AbcNode',
     ):
         """Add a node to the network graph.
 
         Parameters
         ----------
-        node_implementation : AbcNodeImplementation
+        node : AbcNode
             The node implementation object.
         """
 
-        if node_implementation.id not in self.graph.nodes():
-            self.graph.add_node(
-                node_implementation.id,
-                implementation=node_implementation
-            )
+        if node not in self.nodes():
+            self.__graph.add_node(node)
+            Global.custom_global.node_added_event(node)
         else:
             raise ValueError(
-                f"Node with ID {node_implementation.id} already exists.")
+                f"Node with ID {node.id} already exists.")
 
    
     def remove_node(self, node_id: int):
@@ -200,79 +203,70 @@ class NetworkSimulator(object):
         ValueError
             If the node is not in the graph.
         """
-
-        if node_id in self.graph.nodes():
-            self.graph.remove_node(node_id)
+        
+        
+        for n in self.nodes():
+            if n.id == node_id:
+                self.graph.remove_node(n)
+                Global.custom_global.node_removed_event(n)
+                break
         else:
             raise ValueError(
                 f"Node with ID {node_id} already removed or do not exists.")
 
-    def add_edge(self, from_id, to_id):
+
+    def add_edge(self, node_from: 'AbcNode', node_to: 'AbcNode'):
         """Add an edge between two nodes in the network graph.
 
         Parameters
         ----------
-        from_id : int
-            The ID of the source node.
-        to_id : int
-            The ID of the destination node.
+        node_from : AbcNode
+            The source node.
+        node_to : AbcNode
+            The destination node.
         """
 
-        self.graph.add_edge(from_id, to_id)
 
-    def add_bi_directional_edge(self, id1, id2):
+
+        # TODO: Criar EdgeImplementation (talvez)
+        self.__graph.add_edge(node_from, node_to)
+
+    def add_bi_directional_edge(self, node1: 'AbcNode', node2: 'AbcNode'):
         """Add a bi-directional edge between two nodes in the network graph."""
 
-        self.add_edge(id1, id2)
-        self.add_edge(id2, id1)
+        self.add_edge(node1, node2)
+        self.add_edge(node2, node1)
 
-    def remove_edge(self,  from_id, to_id):
+    def remove_edge(self,  node_from, node_to):
         """Remove an edge between two nodes in the network graph.
 
         Parameters
         ----------
-        from_id : int
-            The ID of the source node.
-        to_id : int
-            The ID of the destination node.
+        node_from : AbcNode
+            The source node.
+        node_to : AbcNode
+            The destination node.
         """
 
-        self.graph.remove_edge(from_id, to_id)
+        self.__graph.remove_edge(node_from, node_to)
 
-    def remove_bi_directional_edge(self, id1, id2):
+    def remove_bi_directional_edge(self, node1: 'AbcNode', node2: 'AbcNode'):
         """Remove a bi-directional edge between two nodes in the network graph."""
 
-        self.remove_edge(id1, id2)
-        self.remove_edge(id2, id1)
-
-    def init_net_models(self):
-        """Init the models that will be used in the simulation."""
-
-        # dist_model:AbcDistributionModel  = importlib.util.spec_from_file_location("random_dist", "/Users/bps/Documents/playground/MobENV/apps/mobsinet/simulator/defaults/distribution_models/random_dist.py")
-        # foo = importlib.util.module_from_spec(dist_model)
-        # sys.modules["random_dist"] = foo
-        # dist_model.loader.exec_module(foo)
-        # print(foo.RandomDist())
-        pass
+        self.remove_edge(node1, node2)
+        self.remove_edge(node2, node1)
 
 
 
     def __str__(self) -> str:
-        return str(self.graph)
+        return str(self.__graph)
 
     def _gen_node_id(self):
-        """(private) Generates a new `node_id` based on number of current nodes in the graph.
+        """(private) Generates a new unique `node_id` for this simulation."""
 
-        Notes
-        -----
-        The generated id may have already been used by another node that is no longer in the graph
-        """
-        node_id = self.graph.number_of_nodes() + 1
+        NetworkSimulator.last_id += 1
 
-        while node_id in self.graph.nodes():
-            node_id += 1
-
-        return node_id
+        return NetworkSimulator.last_id
 
     def pre_run(self):
         """Called before executing the first round of the simulation."""
@@ -280,6 +274,8 @@ class NetworkSimulator(object):
         Global.custom_global.pre_run()
         
     def run(self):
+        from .synchronous_thread import SynchronousThread
+        
         if Global.is_running:
             return
         

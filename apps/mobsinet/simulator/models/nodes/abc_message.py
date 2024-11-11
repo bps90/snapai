@@ -17,4 +17,5 @@ class AbcMessage(ABC):
         AbcMessage
             A copy of the object.
         """
+        # TODO: implement
         pass

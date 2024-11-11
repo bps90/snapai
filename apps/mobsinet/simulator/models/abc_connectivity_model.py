@@ -14,9 +14,9 @@ class AbcConnectivityModel(AbcModel):
 
         Parameters
         ----------
-        node_a : AbcNodeImplementation
+        node_a : AbcNode
             The first node.
-        node_b : AbcNodeImplementation
+        node_b : AbcNode
             The second node.
         """
         pass

@@ -1,5 +1,5 @@
 from ...models.abc_message_transmission_model import AbcMessageTransmissionModel
-from ...models.nodes.abc_node_implementation import AbcNodeImplementation
+from ...models.nodes.abc_node import AbcNode
 from ...models.nodes.packet import Packet
 from ...configuration.sim_config import config
 
@@ -15,8 +15,8 @@ class ConstantTime(AbcMessageTransmissionModel):
     def time_to_reach(
             self,
             packet: Packet,
-            origin_node: AbcNodeImplementation,
-            destination_node: AbcNodeImplementation) -> int:
+            origin_node: AbcNode,
+            destination_node: AbcNode) -> int:
         """Determines the time that the packet will take to reach the destination node.
 
         On this model, the time is a constant defined in the configuration or setted directly on the model object.
@@ -25,10 +25,10 @@ class ConstantTime(AbcMessageTransmissionModel):
         ----------
         packet : AbcPacket
             The packet object.
-        origin_node : AbcNodeImplementation
-            The origin node implementation object.
-        destination_node : AbcNodeImplementation
-            The destination node implementation object.
+        origin_node : AbcNode
+            The origin node object.
+        destination_node : AbcNode
+            The destination node object.
 
         Returns
         -------

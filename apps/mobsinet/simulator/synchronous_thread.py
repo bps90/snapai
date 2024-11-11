@@ -3,7 +3,7 @@
 from datetime import datetime
 from threading import Thread
 from .global_vars import Global
-from .models.nodes.abc_node_implementation import AbcNodeImplementation
+from .models.nodes.abc_node import AbcNode
 from .network_simulator import simulation
 
 
@@ -18,7 +18,6 @@ class SynchronousThread(Thread):
         Global.is_running = True
         Global.start_time = datetime.now()
 
-        # TODO: Colocar código existente em network_simulator.py : run()
         for current_round in range(self.number_of_rounds):
             Global.current_time += 1
             Global.is_even_round = not Global.is_even_round
@@ -49,13 +48,10 @@ class SynchronousThread(Thread):
     def __move_nodes(self):
         """(private) Moves the nodes in the network graph."""
 
-        for node in simulation.graph.nodes():
-            node_implementation: 'AbcNodeImplementation' = simulation.graph.nodes[
-                node]["implementation"]
-
+        for node in simulation.nodes():
+            node: 'AbcNode'
             # move the node
-            node_implementation.set_position(
-                node_implementation.mobility_model.get_next_position(node_implementation))
+            node.set_position(node.mobility_model.get_next_position(node))
 
             # TODO: Criar logging para movimentação de nós
 
@@ -64,35 +60,33 @@ class SynchronousThread(Thread):
 
         # TODO: Criar logging para conexão
 
-        for node in simulation.graph.nodes():
-            node_implementation: 'AbcNodeImplementation' = simulation.graph.nodes[node]["implementation"]
+        for node in simulation.nodes():
+            node: 'AbcNode'
 
             # reset neighboorhood_changed flag
-            node_implementation.neighboorhood_changed = False
+            node.neighboorhood_changed = False
 
             # update the connections
-            for possible_neighbor in simulation.graph.nodes():
+            for possible_neighbor in simulation.nodes():
+                possible_neighbor: 'AbcNode'
+                
                 if possible_neighbor == node:
                     continue
 
-                possible_neighbor_implementation: 'AbcNodeImplementation' = simulation.graph.nodes[
-                    possible_neighbor]["implementation"]
-
-                is_connected = node_implementation.connectivity_model.is_connected(node_implementation,
-                                                                                   possible_neighbor_implementation)
-                has_edge = simulation.graph.has_edge(node, possible_neighbor)
+                is_connected = node.connectivity_model.is_connected(node, possible_neighbor)
+                has_edge = simulation.has_edge(node, possible_neighbor)
 
                 if (is_connected and not has_edge):
                     simulation.add_edge(node, possible_neighbor)
-                    node_implementation.neighboorhood_changed = True
+                    node.neighboorhood_changed = True
                     
                 elif (not is_connected and has_edge):
                     simulation.remove_edge(node, possible_neighbor)
-                    node_implementation.neighboorhood_changed = True
+                    node.neighboorhood_changed = True
                     
     def __step_nodes(self):
         """(private) Performs a step for each node in the network graph."""
 
-        for node in simulation.graph.nodes():
-            node_implementation: 'AbcNodeImplementation' = simulation.graph.nodes[node]["implementation"]
-            node_implementation.step()
+        for node in simulation.nodes():
+            node: 'AbcNode'
+            node.step()

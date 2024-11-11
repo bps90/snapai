@@ -37,6 +37,9 @@ class InboxPacketBuffer:
 
                 self.buffer.remove(p)
 
+                # if p.edge:
+                #     p.edge.remove_message_for_this_edge(p.message)
+
                 if p.positive_delivery:
                     self.arriving_packets.append(p)
                 else:
@@ -52,7 +55,7 @@ class InboxPacketBuffer:
 
     def get_inbox(self) -> 'Inbox':
         """Obtém a Inbox com os pacotes que chegaram."""
-        self.arriving_packets.sort()
+        self.arriving_packets.sort(key=lambda p: p.arriving_time)
         if self.inbox is None:
             self.inbox = Inbox(self.arriving_packets)
         else:

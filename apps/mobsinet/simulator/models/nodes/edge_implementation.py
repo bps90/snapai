@@ -3,13 +3,13 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .abc_node_implementation import AbcNodeImplementation
+    from .abc_node import AbcNode
     from .abc_message import AbcMessage
 
 class EdgeImplementation:
     num_edges_on_the_fly = 0
 
-    def __init__(self, start_node: 'AbcNodeImplementation' = None, end_node: 'AbcNodeImplementation' = None):
+    def __init__(self, start_node: 'AbcNode' = None, end_node: 'AbcNode' = None):
         self.start_node = start_node
         self.end_node = end_node
         self.opposite_edge: 'EdgeImplementation' = None
@@ -22,9 +22,11 @@ class EdgeImplementation:
 
 
     def initialize_edge(self):
+        # TODO: verificar esse método no sinalgo
         pass
 
     def clean_up(self):
+        # TODO: verificar esse método no sinalgo
         pass
 
     def get_number_of_messages_on_this_edge(self):

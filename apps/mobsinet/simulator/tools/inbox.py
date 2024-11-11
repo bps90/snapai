@@ -4,45 +4,14 @@ from ..models.nodes.packet import Packet
 
 
 class Inbox:
-    def __init__(self, packet_list=None, single_packet=None):
+    def __init__(self, packet_list: list['Packet']=None, single_packet: 'Packet' =None):
         """
         Initializes the inbox with either a list of packets or a single packet.
         """
         self.packet_list = packet_list if packet_list is not None else []
         self.single_packet = single_packet
-        self.active_packet = None
+        self.active_packet: 'Packet' = None
         self.packet_iter = iter(self.packet_list) if self.packet_list else None
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        """
-        Returns the next message in the iterator.
-        """
-        if self.packet_iter:
-            self.active_packet = next(self.packet_iter, None)
-        else:
-            if self.active_packet is None:
-                self.active_packet = self.single_packet
-            else:
-                self.active_packet = None
-
-        if self.active_packet is None:
-            raise StopIteration("No more packets in the inbox.")
-
-        return self.active_packet.message
-
-    def has_next(self):
-        """
-        Returns True if a call to next() will return a message.
-        """
-        if self.packet_iter:
-            return any(self.packet_iter)
-        elif self.single_packet:
-            return self.active_packet is None
-        else:
-            return False
 
     def remove(self):
         """
@@ -138,7 +107,6 @@ class Inbox:
         """
         self.packet_list = packet_list
         self.active_packet = None
-        self.packet_iter = iter(self.packet_list)
         self.single_packet = None
         return self
 

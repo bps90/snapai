@@ -2,10 +2,10 @@
 
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
-from .global_vars import Global
 
 if TYPE_CHECKING:
     from .models.nodes.abc_timer import AbcTimer
+    from .models.nodes.abc_node import AbcNode
 
 
 class AbcCustomGlobal(ABC):
@@ -55,13 +55,13 @@ class AbcCustomGlobal(ABC):
         """
         pass
 
-    def node_added_event(self, node):
+    def node_added_event(self, node: 'AbcNode'):
         """
         Called whenever a node is added to the framework.
         """
         pass
 
-    def node_removed_event(self, node):
+    def node_removed_event(self, node: 'AbcNode'):
         """
         Called whenever a node is removed from the framework.
         """
@@ -71,7 +71,8 @@ class AbcCustomGlobal(ABC):
         """
         Handles all global timers scheduled to execute before or at the current time.
         """
-        if not self.global_timers:
+        from .global_vars import Global
+        if not self.global_timers or len(self.global_timers) == 0:
             return
         
         self.global_timers.sort(key=lambda t: t.fire_time)

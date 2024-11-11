@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
 from abc import ABC
-from ...network_simulator import simulation
 from ...tools.inbox_packet_buffer import InboxPacketBuffer
 from .packet import Packet
 from ...tools.packet_type import PacketType
 from ...tools.nack_box import NackBox
+from ...global_vars import Global
 
 if TYPE_CHECKING:
     from .abc_timer import AbcTimer
@@ -14,13 +14,9 @@ if TYPE_CHECKING:
     from ..abc_interference_model import AbcInterferenceModel
     from ..abc_reliability_model import AbcReliabilityModel
     from ...tools.inbox import Inbox
-    from .edge_implementation import EdgeImplementation
 
 
-class AbcNodeImplementation(ABC):
-
-    timersToHandle: list['AbcTimer'] = []
-
+class AbcNode(ABC):
     def __init__(
             self,
             id: int,
@@ -37,12 +33,14 @@ class AbcNodeImplementation(ABC):
         self.reliability_model: AbcReliabilityModel = reliability_model
 
         self.timers: list[AbcTimer] = []
+        self.timersToHandle: list['AbcTimer'] = []
         self.neighboorhood_changed: bool = False
         self.packet_buffer = InboxPacketBuffer()
-        self.nack_buffer: list['Packet'] = [] # TODO: Criar um NackBuffer para rounds ímpares e pares
+        self.nack_buffer_odd: list['Packet'] = []
+        self.nack_buffer_even: list['Packet'] = []
         self.nack_box: 'NackBox' | None = None
         self.inbox: 'Inbox' | None = None
-        self.outgoing_connections: list['EdgeImplementation'] = []
+        # self.outgoing_connections: list['EdgeImplementation'] = []
 
     def __str__(self):
         return f"""
@@ -154,25 +152,24 @@ Reliability Model: {self.reliability_model.name}
 
         self.timersToHandle.clear()
 
-        if (len(self.timers) > 0):
-            for timer in self.timers:
-                if (timer.fire_time <= simulation.global_time):
-                    self.timers.remove(timer)
-                    self.timersToHandle.append(timer)
+        for timer in self.timers:
+            if (timer.fire_time <= Global.current_time):
+                self.timers.remove(timer)
+                self.timersToHandle.append(timer)
 
-            # sort timersToHandle
-            self.timersToHandle.sort(key=lambda timer: timer.fire_time)
+        # sort timersToHandle
+        self.timersToHandle.sort(key=lambda timer: timer.fire_time)
 
-            for timer in self.timersToHandle:
-                timer.fire()
+        for timer in self.timersToHandle:
+            timer.fire()
 
         if (self.nack_box is None):
-            self.nack_box = NackBox(self.nack_buffer)
+            self.nack_box = NackBox(self.nack_buffer_even if Global.is_even_round else self.nack_buffer_odd)
         else:
-            self.nack_box.reset_for_list(self.nack_buffer)
+            self.nack_box.reset_for_list(self.nack_buffer_even if Global.is_even_round else self.nack_buffer_odd)
 
-        self.handle_nack_messages(self.nack_box)
 
+        self.handle_nack_messages(self.nack_box) 
         self.inbox = self.packet_buffer.get_inbox()
         self.handle_messages(self.inbox)
 
@@ -187,4 +184,7 @@ Reliability Model: {self.reliability_model.name}
             return  # Somente reconhece pacotes UNICAST
 
         # Adiciona o pacote ao buffer
-        self.nack_buffer.append(packet)
+        if Global.is_even_round:
+            self.nack_buffer_odd.append(packet)
+        else:
+            self.nack_buffer_even.append(packet)

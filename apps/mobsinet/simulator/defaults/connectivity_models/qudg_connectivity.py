@@ -1,6 +1,6 @@
 import random
 from ...configuration.sim_config import config
-from ...models.nodes.abc_node_implementation import AbcNodeImplementation
+from ...models.nodes.abc_node import AbcNode
 from ...models.abc_connectivity_model import AbcConnectivityModel
 
 parameters = config.connectivity_model_parameters
@@ -14,7 +14,7 @@ class QUDGConnectivity(AbcConnectivityModel):
         self.max_radius = parameters['max_radius']
         self.big_radius_probability = parameters['big_radius_probability']
 
-    def is_connected(self, node_a: AbcNodeImplementation, node_b: AbcNodeImplementation) -> bool:
+    def is_connected(self, node_a: AbcNode, node_b: AbcNode) -> bool:
         """Check if the nodes are connected.
 
         Nodes are connected if their distance 

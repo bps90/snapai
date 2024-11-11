@@ -13,10 +13,12 @@ class LinearDist(AbcDistributionModel):
         self.line_position = parameters['line_position'] if 'line_position' in parameters and parameters['line_position'] is not None else (
             config.dimY / 2 if self.orientation == 'horizontal' else config.dimX / 2
         )
-        self.number_of_nodes: int = None
+        self.number_of_nodes: int = 0
 
         self._last_position: Position | None = None
         self._separation: float = None
+        
+        self.set_number_of_nodes(parameters['number_of_nodes'])
 
     def get_position(self):
         """Get the next position for the node in the distribution.

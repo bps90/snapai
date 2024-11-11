@@ -8,6 +8,7 @@ class SimulationConfig:
         self.PROJECT_DIR = "apps/mobsinet/simulator/defaults/"
         self.simulation_name = "Network Simulation"
         self.simulation_rounds = 1000
+        self.simulation_refresh_rate = 1
         self.num_nodes = 50
         self.dimX = 100
         self.dimY = 100
@@ -16,12 +17,12 @@ class SimulationConfig:
             'type': 'random_graph',
             'avg_degree': 4
         }
-        self.node_implementation = 'inert_node_implementation'
+        self.node = 'inert_node'
         self.distribution_model = 'random_dist'
         self.distribution_model_parameters = {
             'orientation': 'horizontal',  # 'horizontal' or 'vertical'
             'line_position': None,
-            'number_of_nodes': None,
+            'number_of_nodes': 100,
             'midpoint': (self.dimX / 2, self.dimY / 2),
             'rotation_direction': 'anti-clockwise',
             'radius': None,
@@ -37,9 +38,9 @@ class SimulationConfig:
         }
         self.connectivity_model = 'no_connectivity'
         self.connectivity_model_parameters = {
-            'max_radius': None,
-            'min_radius': None,
-            'big_radius_probability': None
+            'max_radius': self.dimX * 0.1 if self.dimX < self.dimY else self.dimY * 0.1, # 10% da medida da menor dimensão do mapa
+            'min_radius': self.dimX * 0.03 if self.dimX < self.dimY else self.dimY * 0.03, # 3% da medida da menor dimensão do mapa
+            'big_radius_probability': 0.5 # 50%
         }
         self.message_transmission_model = 'constant_time'
         self.message_transmission_model_parameters = {
@@ -81,8 +82,8 @@ class SimulationConfig:
             'network_parameters', self.network_parameters))
         self.set_distribution_model(config_data.get(
             'distribution_model', self.distribution_model))
-        self.set_node_implementation(config_data.get(
-            'node_implementation', self.node_implementation))
+        self.set_node(config_data.get(
+            'node', self.node))
         self.set_connectivity_model(config_data.get(
             'connectivity_model', self.connectivity_model))
         self.set_reliability_model(config_data.get(
@@ -122,8 +123,8 @@ class SimulationConfig:
     def set_mobility_model(self, model):
         self.mobility_model = model
 
-    def set_node_implementation(self, implementation):
-        self.node_implementation = implementation
+    def set_node(self, node):
+        self.node = node
 
     def set_connectivity_model(self, model):
         self.connectivity_model = model
@@ -165,7 +166,7 @@ class SimulationConfig:
         return self.mobility_model
 
     def get_node_implementation(self):
-        return self.node_implementation
+        return self.node
 
     def get_connectivity_model(self):
         return self.connectivity_model

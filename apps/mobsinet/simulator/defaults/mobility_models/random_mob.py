@@ -1,4 +1,4 @@
-from ...models.nodes.abc_node_implementation import AbcNodeImplementation
+from ...models.nodes.abc_node import AbcNode
 from ...tools.position import Position
 from ...models.abc_mobility_model import AbcMobilityModel
 from random import randint
@@ -11,7 +11,7 @@ class RandomMob(AbcMobilityModel):
     def __init__(self):
         super().__init__('RandomMob')
 
-    def get_next_position(self, node_implementation: AbcNodeImplementation = None) -> Position:
+    def get_next_position(self, node: AbcNode = None) -> Position:
         """
         Generate a random position within the given dimensions.
 
