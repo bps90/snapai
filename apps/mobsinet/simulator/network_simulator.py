@@ -23,15 +23,15 @@ class NetworkSimulator(object):
     last_id = 0
 
     def __init__(self):
-        self.__graph: nx.DiGraph = nx.DiGraph()
+        self.graph: nx.DiGraph = nx.DiGraph()
         self.packets_in_the_air = PacketsInTheAirBuffer()
         self.arrived_packets: list[Packet] = []
 
     def nodes(self):
-        return self.__graph.nodes()
+        return self.graph.nodes()
     
     def has_edge(self, node_from: 'AbcNode', node_to: 'AbcNode'):
-        return self.__graph.has_edge(node_from, node_to)
+        return self.graph.has_edge(node_from, node_to)
 
     def init_simulator(self, parameters: dict[str, Any]):
         """Initialize the simulator with the given parameters.
@@ -188,7 +188,7 @@ class NetworkSimulator(object):
         """
 
         if node not in self.nodes():
-            self.__graph.add_node(node)
+            self.graph.add_node(node)
             Global.custom_global.node_added_event(node)
         else:
             raise ValueError(
@@ -229,7 +229,7 @@ class NetworkSimulator(object):
 
 
         # TODO: Criar EdgeImplementation (talvez)
-        self.__graph.add_edge(node_from, node_to)
+        self.graph.add_edge(node_from, node_to)
 
     def add_bi_directional_edge(self, node1: 'AbcNode', node2: 'AbcNode'):
         """Add a bi-directional edge between two nodes in the network graph."""
@@ -248,7 +248,7 @@ class NetworkSimulator(object):
             The destination node.
         """
 
-        self.__graph.remove_edge(node_from, node_to)
+        self.graph.remove_edge(node_from, node_to)
 
     def remove_bi_directional_edge(self, node1: 'AbcNode', node2: 'AbcNode'):
         """Remove a bi-directional edge between two nodes in the network graph."""
@@ -259,7 +259,7 @@ class NetworkSimulator(object):
 
 
     def __str__(self) -> str:
-        return str(self.__graph)
+        return str(self.graph)
 
     def _gen_node_id(self):
         """(private) Generates a new unique `node_id` for this simulation."""
