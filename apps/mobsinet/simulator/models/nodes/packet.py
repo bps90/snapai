@@ -23,7 +23,7 @@ class Packet:
     def set_message(self, message: 'AbcMessage'):
         self.message = message
 
-    def denyDelivery(self):
+    def deny_delivery(self):
         """Deny the delivery of the packet."""
 
         self.positive_delivery = False

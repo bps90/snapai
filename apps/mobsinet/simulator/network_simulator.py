@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 
 class NetworkSimulator(object):
-    last_id = 0
+    last_node_id = 0
 
     def __init__(self):
         self.graph: nx.DiGraph = nx.DiGraph()
@@ -264,9 +264,9 @@ class NetworkSimulator(object):
     def _gen_node_id(self):
         """(private) Generates a new unique `node_id` for this simulation."""
 
-        NetworkSimulator.last_id += 1
+        NetworkSimulator.last_node_id += 1
 
-        return NetworkSimulator.last_id
+        return NetworkSimulator.last_node_id
 
     def pre_run(self):
         """Called before executing the first round of the simulation."""

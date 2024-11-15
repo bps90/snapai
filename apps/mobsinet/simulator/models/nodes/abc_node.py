@@ -33,17 +33,14 @@ class AbcNode(ABC):
         self.connectivity_model: AbcConnectivityModel = connectivity_model
         self.interference_model: AbcInterferenceModel = interference_model
         self.reliability_model: AbcReliabilityModel = reliability_model
-
         self.timers: list[AbcTimer] = []
-        self.timersToHandle: list['AbcTimer'] = []
-        self.neighboorhood_changed: bool = False
+        self.neighborhood_changed: bool = False
         self.packet_buffer = InboxPacketBuffer()
         self.nack_buffer_odd: list['Packet'] = []
         self.nack_buffer_even: list['Packet'] = []
         self.nack_box: 'NackBox' | None = None
         self.inbox: 'Inbox' | None = None
         self.intensity: float = 1.0
-        # self.outgoing_connections: list['EdgeImplementation'] = []
 
     def __str__(self):
         return f"""
@@ -99,11 +96,65 @@ Reliability Model: {self.reliability_model.name}
         
         has_edge = simulation.has_edge(self, destination)
         
-        packet = self.__sendMessage(message, has_edge, self, destination, intensity)
+        packet = self.__send_message(message, has_edge, self, destination, intensity)
         
         simulation.packets_in_the_air.add(packet)
         
-    def __sendMessage(self, msg: 'AbcMessage', has_edge: bool, sender: 'AbcNode', destination: 'AbcNode', intensity: float):
+        
+    def send_direct(self, message: 'AbcMessage', destination: 'AbcNode'):
+        cloned_message = message.clone()
+        
+        if (cloned_message == None): raise Exception("Cloned message is None")  
+        
+        packet = Packet(cloned_message)
+        transmission_time = Global.message_transmission_model.time_to_reach(packet, self, destination)
+        
+        packet.arriving_time = Global.current_time + transmission_time
+        packet.sendingTime = Global.current_time
+        packet.origin = self
+        packet.destination = destination
+        packet.intensity = self.intensity
+        packet.positive_delivery = True
+        packet.type = PacketType['UNICAST']
+        
+        Global.number_of_messages_in_this_round += 1
+        
+        if (not Global.is_running): raise Exception("The node " + str(self.id) + " tried to send a message with simulation not running.")
+        
+        destination.packet_buffer.add_packet(packet)
+          
+          
+          
+    def broadcast(self, message: 'AbcMessage', intensity: float = None):
+        intensity = intensity if intensity != None else self.intensity
+        self.__broadcast_message(message, intensity)
+        
+        
+    def __broadcast_message(self, message: 'AbcMessage', intensity: float):
+        if (not Global.is_running): raise Exception("The node " + str(self.id) + " tried to broadcast a message with simulation not running.")
+        
+        longest_packet = None
+        
+        neighbors = self.get_neighbors()
+        
+        for neighbor in neighbors:
+            sent_packet = self.__send_message(message, True, self, neighbor, intensity)
+            sent_packet.type = PacketType['MULTICAST']
+            
+            simulation.packets_in_the_air.add(sent_packet, True)
+            
+            if (longest_packet is None or sent_packet.arriving_time > longest_packet.arriving_time):
+                longest_packet = sent_packet
+                
+        if (longest_packet != None):
+            simulation.packets_in_the_air.upgrade_to_active(longest_packet)
+        else:
+            self_sent_packet = self.__send_message(message, False, self, self, intensity)
+            self_sent_packet.type = PacketType['MULTICAST']
+            self_sent_packet.deny_delivery()
+            simulation.packets_in_the_air.add(self_sent_packet)
+    
+    def __send_message(self, msg: 'AbcMessage', has_edge: bool, sender: 'AbcNode', destination: 'AbcNode', intensity: float):
         return self.__synchronousSending(msg, has_edge, sender, destination, intensity)
 
     def __synchronousSending(self, msg: 'AbcMessage', has_edge: bool, sender: 'AbcNode', destination: 'AbcNode', intensity: float):
@@ -116,8 +167,8 @@ Reliability Model: {self.reliability_model.name}
         packet = Packet(cloned_message)
         transmission_time = Global.message_transmission_model.time_to_reach(packet, sender, destination)
         
-        packet.arriving_time = Global.currentTime + transmission_time
-        packet.sending_time = Global.currentTime
+        packet.arriving_time = Global.current_time + transmission_time
+        packet.sending_time = Global.current_time
         packet.origin = sender
         packet.destination = destination
         packet.intensity = intensity
@@ -220,20 +271,20 @@ Reliability Model: {self.reliability_model.name}
 
         self.pre_step()
 
-        if self.neighboorhood_changed:
+        if self.neighborhood_changed:
             self.on_neighboorhood_change()
 
-        self.timersToHandle.clear()
+        timers_to_handle: list['AbcTimer'] = []
 
         for timer in self.timers:
             if (timer.fire_time <= Global.current_time):
                 self.timers.remove(timer)
-                self.timersToHandle.append(timer)
+                timers_to_handle.append(timer)
 
-        # sort timersToHandle
-        self.timersToHandle.sort(key=lambda timer: timer.fire_time)
+        # sort timers_to_handle
+        timers_to_handle.sort(key=lambda timer: timer.fire_time)
 
-        for timer in self.timersToHandle:
+        for timer in timers_to_handle:
             timer.fire()
 
         if (self.nack_box is None):
@@ -261,3 +312,8 @@ Reliability Model: {self.reliability_model.name}
             self.nack_buffer_odd.append(packet)
         else:
             self.nack_buffer_even.append(packet)
+            
+    def get_neighbors(self):
+        neighbors: list['AbcNode'] = list(simulation.graph.neighbors(self))
+        
+        return neighbors
