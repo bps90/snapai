@@ -2,8 +2,6 @@ from typing import TYPE_CHECKING
 from abc import ABC, abstractmethod
 from ...global_vars import Global
 
-from ...network_simulator import simulation
-
 if TYPE_CHECKING:
     from .abc_node import AbcNode
 
@@ -11,8 +9,8 @@ if TYPE_CHECKING:
 class AbcTimer(ABC):
 
     def __init__(self):
-        self.node: 'AbcNode' | None = None
-        self.fire_time: int | None = None
+        self.node: 'AbcNode'
+        self.fire_time: int
 
     def start_global_timer(self, time: int):
         """Starts a global timer.

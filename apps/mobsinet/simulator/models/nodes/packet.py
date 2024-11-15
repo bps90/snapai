@@ -1,30 +1,24 @@
-import threading
-from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 from .abc_message import AbcMessage
+from typing import Literal
 
 if TYPE_CHECKING:
     from .abc_node import AbcNode
 
 
-class Packet(ABC):
+
+class Packet:
     
-    def __init__(self,
-                 message: 'AbcMessage',
-                 origin: 'AbcNode',
-                 destination: 'AbcNode',
-                 type: str):
+    def __init__(self, message: 'AbcMessage'):
         self.message = message
-        self.origin = origin
-        self.destination = destination
-        self.type = type
-        # self.edge: 'EdgeImplementation' = None
-        self.positive_delivery: bool = True
+        self.origin: 'AbcNode' 
+        self.destination: 'AbcNode' 
+        self.type: Literal["UNICAST", "MULTICAST", "DUMMY"]
+        self.positive_delivery: bool 
         self.arriving_time: int = 0
         self.sending_time: int = 0
+        self.intensity: float = 0
         
-        Packet.issued_packets.add(self)
-        Packet.num_packets_on_the_fly += 1
 
     def set_message(self, message: 'AbcMessage'):
         self.message = message
@@ -34,14 +28,3 @@ class Packet(ABC):
 
         self.positive_delivery = False
 
-    @abstractmethod
-    def clone(self):
-        """Create a copy of the object.
-
-        Returns
-        -------
-        AbcPacket
-            A copy of the object.
-        """
-        # TODO: implement
-        pass

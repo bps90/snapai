@@ -233,6 +233,6 @@ class ModelsNormalizer:
 
         elif (type(node_constructor) is str):
             node_constructor: Type['AbcNode'] = importlib.import_module(
-                config.PROJECT_DIR.replace('/', '.') + 'nodes.' + node_constructor).nod
+                config.PROJECT_DIR.replace('/', '.') + 'nodes.' + node_constructor).node
 
         return node_constructor

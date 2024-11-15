@@ -1,10 +1,12 @@
 from typing import TYPE_CHECKING
-from abc import ABC
+from abc import ABC, abstractmethod
 from ...tools.inbox_packet_buffer import InboxPacketBuffer
 from .packet import Packet
+from .abc_message import AbcMessage
 from ...tools.packet_type import PacketType
 from ...tools.nack_box import NackBox
 from ...global_vars import Global
+from ...network_simulator import simulation
 
 if TYPE_CHECKING:
     from .abc_timer import AbcTimer
@@ -40,6 +42,7 @@ class AbcNode(ABC):
         self.nack_buffer_even: list['Packet'] = []
         self.nack_box: 'NackBox' | None = None
         self.inbox: 'Inbox' | None = None
+        self.intensity: float = 1.0
         # self.outgoing_connections: list['EdgeImplementation'] = []
 
     def __str__(self):
@@ -73,6 +76,64 @@ Reliability Model: {self.reliability_model.name}
 
     def get_coordinates(self):
         return self.position.get_coordinates()
+    
+    def equals(self, object: object | 'AbcNode'):
+        if (object == None): return False
+        elif (isinstance(object, AbcNode)):
+            return self.id == object.id
+        return False
+    
+    def set_radio_intensity(self, intensity: float):
+        if (intensity < 0):
+            self.intensity = 0
+        elif (intensity > 1):
+            self.intensity = 1
+        else:
+            self.intensity = intensity
+            
+    def get_radio_intensity(self):
+        return self.intensity
+
+    def send(self, message: 'AbcMessage', destination: 'AbcNode', intensity: float = None):
+        intensity = intensity if intensity != None else self.intensity
+        
+        has_edge = simulation.has_edge(self, destination)
+        
+        packet = self.__sendMessage(message, has_edge, self, destination, intensity)
+        
+        simulation.packets_in_the_air.add(packet)
+        
+    def __sendMessage(self, msg: 'AbcMessage', has_edge: bool, sender: 'AbcNode', destination: 'AbcNode', intensity: float):
+        return self.__synchronousSending(msg, has_edge, sender, destination, intensity)
+
+    def __synchronousSending(self, msg: 'AbcMessage', has_edge: bool, sender: 'AbcNode', destination: 'AbcNode', intensity: float):
+        if (not Global.is_running): return
+        
+        cloned_message = msg.clone()
+        
+        if (cloned_message == None): raise Exception("Cloned message is None")
+
+        packet = Packet(cloned_message)
+        transmission_time = Global.message_transmission_model.time_to_reach(packet, sender, destination)
+        
+        packet.arriving_time = Global.currentTime + transmission_time
+        packet.sending_time = Global.currentTime
+        packet.origin = sender
+        packet.destination = destination
+        packet.intensity = intensity
+        packet.type = PacketType['UNICAST']
+        
+        if (has_edge):
+            packet.positive_delivery = self.reliability_model.reaches_destination(packet)
+            simulation.graph.edges[sender, destination]['number_of_packets'] += 1
+        else:
+            packet.positive_delivery = False
+
+        destination.packet_buffer.add_packet(packet)
+    
+        Global.number_of_messages_in_this_round += 1
+        
+        return packet
 
     def set_coordinates(self, x: int, y: int, z: int):
         return self.position.set_coordinates(x, y, z)
@@ -95,6 +156,11 @@ Reliability Model: {self.reliability_model.name}
 
         self.timers.append(timer)
 
+    @abstractmethod
+    def init(self): 
+        pass
+
+    @abstractmethod
     def pre_step(self):
         """Action to be performed before the node performs a step.
 
@@ -102,6 +168,7 @@ Reliability Model: {self.reliability_model.name}
         """
         pass
 
+    @abstractmethod
     def post_step(self):
         """Action to be performed at the end of the node step.
 
@@ -109,11 +176,16 @@ Reliability Model: {self.reliability_model.name}
         """
         pass
 
+    @abstractmethod
     def on_neighboorhood_change(self):
         """Action to be performed when the node's neighboorhood changes.
 
         Can be implemented by subclasses.
         """
+        pass
+    
+    @abstractmethod
+    def check_requirements(self):
         pass
 
     def handle_nack_messages(self, nack_box: 'NackBox'):
@@ -126,6 +198,7 @@ Reliability Model: {self.reliability_model.name}
         """
         pass
 
+    @abstractmethod
     def handle_messages(self, inbox: 'Inbox'):
         """This method is invoked after all the Messages are received. 
         Overwrite it to specify what to do  with incoming messages.

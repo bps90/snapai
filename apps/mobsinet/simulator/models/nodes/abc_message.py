@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+from copy import deepcopy
 
 class AbcMessage(ABC):
     def __init__(self):
@@ -17,5 +17,5 @@ class AbcMessage(ABC):
         AbcMessage
             A copy of the object.
         """
-        # TODO: implement
-        pass
+        
+        return deepcopy(self)

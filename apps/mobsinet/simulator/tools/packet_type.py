@@ -1,4 +1,7 @@
+from typing import Literal
+
 PacketType = {
     'UNICAST': 'UNICAST',
-    'BROADCAST': 'BROADCAST'
+    'MULTICAST': 'MULTICAST',
+    'DUMMY': 'DUMMY'
 }

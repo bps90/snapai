@@ -1,33 +1,18 @@
 # GENERATED WITH HELP FROM CHATGPT
 
 from ..models.nodes.packet import Packet
-
+from typing import Union
 
 class Inbox:
-    def __init__(self, packet_list: list['Packet']=None, single_packet: 'Packet' =None):
+    def __init__(self, packets: Union['Packet', list['Packet']] = None):
         """
         Initializes the inbox with either a list of packets or a single packet.
         """
-        self.packet_list = packet_list if packet_list is not None else []
-        self.single_packet = single_packet
-        self.active_packet: 'Packet' = None
-        self.packet_iter = iter(self.packet_list) if self.packet_list else None
-
-    def remove(self):
-        """
-        Removes the message that was returned by the last call to next().
-        """
-        self.active_packet = None
-        if self.packet_iter:
-            # Python iterators don't have a direct remove, so we manipulate the list instead
-            self.packet_list.remove(self.active_packet)
-            self.packet_iter = iter(self.packet_list)
-        else:
-            self.single_packet = None
+        self.reset_for_list(packets) if type(packets) is list else self.reset_for_packet(packets)
 
     def reset(self):
         """
-        Resets the state of this iterator.
+        Resets the state of this Inbox.
         """
         if self.packet_list:
             self.reset_for_list(self.packet_list)
@@ -48,7 +33,7 @@ class Inbox:
     # Meta information about the last packet returned by next()
     def get_sender(self):
         """
-        Returns the sender of the message returned by the last call to next().
+        Returns the sender of the message of the active packet.
         """
         if self.active_packet:
             return self.active_packet.origin
@@ -57,7 +42,7 @@ class Inbox:
 
     def get_receiver(self):
         """
-        Returns the receiver of the message returned by the last call to next().
+        Returns the receiver of the message of the active packet.
         """
         if self.active_packet:
             return self.active_packet.destination
@@ -91,14 +76,6 @@ class Inbox:
         else:
             raise ValueError("No active packet to get sending time from.")
 
-    def get_incoming_edge(self):
-        """
-        Returns the edge over which the current message was received.
-        """
-        if self.active_packet:
-            return self.active_packet.edge
-        else:
-            raise ValueError("No active packet to get incoming edge from.")
 
     # Internal methods
     def reset_for_list(self, packet_list):
@@ -122,14 +99,12 @@ class Inbox:
 
     def free_packets(self):
         """
-        Frees all packets in the inbox, making them available for reuse.
+        Frees all packets in the inbox.
         """
         self.active_packet = None
+        self.single_packet = None
+        
         if self.packet_list:
-            for packet in self.packet_list:
-                Packet.free(packet)
             self.packet_list.clear()
-        else:
-            if self.single_packet:
-                Packet.free(self.single_packet)
-                self.single_packet = None
+        
+        
