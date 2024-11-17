@@ -12,7 +12,7 @@ class AbcReliabilityModel(AbcModel):
 
         Parameters
         ----------
-        packet : AbcPacket
+        packet : Packet
             The packet object.
 
         Returns

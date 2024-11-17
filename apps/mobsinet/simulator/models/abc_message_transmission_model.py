@@ -12,7 +12,7 @@ class AbcMessageTransmissionModel(AbcModel):
 
         Parameters
         ----------
-        packet : AbcPacket
+        packet : Packet
             The packet object.
         origin_node : AbcNode
             The origin node object.

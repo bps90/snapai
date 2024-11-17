@@ -1,7 +1,9 @@
 from abc import abstractmethod
-
+from typing import  TYPE_CHECKING
 from .abc_model import AbcModel
 
+if (TYPE_CHECKING):
+    from .nodes.abc_node import AbcNode
 
 class AbcConnectivityModel(AbcModel):
 
@@ -9,7 +11,7 @@ class AbcConnectivityModel(AbcModel):
         super().__init__(name)
 
     @abstractmethod
-    def is_connected(self, node_a, node_b) -> bool:
+    def is_connected(self, node_a: 'AbcNode', node_b: 'AbcNode') -> bool:
         """Check if the nodes are connected.
 
         Parameters
