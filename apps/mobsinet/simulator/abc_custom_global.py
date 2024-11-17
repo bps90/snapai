@@ -9,8 +9,10 @@ if TYPE_CHECKING:
 
 
 class AbcCustomGlobal(ABC):
-    global_timers: list['AbcTimer'] = []
+    def __init__(self):
+        self.global_timers: list['AbcTimer'] = []
 
+    
     @abstractmethod
     def has_terminated(self) -> bool:
         """
@@ -72,6 +74,7 @@ class AbcCustomGlobal(ABC):
         Handles all global timers scheduled to execute before or at the current time.
         """
         from .global_vars import Global
+        
         if not self.global_timers or len(self.global_timers) == 0:
             return
         
