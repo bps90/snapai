@@ -7,6 +7,7 @@ from ...tools.packet_type import PacketType
 from ...tools.nack_box import NackBox
 from ...global_vars import Global
 from ...network_simulator import simulation
+from ...tools.models_normalizer import ModelsNormalizer
 
 if TYPE_CHECKING:
     from .abc_timer import AbcTimer
@@ -317,3 +318,22 @@ Reliability Model: {self.reliability_model.name}
         neighbors: list['AbcNode'] = list(simulation.graph.neighbors(self))
         
         return neighbors
+    
+    def finish_init_with_defaults(self, add_to_simulation: bool = False):
+        if (self.connectivity_model is None):
+            self.connectivity_model = ModelsNormalizer.normalize_connectivity_model()
+        if (self.mobility_model is None):
+            self.mobility_model = ModelsNormalizer.normalize_mobility_model()
+        if (self.interference_model is None):
+            self.interference_model = ModelsNormalizer.normalize_interference_model()
+        if (self.reliability_model is None):
+            self.reliability_model = ModelsNormalizer.normalize_reliability_model()
+        if (self.position is None):
+            self.position = Position()
+
+        if (add_to_simulation):
+            self.init()
+            self.check_requirements()
+            simulation.add_node(self)
+        
+        
