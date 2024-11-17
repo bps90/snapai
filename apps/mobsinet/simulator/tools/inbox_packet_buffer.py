@@ -4,15 +4,18 @@ from ..network_simulator import simulation
 from ..models.nodes.packet import Packet
 from .inbox import Inbox
 from ..global_vars import Global
+from typing import TYPE_CHECKING
+
+if (TYPE_CHECKING):
+    from ..models.nodes.abc_node import AbcNode
 
 
 class InboxPacketBuffer:
-    def __init__(self, keep_finger=False):
+    def __init__(self):
         # Lista de pacotes que chegam neste round
         self.arriving_packets: list['Packet'] = []
         self.buffer: list['Packet'] = []
         self.inbox: 'Inbox' = None
-        self.keep_finger = keep_finger
 
     def add_packet(self, p: 'Packet'):
         """Adiciona um pacote à lista."""
@@ -52,6 +55,19 @@ class InboxPacketBuffer:
     def waiting_packets(self) -> int:
         """Retorna o número de pacotes que estão esperando."""
         return len(self.arriving_packets)
+    
+    def invalidade_packets_over_this_edge(self, node_from: 'AbcNode', node_to: 'AbcNode', bidirectional: bool = False):
+        has_edge = simulation.has_edge(node_from, node_to)
+        
+        if (not has_edge):
+            return
+        
+        # Invalida os pacotes       
+        for packet in self.buffer:
+            if ((packet.origin == node_from and packet.destination == node_to) or 
+                (bidirectional and packet.origin == node_to and packet.destination == node_from)):
+                packet.deny_delivery()
+                
 
     def get_inbox(self) -> 'Inbox':
         """Obtém a Inbox com os pacotes que chegaram."""
