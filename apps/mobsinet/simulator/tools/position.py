@@ -51,7 +51,7 @@ class Position:
         return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2)
 
     def __str__(self):
-        return f"Position(x={self.x}, y={self.y}, z={self.z})"
+        return f"({self.x},{self.y},{self.z})"
 
 
 if __name__ == "__main__":

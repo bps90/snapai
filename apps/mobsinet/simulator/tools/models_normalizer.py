@@ -37,12 +37,18 @@ class ModelsNormalizer:
         """
 
         if (mobility_model is None):
-            mobility_model: Type['AbcMobilityModel'] = importlib.import_module(
-                f'apps.mobsinet.simulator.defaults.mobility_models.{config.mobility_model}').model
+            mobility_model = config.mobility_model
 
-        elif (type(mobility_model) is str):
-            mobility_model: Type['AbcMobilityModel'] = importlib.import_module(
-                config.PROJECT_DIR.replace('/', '.') + 'mobility_models.' + mobility_model).model
+        if (type(mobility_model) is str):
+            if (mobility_model.__contains__(':')):
+                project_name, mobility_model = mobility_model.split(':')
+                
+                mobility_model: Type['AbcMobilityModel'] = importlib.import_module(
+                    config.PROJECT_DIR.replace('/', '.') + project_name + '.mobility_models.' + mobility_model).model
+            else:
+                mobility_model: Type['AbcMobilityModel'] = importlib.import_module(
+                    f'apps.mobsinet.simulator.defaults.mobility_models.{mobility_model}').model
+            
 
         if type(mobility_model) is type or type(mobility_model) is ABCMeta:
             mobility_model: 'AbcMobilityModel' = mobility_model()
@@ -69,12 +75,17 @@ class ModelsNormalizer:
         """
 
         if (message_transmission_model is None):
-            message_transmission_model: Type['AbcMessageTransmissionModel'] = importlib.import_module(
-                f'apps.mobsinet.simulator.defaults.message_transmission_models.{config.message_transmission_model}').model
+            message_transmission_model = config.message_transmission_model
 
-        elif (type(message_transmission_model) is str):
-            message_transmission_model: Type['AbcMessageTransmissionModel'] = importlib.import_module(
-                config.PROJECT_DIR.replace('/', '.') + 'message_transmission_models.' + message_transmission_model).model
+        if (type(message_transmission_model) is str):
+            if (message_transmission_model.__contains__(':')):
+                project_name, message_transmission_model = message_transmission_model.split(':')
+                
+                message_transmission_model: Type['AbcMessageTransmissionModel'] = importlib.import_module(
+                    config.PROJECT_DIR.replace('/', '.') + project_name + '.message_transmission_models.' + message_transmission_model).model
+            else:
+                message_transmission_model: Type['AbcMessageTransmissionModel'] = importlib.import_module(
+                    f'apps.mobsinet.simulator.defaults.message_transmission_models.{message_transmission_model}').model
 
         if type(message_transmission_model) is type or type(message_transmission_model) is ABCMeta:
             message_transmission_model: 'AbcMessageTransmissionModel' = message_transmission_model()
@@ -101,12 +112,19 @@ class ModelsNormalizer:
         """
 
         if (connectivity_model is None):
-            connectivity_model: Type['AbcConnectivityModel'] = importlib.import_module(
-                f'apps.mobsinet.simulator.defaults.connectivity_models.{config.connectivity_model}').model
+            connectivity_model = config.connectivity_model
 
-        elif (type(connectivity_model) is str):
-            connectivity_model: Type['AbcConnectivityModel'] = importlib.import_module(
-                config.PROJECT_DIR.replace('/', '.') + 'connectivity_models.' + connectivity_model).model
+        if (type(connectivity_model) is str):
+            if (connectivity_model.__contains__(':')):
+                project_name, connectivity_model = connectivity_model.split(':')
+                
+                connectivity_model: Type['AbcConnectivityModel'] = importlib.import_module(
+                    config.PROJECT_DIR.replace('/', '.') + project_name + '.connectivity_models.' + connectivity_model).model
+            else:
+                connectivity_model: Type['AbcConnectivityModel'] = importlib.import_module(
+                    f'apps.mobsinet.simulator.defaults.connectivity_models.{connectivity_model}').model
+            
+            
 
         if type(connectivity_model) is type or type(connectivity_model) is ABCMeta:
             connectivity_model: 'AbcConnectivityModel' = connectivity_model()
@@ -133,12 +151,17 @@ class ModelsNormalizer:
         """
 
         if (interference_model is None):
-            interference_model: Type['AbcInterferenceModel'] = importlib.import_module(
-                f'apps.mobsinet.simulator.defaults.interference_models.{config.interference_model}').model
+            interference_model = config.interference_model
 
-        elif (type(interference_model) is str):
-            interference_model: Type['AbcInterferenceModel'] = importlib.import_module(
-                config.PROJECT_DIR.replace('/', '.') + 'interference_models.' + interference_model).model
+        if (type(interference_model) is str):
+            if (interference_model.__contains__(':')):
+                project_name, interference_model = interference_model.split(':')
+                
+                interference_model: Type['AbcInterferenceModel'] = importlib.import_module(
+                    config.PROJECT_DIR.replace('/', '.') + project_name + '.interference_models.' + interference_model).model
+            else:
+                interference_model: Type['AbcInterferenceModel'] = importlib.import_module(
+                    f'apps.mobsinet.simulator.defaults.interference_models.{interference_model}').model
 
         if type(interference_model) is type or type(interference_model) is ABCMeta:
             interference_model: 'AbcInterferenceModel' = interference_model()
@@ -165,12 +188,18 @@ class ModelsNormalizer:
         """
 
         if (reliability_model is None):
-            reliability_model: Type['AbcReliabilityModel'] = importlib.import_module(
-                f'apps.mobsinet.simulator.defaults.reliability_models.{config.reliability_model}').model
+            reliability_model = config.reliability_model
 
-        elif (type(reliability_model) is str):
-            reliability_model: Type['AbcReliabilityModel'] = importlib.import_module(
-                config.PROJECT_DIR.replace('/', '.') + 'reliability_models.' + reliability_model).model
+        if (type(reliability_model) is str):
+            if (reliability_model.__contains__(':')):
+                project_name, reliability_model = reliability_model.split(':')
+                
+                reliability_model: Type['AbcReliabilityModel'] = importlib.import_module(
+                    config.PROJECT_DIR.replace('/', '.') + project_name + '.reliability_models.' + reliability_model).model
+            else:
+                reliability_model: Type['AbcReliabilityModel'] = importlib.import_module(
+                    f'apps.mobsinet.simulator.defaults.reliability_models.{reliability_model}').model
+            
 
         if type(reliability_model) is type or type(reliability_model) is ABCMeta:
             reliability_model: 'AbcReliabilityModel' = reliability_model()
@@ -197,12 +226,17 @@ class ModelsNormalizer:
         """
 
         if (distribution_model is None):
-            distribution_model: Type['AbcDistributionModel'] = importlib.import_module(
-                f'apps.mobsinet.simulator.defaults.distribution_models.{config.distribution_model}').model
+            distribution_model = config.distribution_model
 
-        elif (type(distribution_model) is str):
-            distribution_model: Type['AbcDistributionModel'] = importlib.import_module(
-                config.PROJECT_DIR.replace('/', '.') + 'distribution_models.' + distribution_model).model
+        if (type(distribution_model) is str):
+            if (distribution_model.__contains__(':')):
+                project_name, distribution_model = distribution_model.split(':')
+                
+                distribution_model: Type['AbcDistributionModel'] = importlib.import_module(
+                    config.PROJECT_DIR.replace('/', '.') + project_name + '.distribution_models.' + distribution_model).model
+            else:
+                distribution_model: Type['AbcDistributionModel'] = importlib.import_module(
+                    f'apps.mobsinet.simulator.defaults.distribution_models.{distribution_model}').model
 
         if type(distribution_model) is type or type(distribution_model) is ABCMeta:
             distribution_model: 'AbcDistributionModel' = distribution_model()
@@ -228,11 +262,15 @@ class ModelsNormalizer:
         """
 
         if (node_constructor is None):
-            node_constructor: Type['AbcNode'] = importlib.import_module(
-                f'apps.mobsinet.simulator.defaults.nodes.{config.node}').node
+            node_constructor = config.node
 
-        elif (type(node_constructor) is str):
-            node_constructor: Type['AbcNode'] = importlib.import_module(
-                config.PROJECT_DIR.replace('/', '.') + 'nodes.' + node_constructor).node
-
+        if (type(node_constructor) is str):
+            if (node_constructor.__contains__(':')):
+                project_name, node_constructor = node_constructor.split(':')
+                
+                node_constructor: Type['AbcNode'] = importlib.import_module(
+                    config.PROJECT_DIR.replace('/', '.') + project_name + '.nodes.' + node_constructor).node
+            else:
+                node_constructor: Type['AbcNode'] = importlib.import_module(
+                    f'apps.mobsinet.simulator.defaults.nodes.{node_constructor}').node
         return node_constructor

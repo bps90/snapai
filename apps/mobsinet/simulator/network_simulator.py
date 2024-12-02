@@ -27,54 +27,26 @@ class NetworkSimulator(object):
         self.packets_in_the_air = PacketsInTheAirBuffer()
         self.arrived_packets: list[Packet] = []
 
-    def nodes(self):
-        return self.graph.nodes()
+    def reset(self):
+        NetworkSimulator.last_node_id = 0
+        self.__init__()
+
+    def nodes(self) -> list['AbcNode']:
+        return list(self.graph.nodes)
     
     def has_edge(self, node_from: 'AbcNode', node_to: 'AbcNode'):
         return self.graph.has_edge(node_from, node_to)
 
-    def init_simulator(self, parameters: dict[str, Any]):
-        """Initialize the simulator with the given parameters.
+    def add_project_nodes(self):
+        """Initialize the simulator with the config parameters."""
         
-        Parameters
-        ----------
-        parameters : dict[str, Any]
-            A dictionary containing the parameters to initialize the simulator.
-            
-            refresh_rate: int
-                The refresh rate of the simulator.
-            
-            number_of_nodes: int
-                The number of nodes to add.
-            
-            distribution_model: Type[AbcDistributionModel] | AbcDistributionModel | str
-                The distribution model to distribute nodes in the graph.
-            
-            node_constructor: Type[AbcNode] | str
-                The class of the node to instantiate when nodes are created.
-            
-            mobility_model: Type[AbcMobilityModel] | AbcMobilityModel | str
-                The mobility model that will be used by these nodes.
-            
-            connectivity_model: Type[AbcConnectivityModel] | AbcConnectivityModel | str
-                The connectivity model that will be used by these nodes.
-            
-            interference_model: Type[AbcInterferenceModel] | AbcInterferenceModel | str
-                The interference model that will be used by these nodes.
-            
-            reliability_model: Type[AbcReliabilityModel] | AbcReliabilityModel | str
-                The reliability model that will be used by these nodes.
-        """
-        
-        config.refresh_rate = parameters['refresh_rate']
-        
-        self.add_nodes(num_nodes=parameters['number_of_nodes'],
-                       distribution_model=parameters['distribution_model'],
-                       node_constructor=parameters['node_constructor'],
-                       mobility_model=parameters['mobility_model'],
-                       connectivity_model=parameters['connectivity_model'],
-                       interference_model=parameters['interference_model'],
-                       reliability_model=parameters['reliability_model'])
+        self.add_nodes(num_nodes=config.num_nodes,
+                       distribution_model=config.distribution_model,
+                       node_constructor=config.node,
+                       mobility_model=config.mobility_model,
+                       connectivity_model=config.connectivity_model,
+                       interference_model=config.interference_model,        
+                       reliability_model=config.reliability_model)   
 
     def add_nodes(
         self,
@@ -146,27 +118,29 @@ class NetworkSimulator(object):
         If you want to add a unique node with a defined position, use the `add_node` method.
         """
 
+        Global.log.info(f'Adding {num_nodes} nodes with the following configuration:\n    Distribution Model: {distribution_model}\n    Node Constructor: {node_constructor}\n    Mobility Model: {mobility_model}\n    Connectivity Model: {connectivity_model}\n    Interference Model: {interference_model}\n    Reliability Model: {reliability_model}')
+        
         distribution_model: AbcDistributionModel = ModelsNormalizer.normalize_distribution_model(
             distribution_model)
         node_constructor = ModelsNormalizer.normalize_node_constructor(
             node_constructor)
 
         for _ in range(num_nodes):
-            mobility_model = ModelsNormalizer.normalize_mobility_model(
+            mobility = ModelsNormalizer.normalize_mobility_model(
                 mobility_model)
-            connectivity_model = ModelsNormalizer.normalize_connectivity_model(
+            connectivity = ModelsNormalizer.normalize_connectivity_model(
                 connectivity_model)
-            interference_model = ModelsNormalizer.normalize_interference_model(
+            interference = ModelsNormalizer.normalize_interference_model(
                 interference_model)
-            reliability_model = ModelsNormalizer.normalize_reliability_model(
+            reliability = ModelsNormalizer.normalize_reliability_model(
                 reliability_model)
 
             node = node_constructor(
                 self._gen_node_id(),
-                mobility_model=mobility_model,
-                connectivity_model=connectivity_model,
-                interference_model=interference_model,
-                reliability_model=reliability_model
+                mobility_model=mobility,
+                connectivity_model=connectivity,
+                interference_model=interference,
+                reliability_model=reliability
             )
 
             position = distribution_model.get_position()
@@ -229,7 +203,7 @@ class NetworkSimulator(object):
 
 
         # TODO: Criar EdgeImplementation (talvez)
-        self.graph.add_edge(node_from, node_to)
+        self.graph.add_edge(node_from, node_to, number_of_packets=0)
 
     def add_bi_directional_edge(self, node1: 'AbcNode', node2: 'AbcNode'):
         """Add a bi-directional edge between two nodes in the network graph."""
@@ -273,46 +247,28 @@ class NetworkSimulator(object):
         
         Global.custom_global.pre_run()
         
-    def run(self):
+    def run(self, rounds = config.simulation_rounds):
         from .synchronous_thread import SynchronousThread
         
         if Global.is_running:
             return
         
-        thread = SynchronousThread(config.simulation_rounds, config.simulation_refresh_rate)
+        thread = SynchronousThread(rounds, config.simulation_refresh_rate)
         
         thread.start()
         
+    def stop(self):
+        Global.log.info('Stopping simulation...')
         
+        Global.is_running = False
+        
+    def get_node_by_id(self, node_id: int):
+        for node in self.nodes():
+            if node.id == node_id:
+                return node
 
 simulation = NetworkSimulator()
 
 if __name__ == "__main__":
-    # for i in range(1, 4):
-    #     ns.add_node(i)
-
-    simulation.add_nodes([1, 2, 3, 4])
-
-    simulation.add_bi_directional_edge(1, 4)
-    simulation.add_edge(2, 3)
-    print(simulation.graph.edges())
-    simulation.remove_bi_directional_edge(1, 4)
-    print(simulation.graph.edges())
-    print(simulation)
-    print(simulation.graph.nodes())
-    simulation.init_net_models()
-
-    # dist_model  = importlib.util.spec_from_file_location("random_dist", "apps/mobsinet/simulator/defaults/distribution_models/random_dist.py")
-    # foo = importlib.util.module_from_spec(dist_model)
-    # sys.modules["random_dist"] = foo
-    # dist_model.loader.exec_module(foo)
-
-    # print(foo)
-
-    # randomDistModule = importlib.import_module(
-    #     'apps.mobsinet.simulator.defaults.distribution_models.random_dist')
-
-    # print(randomDistModule.model())
-
-    print('\nGraph nodes with his attributes')
-    print(simulation.graph.nodes(data=True))
+    # TODO: Do something here
+    pass

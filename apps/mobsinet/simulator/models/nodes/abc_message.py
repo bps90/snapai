@@ -8,7 +8,6 @@ class AbcMessage(ABC):
     def __str__(self):
         return self.content
 
-    @abstractmethod
     def clone(self):
         """Create a copy of the object.
 

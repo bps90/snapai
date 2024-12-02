@@ -7,17 +7,15 @@ from ...models.abc_distribution_model import AbcDistributionModel
 from ...tools.position import Position
 from ...configuration.sim_config import config
 
-parameters = config.distribution_model_parameters
-
 
 class CircularDist(AbcDistributionModel):
     def __init__(self) -> None:
         super().__init__('CircularDist')
 
-        self.radius = parameters['radius']
-        self.rotation_direction = parameters['rotation_direction']
-        self.midpoint = parameters['midpoint']
-        self.number_of_nodes = parameters['number_of_nodes']
+        self.radius = config.distribution_model_parameters['radius']
+        self.rotation_direction = config.distribution_model_parameters['rotation_direction']
+        self.midpoint = config.distribution_model_parameters['midpoint']
+        self.number_of_nodes = config.distribution_model_parameters['number_of_nodes']
 
         self._radians = 0
 
@@ -118,6 +116,7 @@ class CircularDist(AbcDistributionModel):
 
         self.midpoint = midpoint.get_coordinates()
 
+model = CircularDist
 
 if __name__ == '__main__':
     circular_dist = CircularDist()

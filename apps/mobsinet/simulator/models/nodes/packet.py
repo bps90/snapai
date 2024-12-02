@@ -27,4 +27,16 @@ class Packet:
         """Deny the delivery of the packet."""
 
         self.positive_delivery = False
-
+        
+    
+    def to_json(self):
+        return {
+            'message': self.message.__str__(),
+            'origin': self.origin.__str__(),
+            'destination': self.destination.__str__(),
+            'type': self.type,
+            'positive_delivery': self.positive_delivery,
+            'arriving_time': self.arriving_time,
+            'sending_time': self.sending_time,
+            'intensity': self.intensity
+        }

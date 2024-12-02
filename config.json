@@ -1,6 +1,0 @@
-{
-    "network_size": 100,
-    "node_count": 50,
-    "transmission_range": 10.0,
-    "simulation_time": 1000
-}

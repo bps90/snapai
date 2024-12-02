@@ -2,14 +2,14 @@ from ...models.nodes.abc_node import AbcNode
 from ...models.abc_connectivity_model import AbcConnectivityModel
 from ...configuration.sim_config import config
 
-parameters = config.connectivity_model_parameters
+config.connectivity_model_parameters = config.connectivity_model_parameters
 
 
 class UDGConnectivity(AbcConnectivityModel):
     def __init__(self):
         super().__init__('UDGConnectivity')
 
-        self.max_radius = parameters['max_radius']
+        self.max_radius = config.connectivity_model_parameters['max_radius']
 
     def is_connected(self, node_a: AbcNode, node_b: AbcNode) -> bool:
         """Check if the nodes are connected.

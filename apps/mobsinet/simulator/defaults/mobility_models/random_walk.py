@@ -14,7 +14,7 @@ from ...tools.position import Position
 from random import randint, random
 import matplotlib.pyplot as plt
 
-parameters = config.mobility_model_parameters
+config.mobility_model_parameters = config.mobility_model_parameters
 
 # REMOVE IT AFTER TESTING
 colision_digraph = DiGraph()
@@ -85,16 +85,17 @@ class RandomWalk(AbcMobilityModel):
     def __init__(self):
         super().__init__('RandomWalk')
 
-        self.speed_range: list[float | int] = parameters['speed_range']
-        self.direction_range: list[float | int] = parameters['direction_range']
-        self.travel_distance: float = parameters['travel_distance']
-        self.travel_time: float = parameters['travel_time']
-        self.prioritize_speed: bool = parameters['prioritize_speed']
+        self.speed_range: list[float | int] = config.mobility_model_parameters['speed_range']
+        self.direction_range: list[float | int] = config.mobility_model_parameters['direction_range']
+        self.travel_distance: float = config.mobility_model_parameters['travel_distance']
+        self.travel_time: float = config.mobility_model_parameters['travel_time']
+        self.prioritize_speed: bool = config.mobility_model_parameters['prioritize_speed']
 
         self._current_speed = 0  # unit of length per time step
         self._current_direction = 0  # radians
         self._remaining_time = self.travel_time if self.travel_time else Infinity
         self._remaining_distance = self.travel_distance if self.travel_distance else Infinity
+        self._new_random_attributes()
 
     def get_next_position(self, node: AbcNode) -> Position:
         """Get the next position based on random directions and speeds.
@@ -658,8 +659,9 @@ class RandomWalk(AbcMobilityModel):
 model = RandomWalk
 
 if __name__ == '__main__':
+    print('asd')
     random_walk = RandomWalk()
-
+    
     random_walk.set_travel_distance(70)
     random_walk.set_speed_range(1, 50)
 

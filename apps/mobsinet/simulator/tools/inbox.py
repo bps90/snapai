@@ -8,7 +8,11 @@ class Inbox:
         """
         Initializes the inbox with either a list of packets or a single packet.
         """
+        self.packet_list: list['Packet'] = None
+        self.active_packet: 'Packet' = None
+        self.single_packet: 'Packet' = None
         self.reset_for_list(packets) if type(packets) is list else self.reset_for_packet(packets)
+        
 
     def reset(self):
         """
@@ -93,7 +97,6 @@ class Inbox:
         """
         self.packet_list = None
         self.active_packet = None
-        self.packet_iter = None
         self.single_packet = packet
         return self
 

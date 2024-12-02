@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 from abc import ABC, abstractmethod
 from ...tools.inbox_packet_buffer import InboxPacketBuffer
 from .packet import Packet
@@ -44,14 +44,7 @@ class AbcNode(ABC):
         self.intensity: float = 1.0
 
     def __str__(self):
-        return f"""
-ID: {self.id}
-Position: {self.position}
-Mobility Model: {self.mobility_model.name}
-Connectivity Model: {self.connectivity_model.name}
-Interference Model: {self.interference_model.name}
-Reliability Model: {self.reliability_model.name}
-"""
+        return f'{self.id}@{self.position}'
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -75,7 +68,7 @@ Reliability Model: {self.reliability_model.name}
     def get_coordinates(self):
         return self.position.get_coordinates()
     
-    def equals(self, object: object | 'AbcNode'):
+    def equals(self, object: Union[object, 'AbcNode']):
         if (object == None): return False
         elif (isinstance(object, AbcNode)):
             return self.id == object.id
@@ -177,7 +170,7 @@ Reliability Model: {self.reliability_model.name}
         
         if (has_edge):
             packet.positive_delivery = self.reliability_model.reaches_destination(packet)
-            simulation.graph.edges[sender, destination]['number_of_packets'] += 1
+            simulation.graph.edges[sender, destination]['number_of_packets'] = simulation.graph.edges[sender, destination]['number_of_packets'] + 1
         else:
             packet.positive_delivery = False
 

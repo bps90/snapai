@@ -3,16 +3,16 @@ from ...configuration.sim_config import config
 from ...models.nodes.abc_node import AbcNode
 from ...models.abc_connectivity_model import AbcConnectivityModel
 
-parameters = config.connectivity_model_parameters
+# TODO: mudar isso para dentro da classe em todos os lugares que declare essa variável
 
 
 class QUDGConnectivity(AbcConnectivityModel):
     def __init__(self):
         super().__init__('QUDGConnectivity')
 
-        self.min_radius = parameters['min_radius']
-        self.max_radius = parameters['max_radius']
-        self.big_radius_probability = parameters['big_radius_probability']
+        self.min_radius = config.connectivity_model_parameters['min_radius']
+        self.max_radius = config.connectivity_model_parameters['max_radius']
+        self.big_radius_probability = config.connectivity_model_parameters['big_radius_probability']
 
     def is_connected(self, node_a: AbcNode, node_b: AbcNode) -> bool:
         """Check if the nodes are connected.

@@ -5,7 +5,7 @@ from math import pi, sqrt
 class SimulationConfig:
     def __init__(self, config_file=None):
         # Default values
-        self.PROJECT_DIR = "apps/mobsinet/simulator/defaults/"
+        self.PROJECT_DIR = "apps/mobsinet/simulator/projects/"
         self.simulation_name = "Network Simulation"
         self.simulation_rounds = 1000
         self.simulation_refresh_rate = 1
@@ -38,9 +38,11 @@ class SimulationConfig:
         }
         self.connectivity_model = 'no_connectivity'
         self.connectivity_model_parameters = {
-            'max_radius': self.dimX * 0.1 if self.dimX < self.dimY else self.dimY * 0.1, # 10% da medida da menor dimensão do mapa
-            'min_radius': self.dimX * 0.03 if self.dimX < self.dimY else self.dimY * 0.03, # 3% da medida da menor dimensão do mapa
-            'big_radius_probability': 0.5 # 50%
+            # 10% da medida da menor dimensão do mapa
+            'max_radius': self.dimX * 0.1 if self.dimX < self.dimY else self.dimY * 0.1,
+            # 3% da medida da menor dimensão do mapa
+            'min_radius': self.dimX * 0.03 if self.dimX < self.dimY else self.dimY * 0.03,
+            'big_radius_probability': 0.5  # 50%
         }
         self.message_transmission_model = 'constant_time'
         self.message_transmission_model_parameters = {
@@ -49,7 +51,9 @@ class SimulationConfig:
             'random_transmission_max_time': 10
         }
         self.reliability_model = 'no_reliability'
+        self.reliability_model_parameters = {}
         self.interference_model = 'no_interference'
+        self.interference_model_parameters = {}
         self.message_protocol = 'TCP'
         self.verbose_logging = False
 
@@ -74,24 +78,39 @@ class SimulationConfig:
             'simulation_name', self.simulation_name))
         self.set_simulation_rounds(config_data.get(
             'simulation_rounds', self.simulation_rounds))
+        self.set_simulation_refresh_rate(config_data.get(
+            'simulation_refresh_rate', self.simulation_refresh_rate))
         self.set_num_nodes(config_data.get('num_nodes', self.num_nodes))
         self.set_network_dimensions(config_data.get('dimX', self.dimX),
                                     config_data.get('dimY', self.dimY),
                                     config_data.get('dimZ', self.dimZ))
         self.set_network_parameters(config_data.get(
             'network_parameters', self.network_parameters))
+        self.set_node(config_data.get('node', self.node))
         self.set_distribution_model(config_data.get(
             'distribution_model', self.distribution_model))
-        self.set_node(config_data.get(
-            'node', self.node))
-        self.set_connectivity_model(config_data.get(
-            'connectivity_model', self.connectivity_model))
-        self.set_reliability_model(config_data.get(
-            'reliability_model', self.reliability_model))
-        self.set_interference_model(config_data.get(
-            'interference_model', self.interference_model))
+        self.set_distribution_model_parameters(config_data.get(
+            'distribution_model_parameters', self.distribution_model_parameters))
         self.set_mobility_model(config_data.get(
             'mobility_model', self.mobility_model))
+        self.set_mobility_model_parameters(config_data.get(
+            'mobility_model_parameters', self.mobility_model_parameters))
+        self.set_connectivity_model(config_data.get(
+            'connectivity_model', self.connectivity_model))
+        self.set_connectivity_model_parameters(config_data.get(
+            'connectivity_model_parameters', self.connectivity_model_parameters))
+        self.set_message_transmission_model(config_data.get(
+            'message_transmission_model', self.message_transmission_model))
+        self.set_message_transmission_model_parameters(config_data.get(
+            'message_transmission_model_parameters', self.message_transmission_model_parameters))
+        self.set_reliability_model(config_data.get(
+            'reliability_model', self.reliability_model))
+        self.set_reliability_model_parameters(config_data.get(
+            'reliability_model_parameters', self.reliability_model_parameters))
+        self.set_interference_model(config_data.get(
+            'interference_model', self.interference_model))
+        self.set_interference_model_parameters(config_data.get(
+            'interference_model_parameters', self.interference_model_parameters))
         self.set_message_protocol(config_data.get(
             'message_protocol', self.message_protocol))
         self.set_verbose_logging(config_data.get(
@@ -105,6 +124,9 @@ class SimulationConfig:
 
     def set_simulation_rounds(self, rounds):
         self.simulation_rounds = rounds
+        
+    def set_simulation_refresh_rate(self, refresh_rate):
+        self.simulation_refresh_rate = refresh_rate
 
     def set_num_nodes(self, num_nodes):
         self.num_nodes = num_nodes
@@ -117,23 +139,46 @@ class SimulationConfig:
     def set_network_parameters(self, params):
         self.network_parameters = params
 
+
     def set_distribution_model(self, model):
         self.distribution_model = model
+        
+    def set_distribution_model_parameters(self, params):
+        self.distribution_model_parameters = params
+
 
     def set_mobility_model(self, model):
         self.mobility_model = model
+
+    def set_mobility_model_parameters(self, params):
+        self.mobility_model_parameters = params
 
     def set_node(self, node):
         self.node = node
 
     def set_connectivity_model(self, model):
         self.connectivity_model = model
+        
+    def set_connectivity_model_parameters(self, params):
+        self.connectivity_model_parameters = params
+        
+    def set_message_transmission_model(self, model):
+        self.message_transmission_model = model
+        
+    def set_message_transmission_model_parameters(self, params):
+        self.message_transmission_model_parameters = params
 
     def set_reliability_model(self, model):
         self.reliability_model = model
 
+    def set_reliability_model_parameters(self, params):
+        self.reliability_model_parameters = params
+
     def set_interference_model(self, model):
         self.interference_model = model
+
+    def set_interference_model_parameters(self, params):
+        self.interference_model_parameters = params
 
     def set_message_protocol(self, protocol):
         self.message_protocol = protocol
@@ -141,81 +186,36 @@ class SimulationConfig:
     def set_verbose_logging(self, verbose):
         self.verbose_logging = verbose
 
-    def get_project_dir(self):
-        return self.PROJECT_DIR
 
-    def get_simulation_name(self):
-        return self.simulation_name
-
-    def get_simulation_rounds(self):
-        return self.simulation_rounds
-
-    def get_num_nodes(self):
-        return self.num_nodes
-
-    def get_network_dimensions(self):
-        return self.dimX, self.dimY, self.dimZ
-
-    def get_network_parameters(self):
-        return self.network_parameters
-
-    def get_distribution_model(self):
-        return self.distribution_model
-
-    def get_mobility_model(self):
-        return self.mobility_model
-
-    def get_node_implementation(self):
-        return self.node
-
-    def get_connectivity_model(self):
-        return self.connectivity_model
-
-    def get_reliability_model(self):
-        return self.reliability_model
-
-    def get_interference_model(self):
-        return self.interference_model
-
-    def get_message_protocol(self):
-        return self.message_protocol
-
-    def get_verbose_logging(self):
-        return self.verbose_logging
 
     def print_config(self):
-        print(f"Simulation Name: {self.get_simulation_name()}")
-        print(f"Simulation Rounds: {self.get_simulation_rounds()}")
-        print(f"Number of Nodes: {self.get_num_nodes()}")
-        print(
-            f"Network Dimensions(dimX, dimY, dimZ): {self.get_network_dimensions()}")
-        print(f"Network Parameters: {self.get_network_parameters()}")
-        print(f"Distribution Model: {self.get_distribution_model()}")
-        print(f"Mobility Model: {self.get_mobility_model()}")
-        print(f"Node Implementation: {self.get_node_implementation()}")
-        print(f"Connectivity Model: {self.get_connectivity_model()}")
-        print(f"Reliability Model: {self.get_reliability_model()}")
-        print(f"Interference Model: {self.get_interference_model()}")
-        print(f"Message Protocol: {self.get_message_protocol()}")
-        print(f"Verbose Logging: {self.get_verbose_logging()}")
+        print("Simulation Configuration:")
+        print(f"Simulation Name: {self.simulation_name}")
+        print(f"Simulation Rounds: {self.simulation_rounds}")
+        print(f"Simulation Refresh Rate: {self.simulation_refresh_rate}")
+        print(f"Number of Nodes: {self.num_nodes}")
+        print(f"Network Dimensions: {self.dimX} x {self.dimY} x {self.dimZ}")
+        print(f"Network Parameters: {self.network_parameters}")
+        print(f"Node: {self.node}")
+        print(f"Distribution Model: {self.distribution_model}")
+        print(f"Distribution Model Parameters: {self.distribution_model_parameters}")
+        print(f"Mobility Model: {self.mobility_model}")
+        print(f"Mobility Model Parameters: {self.mobility_model_parameters}")
+        print(f"Connectivity Model: {self.connectivity_model}")
+        print(f"Connectivity Model Parameters: {self.connectivity_model_parameters}")
+        print(f"Message Transmission Model: {self.message_transmission_model}")
+        print(f"Message Transmission Model Parameters: {self.message_transmission_model_parameters}")
+        print(f"Reliability Model: {self.reliability_model}")
+        print(f"Reliability Model Parameters: {self.reliability_model_parameters}")
+        print(f"Interference Model: {self.interference_model}")
+        print(f"Interference Model Parameters: {self.interference_model_parameters}")
+        print(f"Message Protocol: {self.message_protocol}")
+        print(f"Verbose Logging: {self.verbose_logging}")
 
 
-config_file_path = 'apps/mobsinet/simulator/configuration/simulation_config.json'
-config = SimulationConfig(config_file_path)
+config = SimulationConfig()
 
 # usage
 if __name__ == "__main__":
-    # Example usage:
-    config_file_path = 'apps/mobsinet/simulator/configuration/simulation_config.json'
-    # Example JSON content in simulation_config.json:
-    # {
-    #     "simulation_name": "My Network Simulation",
-    #     "simulation_rounds": 2000,
-    #     "num_nodes": 100,
-    #     "dimX": 200,
-    #     "dimY": 200,
-    #     "dimZ": 100,
-    #     "network_parameters": {"type": "random_graph", "avg_degree": 6}
-    # }
-    config = SimulationConfig(config_file_path)
-    config.print_config()
+    # TODO: Do something here
+    pass

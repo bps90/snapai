@@ -4,15 +4,15 @@ from ...models.nodes.abc_node import AbcNode
 from ...models.nodes.packet import Packet
 from ...configuration.sim_config import config
 
-parameters = config.message_transmission_model_parameters
+config.message_transmission_model_parameters = config.message_transmission_model_parameters
 
 
 class RandomTime(AbcMessageTransmissionModel):
     def __init__(self):
         super().__init__('RandomTime')
 
-        self.min_time = parameters['random_transmission_min_time']
-        self.max_time = parameters['random_transmission_max_time']
+        self.min_time = config.message_transmission_model_parameters['random_transmission_min_time']
+        self.max_time = config.message_transmission_model_parameters['random_transmission_max_time']
 
     def time_to_reach(self,
                       packet: Packet,
@@ -42,8 +42,8 @@ class RandomTime(AbcMessageTransmissionModel):
         return random.randint(self.min_time, self.max_time)
 
     def set_interval(self,
-                     min_time: int = parameters['random_transmission_min_time'],
-                     max_time: int = parameters['random_transmission_max_time']):
+                     min_time: int = config.message_transmission_model_parameters['random_transmission_min_time'],
+                     max_time: int = config.message_transmission_model_parameters['random_transmission_max_time']):
         """Set the min and max time that the packet will take to reach the destination node.
 
         Parameters

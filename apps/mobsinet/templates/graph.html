@@ -1,38 +1,728 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block head %}
 
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
-{% block title %} Graph Visualization {% endblock title %}
+<style>
+  .node circle {
+    fill: #69b3a2;
+    stroke: #000;
+    stroke-width: 1.5px;
+  }
 
-{% block header %}<h1>Graph Visualization</h1>{% endblock header %}
+  .link {
+    fill: none;
+    stroke: #222;
+    stroke-opacity: 0.6;
+    stroke-width: 2px;
+  }
 
+  text {
+    font-size: 12px;
+    font-family: sans-serif;
+  }
+</style>
+<style>
+  .node,
+  .node-text {
+    transition: cx 16ms linear, cy 16ms linear; /* Transição suave de 1 segundo */
+  }
+</style>
+
+{% endblock head %} {% block title %} Graph Visualization {% endblock title %}
+{% block header %}
+<h1>Graph Visualization</h1>
+{% endblock header %} {% block content %}
+
+<form
+  id="options-form"
+  enctype="application/x-www-form-urlencoded"
+  method="post"
+  action="{% url 'update_config' %}"
+>
+  {% csrf_token %}
+
+  <!-- Dropdown for projects -->
+  <label for="project">Select Project:</label>
+  <select id="project" name="project" onchange="changeProject()">
+    {% for project in projects %}
+    <option value="{{ project }}">{{ project }}</option>
+    {% endfor %}
+  </select>
+
+  <!-- Top-level fields -->
+  <label for="project_dir">PROJECT_DIR:</label>
+  <input
+    type="text"
+    id="project_dir"
+    name="PROJECT_DIR"
+    value="{{ project_data.PROJECT_DIR }}"
+  />
+
+  <label for="simulation_name">Simulation Name:</label>
+  <input
+    type="text"
+    id="simulation_name"
+    name="simulation_name"
+    value="{{ project_data.simulation_name }}"
+  />
+
+  {% comment %}
+  <label for="simulation_refresh_rate">Simulation Refresh Rate:</label>
+  <input
+    type="number"
+    id="simulation_refresh_rate"
+    name="simulation_refresh_rate"
+    value="{{ project_data.simulation_refresh_rate }}"
+  />
+  {% endcomment %}
+
+  <label for="num_nodes">Number of Nodes:</label>
+  <input
+    type="number"
+    id="num_nodes"
+    name="num_nodes"
+    value="{{ project_data.num_nodes }}"
+  />
+
+  <label for="dimX">Dimension X:</label>
+  <input type="number" id="dimX" name="dimX" value="{{ project_data.dimX }}" />
+
+  <label for="dimY">Dimension Y:</label>
+  <input type="number" id="dimY" name="dimY" value="{{ project_data.dimY }}" />
+
+  <label for="dimZ">Dimension Z:</label>
+  <input type="number" id="dimZ" name="dimZ" value="{{ project_data.dimZ }}" />
+
+  <!-- Nested fields for network parameters -->
+  <fieldset>
+    <legend>Network Parameters:</legend>
+    <label for="network_type">Type:</label>
+    <input
+      type="text"
+      id="network_type"
+      name="network_parameters[type]"
+      value="{{ project_data.network_parameters.type }}"
+    />
+
+    <label for="avg_degree">Average Degree:</label>
+    <input
+      type="number"
+      id="avg_degree"
+      name="network_parameters[avg_degree]"
+      value="{{ project_data.network_parameters.avg_degree }}"
+    />
+  </fieldset>
+
+  <!-- distribution_model -->
+  <label for="node">Node:</label>
+  <input type="text" id="node" name="node" value="{{ project_data.node }}" />
+
+  <!-- distribution_model -->
+  <label for="distribution_model">Distribution Model:</label>
+  <input
+    type="text"
+    id="distribution_model"
+    name="distribution_model"
+    value="{{ project_data.distribution_model }}"
+  />
+
+  <!-- Nested fields for distribution model parameters -->
+  <fieldset>
+    <legend>Distribution Model Parameters:</legend>
+    <label for="orientation">Orientation:</label>
+    <input
+      type="text"
+      id="orientation"
+      name="distribution_model_parameters[orientation]"
+      value="{{ project_data.distribution_model_parameters.orientation }}"
+    />
+
+    <label for="line_position">Line Position:</label>
+    <input
+      type="number"
+      id="line_position"
+      name="distribution_model_parameters[line_position]"
+      value="{{ project_data.distribution_model_parameters.line_position }}"
+    />
+
+    <label for="number_of_nodes">Number of Nodes:</label>
+    <input
+      type="number"
+      id="number_of_nodes"
+      name="distribution_model_parameters[number_of_nodes]"
+      value="{{ project_data.distribution_model_parameters.number_of_nodes }}"
+    />
+
+    <label for="midpoint">Midpoint:</label>
+    <input
+      type="text"
+      id="midpoint"
+      name="distribution_model_parameters[midpoint]"
+      value="{{ project_data.distribution_model_parameters.midpoint|join:',' }}"
+    />
+
+    <label for="rotation_direction">Rotation Direction:</label>
+    <input
+      type="text"
+      id="rotation_direction"
+      name="distribution_model_parameters[rotation_direction]"
+      value="{{ project_data.distribution_model_parameters.rotation_direction }}"
+    />
+
+    <label for="radius">Radius:</label>
+    <input
+      type="number"
+      id="radius"
+      name="distribution_model_parameters[radius]"
+      value="{{ project_data.distribution_model_parameters.radius }}"
+    />
+  </fieldset>
+
+  <!-- mobility_model -->
+  <label for="mobility_model">Mobility Model:</label>
+  <input
+    type="text"
+    id="mobility_model"
+    name="mobility_model"
+    value="{{ project_data.mobility_model }}"
+  />
+
+  <!-- mobility_model_parameters -->
+  <fieldset>
+    <legend>Mobility Model Parameters:</legend>
+    <label for="speed_range">Speed Range:</label>
+    <input
+      type="text"
+      id="speed_range"
+      name="mobility_model_parameters[speed_range]"
+      value="{{ project_data.mobility_model_parameters.speed_range|join:',' }}"
+    />
+
+    <label for="direction_range">Direction Range:</label>
+    <input
+      type="text"
+      id="direction_range"
+      name="mobility_model_parameters[direction_range]"
+      value="{{ project_data.mobility_model_parameters.direction_range|join:',' }}"
+    />
+
+    <label for="prioritize_speed">Prioritize Speed:</label>
     
+    <select id="prioritize_speed" name="mobility_model_parameters[prioritize_speed]">
+        <option value="true" {% if project_data.mobility_model_parameters.prioritize_speed %}selected{% endif %}>Sim</option>
+        <option value="false" {% if not project_data.mobility_model_parameters.prioritize_speed %}selected{% endif %}>Não</option>
+    </select>
 
-{% block content %}
 
-<!-- <div id="graph">{% autoescape off %}{{ graph_div }}{% endautoescape %}</div> -->
-<div id="graph"></div>
+    <label for="travel_distance">Travel Distance:</label>
+    <input
+      type="number"
+      id="travel_distance"
+      name="mobility_model_parameters[travel_distance]"
+      value="{{ project_data.mobility_model_parameters.travel_distance }}"
+    />
 
+    <label for="travel_time">Travel Time:</label>
+    <input
+      type="number"
+      id="travel_time"
+      name="mobility_model_parameters[travel_time]"
+      value="{{ project_data.mobility_model_parameters.travel_time }}"
+    />
+  </fieldset>
+
+  <!-- Connectivity Model -->
+  <label for="connectivity_model">Connectivity Model:</label>
+  <input
+    type="text"
+    id="connectivity_model"
+    name="connectivity_model"
+    value="{{ project_data.connectivity_model }}"
+  />
+
+  <fieldset>
+    <legend>Connectivity Model Parameters:</legend>
+    <label for="max_radius">Max Radius:</label>
+    <input
+      type="number"
+      id="max_radius"
+      name="connectivity_model_parameters[max_radius]"
+      value="{{ project_data.connectivity_model_parameters.max_radius }}"
+    />
+
+    <label for="min_radius">Min Radius:</label>
+    <input
+      type="number"
+      id="min_radius"
+      name="connectivity_model_parameters[min_radius]"
+      value="{{ project_data.connectivity_model_parameters.min_radius }}"
+    />
+
+    <label for="big_radius_probability">Big Radius Probability:</label>
+    <input
+      type="number"
+      step="0.01"
+      id="big_radius_probability"
+      name="connectivity_model_parameters[big_radius_probability]"
+      value="{{ project_data.connectivity_model_parameters.big_radius_probability }}"
+    />
+  </fieldset>
+
+  <!-- Reliability Model -->
+  <label for="reliability_model">Reliability Model:</label>
+  <input
+    type="text"
+    id="reliability_model"
+    name="reliability_model"
+    value="{{ project_data.reliability_model }}"
+  />
+
+  <fieldset>
+    <legend>Reliability Model Parameters:</legend>
+    <!-- Nenhum parâmetro fornecido, mas o espaço está reservado -->
+    <p>No parameters for this model.</p>
+  </fieldset>
+
+  <!-- Interference Model -->
+  <label for="interference_model">Interference Model:</label>
+  <input
+    type="text"
+    id="interference_model"
+    name="interference_model"
+    value="{{ project_data.interference_model }}"
+  />
+
+  <fieldset>
+    <legend>Interference Model Parameters:</legend>
+    <!-- Nenhum parâmetro fornecido, mas o espaço está reservado -->
+    <p>No parameters for this model.</p>
+  </fieldset>
+
+  <!-- Message Transmission Model -->
+  <label for="message_transmission_model">Message Transmission Model:</label>
+  <input
+    type="text"
+    id="message_transmission_model"
+    name="message_transmission_model"
+    value="{{ project_data.message_transmission_model }}"
+  />
+
+  <fieldset>
+    <legend>Message Transmission Model Parameters:</legend>
+    <label for="constant_transmission_time">Constant Transmission Time:</label>
+    <input
+      type="number"
+      id="constant_transmission_time"
+      name="message_transmission_model_parameters[constant_transmission_time]"
+      value="{{ project_data.message_transmission_model_parameters.constant_transmission_time }}"
+    />
+
+    <label for="random_transmission_min_time"
+      >Random Transmission Min Time:</label
+    >
+    <input
+      type="number"
+      id="random_transmission_min_time"
+      name="message_transmission_model_parameters[random_transmission_min_time]"
+      value="{{ project_data.message_transmission_model_parameters.random_transmission_min_time }}"
+    />
+
+    <label for="random_transmission_max_time"
+      >Random Transmission Max Time:</label
+    >
+    <input
+      type="number"
+      id="random_transmission_max_time"
+      name="message_transmission_model_parameters[random_transmission_max_time]"
+      value="{{ project_data.message_transmission_model_parameters.random_transmission_max_time }}"
+    />
+  </fieldset>
+
+  <button type="submit">Submit</button>
+</form>
+
+<button onClick="initSimulation()">Inicializar</button>
+
+<input
+      type="number"
+      id="simulation_rounds"
+      name="simulation_rounds"
+      value="{{ project_data.simulation_rounds }}"
+    />
+
+<button onClick="runSimulation()">Rodar</button>
+<button onClick="stopSimulation()">Parar</button>
+<div>Time: <span id="time"></span></div>
+<div id="graph" style="width: 800px; height: 800px">
+  <svg id="graph_svg" viewBox="0 0 10000 10000" width="600" height="600"></svg>
+</div>
 <script>
-    function updateGraph() {
-        $.ajax({
-            url: 'update_graph/',
-            type: 'GET',
-            success: function (data) {
-                $('#graph').html(data.graph_div);
-            },
-            error: function (xhr, status, error) {
-                console.error(error);
-            }
+  let running = false;
+  let interval_update = null;
+
+  function foo(nodeScatter, layout, round) {
+    Plotly.newPlot("graph", [nodeScatter], layout);
+    document.getElementById("time").innerText = round;
+  }
+
+  async function renderGraph(nodes, links, round) {
+    // Define os nós do grafo
+    running = true;
+
+    // Cria os dados para o scatter plot (nós)
+    const nodeScatter = {
+      x: nodes.map((node) => node.x),
+      y: nodes.map((node) => node.y),
+      customdata: nodes.map((node) => "node-" + node.id),
+      text: nodes.map((node) => node.id),
+      mode: "markers+text",
+      marker: { size: 5, color: "blue" },
+      textposition: "top center",
+      type: "scatter",
+    };
+
+    // Configurações do layout
+    const layout = {
+      title: "Directed Graph with Plotly.js",
+      xaxis: { range: [-1000, 11000], zeroline: false },
+      yaxis: { range: [-1000, 11000], zeroline: false },
+      shapes: createEdgeShapes(nodes, links),
+      showlegend: false,
+    };
+
+    // Renderiza o gráfico
+    Plotly.react("graph", [nodeScatter], layout, {
+      transition: {
+        duration: 16, // Duração da transição (16ms para 60FPS)
+        easing: "linear", // Define a curva de transição
+      },
+      frame: { duration: 16 }, // Duração de cada frame da animação
+    });
+
+    document.getElementById("time").innerText = round;
+    running = false;
+  }
+
+  // Função para criar as arestas como shapes (linhas com setas)
+  function createEdgeShapes(nodes, links) {
+    const shapes = [];
+    links.forEach((link) => {
+      const sourceNode = nodes.find((node) => node.id === link.source);
+      const targetNode = nodes.find((node) => node.id === link.target);
+
+      if (sourceNode && targetNode) {
+        shapes.push({
+          type: "line",
+          x0: sourceNode.x,
+          y0: sourceNode.y,
+          x1: targetNode.x,
+          y1: targetNode.y,
+          line: { color: "black", width: 1 },
         });
+
+        // Adiciona uma seta
+        const arrowSize = 0.2;
+        const angle = Math.atan2(
+          targetNode.y - sourceNode.y,
+          targetNode.x - sourceNode.x
+        );
+        shapes.push({
+          type: "path",
+          path: `M ${
+            targetNode.x - arrowSize * Math.cos(angle - Math.PI / 6)
+          } ${targetNode.y - arrowSize * Math.sin(angle - Math.PI / 6)}
+              L ${targetNode.x} ${targetNode.y}
+              L ${targetNode.x - arrowSize * Math.cos(angle + Math.PI / 6)} ${
+            targetNode.y - arrowSize * Math.sin(angle + Math.PI / 6)
+          }
+              Z`,
+          fillcolor: "black",
+          line: { color: "black" },
+        });
+      }
+    });
+
+    return shapes;
+  }
+
+  /*async function renderGraph(nodes, links, round) {
+    const svgns = "http://www.w3.org/2000/svg";
+    const graph_svg = document.getElementById("graph_svg");
+
+    const nodes_circles = nodes.map((node) => {
+      const node_circle =
+        graph_svg.getElementById("node-" + node.id) ||
+        document.createElementNS(svgns, "circle");
+
+      node_circle.setAttributeNS(null, "id", "node-" + node.id);
+      node_circle.setAttributeNS(null, "class", "node");
+      node_circle.setAttributeNS(null, "cx", node.x);
+      node_circle.setAttributeNS(null, "cy", node.y);
+      node_circle.setAttributeNS(null, "r", 20);
+      node_circle.setAttributeNS(null, "fill", "blue");
+      graph_svg.getElementById("node-" + node.id) ||
+        graph_svg.append(node_circle);
+
+      return node_circle;
+    });
+
+    old_drawed_link_lines = graph_svg.getElementsByClassName("link");
+
+    for (const link_line of old_drawed_link_lines) {
+      graph_svg.removeChild(link_line);
     }
 
-    $(document).ready(function() {
-        // Load initial graph
-        updateGraph();
+    const link_lines = links.map((link) => {
+      const link_line =
+        graph_svg.getElementById("link-" + link.source + "-" + link.target) ||
+        document.createElementNS(svgns, "line");
 
-        // Set up interval to update the graph every 5 seconds
-        setInterval(updateGraph, 5000); // 5000 milliseconds = 5 seconds
+      source_node = nodes.find((node) => node.id === link.source);
+      target_node = nodes.find((node) => node.id === link.target);
+
+      link_line.setAttributeNS(
+        null,
+        "id",
+        "link-" + link.source + "-" + link.target
+      );
+      link_line.setAttributeNS(null, "class", "link");
+      link_line.setAttributeNS(null, "x1", source_node.x);
+      link_line.setAttributeNS(null, "x2", target_node.x);
+      link_line.setAttributeNS(null, "y1", source_node.y);
+      link_line.setAttributeNS(null, "y2", target_node.y);
+      link_line.setAttributeNS(null, "stroke-width", "10");
+      link_line.setAttributeNS(null, "stroke", "black");
+
+      graph_svg.getElementById("link-" + link.source + "-" + link.target) ||
+        graph_svg.append(link_line);
+
+      return link_line;
     });
+
+    document.getElementById("time").innerText = round;
+  }*/
+
+  // Criar o Worker
+  let chamadasHTTP = 0;
+  let currentRound = -1;
+  function getUpdatedGraph() {
+    chamadasHTTP++;
+    $.ajax({
+      url: "update_graph/",
+      type: "GET",
+      success: function (data) {
+        chamadasHTTP--;
+        if (!data.n || !data.l) return clearInterval(interval_update);
+        if (!data.r) clearInterval(interval_update);
+        if (data.t < currentRound) return;
+
+        // console.log("data do método GET update_graph/", data);
+        if (!running) {
+          running = true;
+          /*worker.postMessage({
+            round: data.t,
+            nodes: data.n.map(([id, x, y]) => ({ id, x, y })),
+            links: data.l.map(([source, target]) => ({ source, target })),
+          });*/
+          let lastts = Date.now();
+          currentRound = data.t;
+          renderGraph(
+            data.n.map(([id, x, y]) => ({ id, x, y })),
+            data.l.map(([source, target]) => ({ source, target })),
+            data.t
+          );
+          console.log("Tempo gasto pra renderizar", Date.now() - lastts, "ms");
+          /*worker.onmessage = function (event) {
+            foo(event.data.nodeScatter, event.data.layout, event.data.round);
+          };*/
+          running = false;
+        } else console.warn(running);
+      },
+    });
+  }
+
+  function intervalUpdate() {
+    interval_update = setInterval(() => {
+      if (chamadasHTTP < 2) getUpdatedGraph();
+    }, 16.66666666666);
+  }
+
+  async function onReady() {
+    intervalUpdate();
+
+    $.ajax({
+      url: "projects_names/",
+      type: "GET",
+      success: function (data) {
+        console.log(data);
+      },
+      error: function (xhr, status, error) {
+        console.error(error);
+      },
+    });
+
+    initForm()
+  }
+
+  function getSelectedProject() {
+    const select = document.querySelector("#project");
+    const option = select.children[select.selectedIndex];
+
+    return option.textContent
+  }
+
+  function initForm() {
+    const project = getSelectedProject();
+
+    $.ajax({
+      url: "get_config/?project=" + project,
+      type: "GET",
+      success: function (data) {
+        console.log(data)
+        populateForm(data)
+      },
+      error: function (xhr, status, error) {
+        console.error(error);
+      }
+    })
+  }
+
+  $(document).ready(onReady);
+
+  function initSimulation() {
+    $.ajax({
+      url: "init_simulation/?project=" + getSelectedProject(),
+      type: "GET",
+      success: function () {
+        alert("Simulação inicializada com sucesso")
+        currentRound = -1
+        getUpdatedGraph()
+        
+      },
+      error: function (xhr, status, error) {
+        alert("Erro")
+        console.error(error);
+      },
+    });
+  }
+
+  function runSimulation() {
+    const field = document.querySelector('#simulation_rounds').value
+
+    $.ajax({
+      url: "run_simulation/?rounds=" + field,
+      type: "GET",
+      success: function () {
+        intervalUpdate();
+      },
+      error: function (xhr, status, error) {
+        console.error(error);
+      },
+    });
+  }
+
+  function stopSimulation() {
+    $.ajax({
+      url: "stop_simulation/",
+      type: "GET",
+      success: function () {
+        
+      },
+      error: function (xhr, status, error) {
+        console.error(error);
+      },
+    })
+  }
+
+  function changeProject(e) {
+    initForm()
+  }
+
+  // Função que será executada quando o formulário for submetido
+  document
+    .getElementById("options-form")
+    .addEventListener("submit", function (event) {
+      // Impede o envio do formulário para poder processar os dados com JS
+      event.preventDefault();
+
+
+      // Serializa os dados do formulário
+      const formData = $(this).serialize();
+
+      $.ajax({
+          url: $(this).attr('action'), // URL definida no atributo 'action' do formulário
+          type: 'POST', // Método HTTP
+          data: formData, // Dados do formulário
+          headers: {
+              'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val(), // Adiciona o CSRF token
+          },
+          success: function (response) {
+              console.log('Resposta do servidor:', response);
+              alert('Formulário enviado com sucesso!');
+          },
+          error: function (xhr, status, error) {
+              console.error('Erro ao enviar o formulário:', error);
+              alert('Erro ao enviar o formulário.');
+          },
+      });
+
+    });
+
+  /**
+   * Preenche o formulário com os valores do arquivo JSON.
+   * @param {Object} jsonData - Dados do JSON a serem aplicados ao formulário.
+   */
+  function populateForm(jsonData) {
+    const form = document.getElementById("options-form");
+
+    Object.entries(jsonData).forEach(([key, value]) => {
+      // Verifica se o valor é um objeto aninhado
+      if (
+        typeof value === "object" &&
+        !Array.isArray(value) &&
+        value !== null
+      ) {
+        Object.entries(value).forEach(([subKey, subValue]) => {
+          const field = form.querySelector(`[name="${key}[${subKey}]"]`);
+          if (field) {
+            setFieldValue(field, subValue);
+          }
+        });
+      } else {
+        // Atualiza valores simples
+        const field = form.querySelector(`[name="${key}"]`);
+        if (field) {
+          setFieldValue(field, value);
+        }
+      }
+    });
+
+    const field = document.querySelector(`[name="simulation_rounds"]`);
+
+    setFieldValue(field, jsonData.simulation_rounds);
+  }
+
+  /**
+   * Define o valor de um campo do formulário com base no tipo do campo.
+   * @param {HTMLElement} field - Campo do formulário.
+   * @param {any} value - Valor a ser aplicado ao campo.
+   */
+  function setFieldValue(field, value) {
+    if (field.type === "checkbox") {
+      field.checked = Boolean(value);
+    } else if (field.type === "radio") {
+      const radio = document.querySelector(
+        `[name="${field.name}"][value="${value}"]`
+      );
+      if (radio) radio.checked = true;
+    } else {
+      field.value = value;
+    }
+  }
 </script>
+
+<script></script>
 
 {% endblock content %}

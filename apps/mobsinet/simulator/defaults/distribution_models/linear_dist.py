@@ -2,15 +2,15 @@ from ...models.abc_distribution_model import AbcDistributionModel
 from ...tools.position import Position
 from ...configuration.sim_config import config
 
-parameters = config.distribution_model_parameters
+config.distribution_model_parameters = config.distribution_model_parameters
 
 
 class LinearDist(AbcDistributionModel):
     def __init__(self):
         super().__init__('LinearDist')
-        self.orientation = parameters['orientation']
+        self.orientation = config.distribution_model_parameters['orientation']
         self.length = config.dimX if self.orientation == 'horizontal' else config.dimY
-        self.line_position = parameters['line_position'] if 'line_position' in parameters and parameters['line_position'] is not None else (
+        self.line_position = config.distribution_model_parameters['line_position'] if 'line_position' in config.distribution_model_parameters and config.distribution_model_parameters['line_position'] is not None else (
             config.dimY / 2 if self.orientation == 'horizontal' else config.dimX / 2
         )
         self.number_of_nodes: int = 0
@@ -18,7 +18,7 @@ class LinearDist(AbcDistributionModel):
         self._last_position: Position | None = None
         self._separation: float = None
         
-        self.set_number_of_nodes(parameters['number_of_nodes'])
+        self.set_number_of_nodes(config.distribution_model_parameters['number_of_nodes'])
 
     def get_position(self):
         """Get the next position for the node in the distribution.
