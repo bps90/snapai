@@ -1,8 +1,6 @@
-from math import cos, sin, sqrt
+from math import cos, sin, sqrt, pi
 from typing import Tuple
 from networkx import DiGraph, Graph, draw, draw_networkx_edge_labels, draw_networkx_labels, get_edge_attributes, get_node_attributes
-from numpy import Infinity, pi
-
 from ...configuration.sim_config import config
 from ..connectivity_models.no_connectivity import NoConnectivity
 from ..interference_models.no_interference import NoInterference
@@ -16,7 +14,7 @@ import matplotlib.pyplot as plt
 
 config.mobility_model_parameters = config.mobility_model_parameters
 
-# REMOVE IT AFTER TESTING
+# TODO: REMOVE IT AFTER TESTING
 colision_digraph = DiGraph()
 trace_graph = DiGraph()
 
@@ -85,16 +83,20 @@ class RandomWalk(AbcMobilityModel):
     def __init__(self):
         super().__init__('RandomWalk')
 
-        self.speed_range: list[float | int] = config.mobility_model_parameters['speed_range']
-        self.direction_range: list[float | int] = config.mobility_model_parameters['direction_range']
+        self.speed_range: list[float |
+                               int] = config.mobility_model_parameters['speed_range']
+        self.direction_range: list[float |
+                                   int] = config.mobility_model_parameters['direction_range']
         self.travel_distance: float = config.mobility_model_parameters['travel_distance']
         self.travel_time: float = config.mobility_model_parameters['travel_time']
         self.prioritize_speed: bool = config.mobility_model_parameters['prioritize_speed']
 
         self._current_speed = 0  # unit of length per time step
         self._current_direction = 0  # radians
-        self._remaining_time = self.travel_time if self.travel_time else Infinity
-        self._remaining_distance = self.travel_distance if self.travel_distance else Infinity
+        self._remaining_time = self.travel_time if self.travel_time else float(
+            'inf')
+        self._remaining_distance = self.travel_distance if self.travel_distance else float(
+            'inf')
         self._new_random_attributes()
 
     def get_next_position(self, node: AbcNode) -> Position:
@@ -173,8 +175,10 @@ class RandomWalk(AbcMobilityModel):
         self._current_direction = (
             random() * (max_direction - min_direction)) + min_direction
 
-        self._remaining_distance = self.travel_distance if self.travel_distance else Infinity
-        self._remaining_time = self.travel_time if self.travel_time else Infinity
+        self._remaining_distance = self.travel_distance if self.travel_distance else float(
+            'inf')
+        self._remaining_time = self.travel_time if self.travel_time else float(
+            'inf')
 
     def _get_direction_vector(self, speed: float, direction: float) -> Tuple[float, float, float]:
         """(private) Get the direction vector that can be used to calculate next position.
@@ -243,13 +247,13 @@ class RandomWalk(AbcMobilityModel):
         unit_vector = self._get_unit_vector(self._current_direction)
 
         traveled_distance_to_left_boundary = (
-            - old_coordinates[0] / unit_vector[0]) if unit_vector[0] != 0 else Infinity
+            - old_coordinates[0] / unit_vector[0]) if unit_vector[0] != 0 else float('inf')
         traveled_distance_to_right_boundary = ((config.dimX -
-                                               old_coordinates[0]) / unit_vector[0]) if unit_vector[0] != 0 else Infinity
+                                               old_coordinates[0]) / unit_vector[0]) if unit_vector[0] != 0 else float('inf')
         traveled_distance_to_top_boundary = ((
-            config.dimY - old_coordinates[1]) / unit_vector[1]) if unit_vector[1] != 0 else Infinity
+            config.dimY - old_coordinates[1]) / unit_vector[1]) if unit_vector[1] != 0 else float('inf')
         traveled_distance_to_bottom_boundary = (
-            - old_coordinates[1] / unit_vector[1]) if unit_vector[1] != 0 else Infinity
+            - old_coordinates[1] / unit_vector[1]) if unit_vector[1] != 0 else float('inf')
 
         on_range_direction = self._current_direction % (2 * pi)
 
@@ -263,8 +267,10 @@ class RandomWalk(AbcMobilityModel):
         # If the direction vector is in first quadrant
         elif (on_range_direction < (pi / 2) and on_range_direction > 0):
             less_traveled_distance = min(
-                traveled_distance_to_right_boundary if traveled_distance_to_right_boundary >= 0 else Infinity,
-                traveled_distance_to_top_boundary if traveled_distance_to_top_boundary >= 0 else Infinity,
+                traveled_distance_to_right_boundary if traveled_distance_to_right_boundary >= 0 else float(
+                    'inf'),
+                traveled_distance_to_top_boundary if traveled_distance_to_top_boundary >= 0 else float(
+                    'inf'),
             )
 
             if (traveled_distance_to_right_boundary == less_traveled_distance):
@@ -283,8 +289,10 @@ class RandomWalk(AbcMobilityModel):
         # If the direction vector is in second quadrant
         elif (on_range_direction < pi and on_range_direction > (pi / 2)):
             less_traveled_distance = min(
-                traveled_distance_to_left_boundary if traveled_distance_to_left_boundary >= 0 else Infinity,
-                traveled_distance_to_top_boundary if traveled_distance_to_top_boundary >= 0 else Infinity,
+                traveled_distance_to_left_boundary if traveled_distance_to_left_boundary >= 0 else float(
+                    'inf'),
+                traveled_distance_to_top_boundary if traveled_distance_to_top_boundary >= 0 else float(
+                    'inf'),
             )
 
             if (traveled_distance_to_left_boundary == less_traveled_distance):
@@ -303,8 +311,10 @@ class RandomWalk(AbcMobilityModel):
         # If the direction vector is in third quadrant
         elif (on_range_direction < (3 * pi / 2) and on_range_direction > pi):
             less_traveled_distance = min(
-                traveled_distance_to_left_boundary if traveled_distance_to_left_boundary >= 0 else Infinity,
-                traveled_distance_to_bottom_boundary if traveled_distance_to_bottom_boundary >= 0 else Infinity,
+                traveled_distance_to_left_boundary if traveled_distance_to_left_boundary >= 0 else float(
+                    'inf'),
+                traveled_distance_to_bottom_boundary if traveled_distance_to_bottom_boundary >= 0 else float(
+                    'inf'),
             )
 
             if (traveled_distance_to_left_boundary == less_traveled_distance):
@@ -323,8 +333,10 @@ class RandomWalk(AbcMobilityModel):
         # If the direction vector is in fourth quadrant
         elif (on_range_direction < 2 * pi and on_range_direction > (3 * pi / 2)):
             less_traveled_distance = min(
-                traveled_distance_to_right_boundary if traveled_distance_to_right_boundary >= 0 else Infinity,
-                traveled_distance_to_bottom_boundary if traveled_distance_to_bottom_boundary >= 0 else Infinity,
+                traveled_distance_to_right_boundary if traveled_distance_to_right_boundary >= 0 else float(
+                    'inf'),
+                traveled_distance_to_bottom_boundary if traveled_distance_to_bottom_boundary >= 0 else float(
+                    'inf'),
             )
 
             if (traveled_distance_to_right_boundary == less_traveled_distance):
@@ -366,7 +378,7 @@ class RandomWalk(AbcMobilityModel):
 
             traveled_distance_to_boundary = (-
                                              old_coordinates[0] /
-                                             unit_vector[0]) if unit_vector[0] != 0 else Infinity
+                                             unit_vector[0]) if unit_vector[0] != 0 else float('inf')
             remaining_distance = current_speed - \
                 traveled_distance_to_boundary
 
@@ -425,7 +437,7 @@ class RandomWalk(AbcMobilityModel):
             self._current_direction = -self._current_direction + pi
 
             traveled_distance_to_boundary = ((
-                config.dimX - old_coordinates[0]) / unit_vector[0]) if unit_vector[0] != 0 else Infinity
+                config.dimX - old_coordinates[0]) / unit_vector[0]) if unit_vector[0] != 0 else float('inf')
             remaining_distance = (
                 current_speed - traveled_distance_to_boundary)
 
@@ -484,7 +496,7 @@ class RandomWalk(AbcMobilityModel):
             self._current_direction = -self._current_direction
 
             traveled_distance_to_boundary = ((
-                config.dimY - old_coordinates[1]) / unit_vector[1]) if unit_vector[1] != 0 else Infinity
+                config.dimY - old_coordinates[1]) / unit_vector[1]) if unit_vector[1] != 0 else float('inf')
             remaining_distance = current_speed - \
                 traveled_distance_to_boundary
 
@@ -543,7 +555,7 @@ class RandomWalk(AbcMobilityModel):
             self._current_direction = -self._current_direction
 
             traveled_distance_to_boundary = (
-                - old_coordinates[1] / unit_vector[1]) if unit_vector[1] != 0 else Infinity
+                - old_coordinates[1] / unit_vector[1]) if unit_vector[1] != 0 else float('inf')
             remaining_distance = current_speed - \
                 traveled_distance_to_boundary
 
@@ -661,7 +673,7 @@ model = RandomWalk
 if __name__ == '__main__':
     print('asd')
     random_walk = RandomWalk()
-    
+
     random_walk.set_travel_distance(70)
     random_walk.set_speed_range(1, 50)
 

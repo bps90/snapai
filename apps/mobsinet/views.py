@@ -6,57 +6,66 @@ from networkx.readwrite import json_graph
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from .simulator.global_vars import Global
-import time 
+import time
 import os
+from django.views.decorators.csrf import csrf_exempt
 from .simulator.main import Main
 
 # Create your views here.
 # Caminho para a pasta PROJECTS
 PROJECTS_DIR = "apps/mobsinet/simulator/projects/"
 
+
 def index(request):
     return render(request, "mobsinet_index.html")
 
+
 def graph_view(request):
-    return render(request, 'graph.html', { "projects": os.listdir(PROJECTS_DIR) })
+    return render(request, 'graph.html', {"projects": os.listdir(PROJECTS_DIR)})
 
 
 def update_graph(request):
-    
-    node_link_data = json_graph.node_link_data(simulation.graph)
-    
-    nodes = list(map(lambda node: [node['id'].id, round(node['id'].position.x, 2), round(node['id'].position.y, 2)], node_link_data.get('nodes')))
-    links = list(map(lambda link: [link['source'].id, link['target'].id], node_link_data.get('links')))
-    
-    graph_data = { 't': Global.current_time, 'r': Global.is_running, 'n': nodes, 'l': links }
 
-    
+    node_link_data = json_graph.node_link_data(simulation.graph)
+
+    nodes = list(map(lambda node: [node['id'].id, round(node['id'].position.x, 2), round(
+        node['id'].position.y, 2)], node_link_data.get('nodes')))
+    links = list(map(lambda link: [
+                 link['source'].id, link['target'].id], node_link_data.get('links')))
+
+    graph_data = {'t': Global.current_time,
+                  'r': Global.is_running, 'n': nodes, 'l': links}
+
     return JsonResponse(graph_data)
+
 
 def get_projects_names(request):
     return JsonResponse(os.listdir(PROJECTS_DIR), safe=False)
 
+
 def init_simulation(request):
-    project = request.GET.get('project')    
-    
+    project = request.GET.get('project')
+
     Main.init(project)
-        
+
     return HttpResponse(status=200)
+
 
 def run_simulation(request):
     rounds = request.GET.get('rounds')
-    
+
     simulation.run(int(rounds))
-    
+
     return HttpResponse(status=200)
+
 
 def stop_simulation(request):
     simulation.stop()
-    
+
     return HttpResponse(status=200)
 
 
-
+@csrf_exempt
 def update_config(request):
     if request.method == "POST":
         try:
@@ -119,12 +128,13 @@ def parse_value(value):
         elif "," in value:  # Trata listas separadas por vírgulas
             return [parse_value(v.strip()) for v in value.split(",")]
         return value
-    
+
+
 def get_config(request):
     """
     Lê um arquivo JSON existente e retorna os dados como resposta.
     """
-    
+
     try:
         # Lê o arquivo JSON
         with open(os.path.join(PROJECTS_DIR, request.GET.get('project'), 'config.json'), "r") as json_file:

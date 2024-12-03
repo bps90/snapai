@@ -1,0 +1,45 @@
+name: mobenv
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - asgiref
+  - blas
+  - bzip2
+  - ca-certificates
+  - django
+  - expat
+  - libcxx
+  - libffi
+  - libgfortran5
+  - libgfortran
+  - llvm-openmp
+  - networkx
+  - numpy-base
+  - numpy
+  - openssl
+  - packaging
+  - pip
+  - plotly
+  - python
+  - pyyaml
+  - setuptools
+  - sqlite
+  - sqlparse
+  - tenacity
+  - tk
+  - tzdata
+  - wheel
+  - xz
+  - yaml
+  - zlib
+  - djangorestframework
+  - tqdm
+  - matplotlib
+  - pandas
+  - ipykernel
+  - channels
+  - numba
+  - pyinstaller
+  - dill
+prefix: C:\Users\joaov\anaconda3\envs\mobenv-virtualenv

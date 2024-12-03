@@ -209,12 +209,35 @@
     />
 
     <label for="prioritize_speed">Prioritize Speed:</label>
-    
-    <select id="prioritize_speed" name="mobility_model_parameters[prioritize_speed]">
-        <option value="true" {% if project_data.mobility_model_parameters.prioritize_speed %}selected{% endif %}>Sim</option>
-        <option value="false" {% if not project_data.mobility_model_parameters.prioritize_speed %}selected{% endif %}>Não</option>
-    </select>
 
+    <select
+      id="prioritize_speed"
+      name="mobility_model_parameters[prioritize_speed]"
+    >
+      <option
+        value="true"
+        {%
+        if
+        project_data.mobility_model_parameters.prioritize_speed
+        %}selected{%
+        endif
+        %}
+      >
+        Sim
+      </option>
+      <option
+        value="false"
+        {%
+        if
+        not
+        project_data.mobility_model_parameters.prioritize_speed
+        %}selected{%
+        endif
+        %}
+      >
+        Não
+      </option>
+    </select>
 
     <label for="travel_distance">Travel Distance:</label>
     <input
@@ -346,11 +369,11 @@
 <button onClick="initSimulation()">Inicializar</button>
 
 <input
-      type="number"
-      id="simulation_rounds"
-      name="simulation_rounds"
-      value="{{ project_data.simulation_rounds }}"
-    />
+  type="number"
+  id="simulation_rounds"
+  name="simulation_rounds"
+  value="{{ project_data.simulation_rounds }}"
+/>
 
 <button onClick="runSimulation()">Rodar</button>
 <button onClick="stopSimulation()">Parar</button>
@@ -563,14 +586,14 @@
       },
     });
 
-    initForm()
+    initForm();
   }
 
   function getSelectedProject() {
     const select = document.querySelector("#project");
     const option = select.children[select.selectedIndex];
 
-    return option.textContent
+    return option.textContent;
   }
 
   function initForm() {
@@ -580,13 +603,13 @@
       url: "get_config/?project=" + project,
       type: "GET",
       success: function (data) {
-        console.log(data)
-        populateForm(data)
+        console.log(data);
+        populateForm(data);
       },
       error: function (xhr, status, error) {
         console.error(error);
-      }
-    })
+      },
+    });
   }
 
   $(document).ready(onReady);
@@ -596,20 +619,19 @@
       url: "init_simulation/?project=" + getSelectedProject(),
       type: "GET",
       success: function () {
-        alert("Simulação inicializada com sucesso")
-        currentRound = -1
-        getUpdatedGraph()
-        
+        alert("Simulação inicializada com sucesso");
+        currentRound = -1;
+        getUpdatedGraph();
       },
       error: function (xhr, status, error) {
-        alert("Erro")
+        alert("Erro");
         console.error(error);
       },
     });
   }
 
   function runSimulation() {
-    const field = document.querySelector('#simulation_rounds').value
+    const field = document.querySelector("#simulation_rounds").value;
 
     $.ajax({
       url: "run_simulation/?rounds=" + field,
@@ -627,17 +649,15 @@
     $.ajax({
       url: "stop_simulation/",
       type: "GET",
-      success: function () {
-        
-      },
+      success: function () {},
       error: function (xhr, status, error) {
         console.error(error);
       },
-    })
+    });
   }
 
   function changeProject(e) {
-    initForm()
+    initForm();
   }
 
   // Função que será executada quando o formulário for submetido
@@ -647,27 +667,25 @@
       // Impede o envio do formulário para poder processar os dados com JS
       event.preventDefault();
 
-
       // Serializa os dados do formulário
       const formData = $(this).serialize();
 
       $.ajax({
-          url: $(this).attr('action'), // URL definida no atributo 'action' do formulário
-          type: 'POST', // Método HTTP
-          data: formData, // Dados do formulário
-          headers: {
-              'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val(), // Adiciona o CSRF token
-          },
-          success: function (response) {
-              console.log('Resposta do servidor:', response);
-              alert('Formulário enviado com sucesso!');
-          },
-          error: function (xhr, status, error) {
-              console.error('Erro ao enviar o formulário:', error);
-              alert('Erro ao enviar o formulário.');
-          },
+        url: $(this).attr("action"), // URL definida no atributo 'action' do formulário
+        type: "POST", // Método HTTP
+        data: formData, // Dados do formulário
+        headers: {
+          "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').val(), // Adiciona o CSRF token
+        },
+        success: function (response) {
+          console.log("Resposta do servidor:", response);
+          alert("Formulário enviado com sucesso!");
+        },
+        error: function (xhr, status, error) {
+          console.error("Erro ao enviar o formulário:", error);
+          alert("Erro ao enviar o formulário.");
+        },
       });
-
     });
 
   /**
