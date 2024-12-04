@@ -122,6 +122,19 @@
   .node-text {
     transition: cx 16ms linear, cy 16ms linear; /* Transição suave de 1 segundo */
   }
+
+  #graph {
+    width: 100vh;
+    height: 100vh;
+  }
+
+  #runtime {
+    display: flex;
+  }
+
+  #runtime_panel {
+    width: 500px;
+  }
 </style>
 
 {% endblock head %} {% block title %} Graph Visualization {% endblock title %}
@@ -466,48 +479,62 @@
   <button type="submit">Submit</button>
 </form>
 
-<button onClick="initSimulation()">Inicializar</button>
+<div id="runtime">
+  <div id="runtime_panel">
+    <button onClick="initSimulation()">Inicializar</button>
 
-<label for="simulation_rounds">Rodadas</label>
-<input
-  type="number"
-  id="simulation_rounds"
-  name="simulation_rounds"
-  value="{{ project_data.simulation_rounds }}"
-  placeholder="Rodadas"
-/>
+    <label for="simulation_rounds">Rodadas</label>
+    <input
+      type="number"
+      id="simulation_rounds"
+      name="simulation_rounds"
+      value="{{ project_data.simulation_rounds }}"
+      placeholder="Rodadas"
+    />
 
-<label for="simulation_refresh_rate"
-  >Taxa de atualização (Rodadas por segundo) (0 para não haver limitação)</label
->
-<input
-  type="number"
-  id="simulation_refresh_rate"
-  name="simulation_refresh_rate"
-  value="{{ project_data.simulation_refresh_rate }}"
-  placeholder="Taxa de atualização"
-/>
+    <label for="simulation_refresh_rate"
+      >Taxa de atualização (Rodadas por segundo) (0 para não haver
+      limitação)</label
+    >
+    <input
+      type="number"
+      id="simulation_refresh_rate"
+      name="simulation_refresh_rate"
+      value="{{ project_data.simulation_refresh_rate }}"
+      placeholder="Taxa de atualização"
+    />
 
-<button onClick="runSimulation()">Rodar</button>
-<button onClick="stopSimulation()">Parar</button>
-<div>Time: <span id="time"></span></div>
-<div>
-  Mensagens nesta rodada: <span id="numberOfMessagesInThisRound"></span>
-</div>
-<div>
-  Total de mensagens enviadas: <span id="numberOfMessagesOverAll"></span>
-</div>
-<div id="graph" style="width: 800px; height: 800px">
-  <svg id="graph_svg" viewBox="0 0 10000 10000" width="600" height="600"></svg>
+    <select
+      id="GUI_refresh_rate"
+      name="GUI_refresh_rate"
+      onchange="changeGUIRefreshRate()"
+    >
+      <option value="24">24 fps</option>
+      <option value="30">30 fps</option>
+      <option value="50">50 fps</option>
+      <option selected value="60">60 fps</option>
+      <option value="75">75 fps</option>
+      <option value="100">100 fps</option>
+      <option value="120">120 fps</option>
+      <option value="144">144 fps</option>
+      <option value="200">200 fps</option>
+    </select>
+
+    <button onClick="runSimulation()">Rodar</button>
+    <button onClick="stopSimulation()">Parar</button>
+    <div>Time: <span id="time"></span></div>
+    <div>
+      Mensagens nesta rodada: <span id="numberOfMessagesInThisRound"></span>
+    </div>
+    <div>
+      Total de mensagens enviadas: <span id="numberOfMessagesOverAll"></span>
+    </div>
+  </div>
+  <div id="graph"></div>
 </div>
 <script>
   let running = false;
   let interval_update = null;
-
-  function foo(nodeScatter, layout, round) {
-    Plotly.newPlot("graph", [nodeScatter], layout);
-    document.getElementById("time").innerText = round;
-  }
 
   async function renderGraph(
     nodes,
@@ -570,29 +597,48 @@
       },
     ];
 
+    // Obtém o estado atual do gráfico (eixos)
+    const currentGraph = document.getElementById("graph");
+    const currentLayout = currentGraph ? currentGraph.layout : null;
+
     // Configurações do layout
     const layout = {
-      title: "Directed Graph with Plotly.js",
       xaxis: {
-        range: [dimX * -0.1, dimX * 1.1],
+        range: currentLayout?.xaxis.range || [dimX * -0.1, dimX * 1.1],
         zeroline: false,
       },
       yaxis: {
-        range: [dimY * -0.1, dimY * 1.1],
+        range: currentLayout?.yaxis.range || [dimY * -0.1, dimY * 1.1],
         zeroline: false,
       },
       shapes: [...createEdgeShapes(nodes, links), ...boundaryShapes], // Adiciona bordas e arestas
       showlegend: false,
     };
 
+    const graph = document.getElementById("graph");
+
+    function relayout(ed) {
+      if (Object.entries(ed).length === 0) return;
+
+      const x = graph.layout.xaxis;
+      if (ed["xaxis.autorange"] && x.autorange) return;
+      if (
+        x.range[0] != ed["xaxis.range[0]"] ||
+        x.range[1] != ed["xaxis.range[1]"]
+      ) {
+        var update = {
+          "xaxis.range[0]": ed["xaxis.range[0]"],
+          "xaxis.range[1]": ed["xaxis.range[1]"],
+          "xaxis.autorange": ed["xaxis.autorange"],
+        };
+        Plotly.relayout(graph, update);
+      }
+    }
+
+    graph.addEventListener("plotly_relayout", relayout);
+
     // Renderiza o gráfico
-    Plotly.react("graph", [nodeScatter], layout, {
-      transition: {
-        duration: 16, // Duração da transição (16ms para 60FPS)
-        easing: "linear", // Define a curva de transição
-      },
-      frame: { duration: 16 }, // Duração de cada frame da animação
-    });
+    Plotly.react(graph, [nodeScatter], layout);
 
     document.getElementById("time").innerText = round;
     document.getElementById("numberOfMessagesInThisRound").innerText =
@@ -759,9 +805,11 @@
   }
 
   function intervalUpdate() {
+    if (interval_update) clearInterval(interval_update);
+
     interval_update = setInterval(() => {
       if (chamadasHTTP < 2) getUpdatedGraph();
-    }, 16.66666666666);
+    }, 1000 / getSelectedGUIRefreshRate());
   }
 
   async function onReady() {
@@ -784,6 +832,13 @@
     const option = select.children[select.selectedIndex];
 
     return option.textContent;
+  }
+
+  function getSelectedGUIRefreshRate() {
+    const select = document.querySelector("#GUI_refresh_rate");
+    const option = select.children[select.selectedIndex];
+
+    return Number(option.value);
   }
 
   function initForm() {
@@ -853,6 +908,10 @@
 
   function changeProject(e) {
     initForm();
+  }
+
+  function changeGUIRefreshRate(e) {
+    intervalUpdate();
   }
 
   // Função que será executada quando o formulário for submetido

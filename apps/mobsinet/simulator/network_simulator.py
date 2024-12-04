@@ -241,7 +241,7 @@ class NetworkSimulator(object):
 
         Global.custom_global.pre_run()
 
-    def run(self, rounds=config.simulation_rounds, refresh_rate=config.simulation_refresh_rate):
+    def run(self, rounds=config.simulation_rounds, refresh_rate: float = config.simulation_refresh_rate):
         from .synchronous_thread import SynchronousThread
 
         if Global.is_running:

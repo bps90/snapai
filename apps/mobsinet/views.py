@@ -56,7 +56,7 @@ def init_simulation(request):
 
 def run_simulation(request):
     rounds = int(request.GET.get('rounds'))
-    refresh_rate = int(request.GET.get('refresh_rate'))
+    refresh_rate = float(request.GET.get('refresh_rate'))
 
     simulation.run(rounds, refresh_rate)
 

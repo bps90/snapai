@@ -10,7 +10,7 @@ import time
 
 class SynchronousThread(Thread):
 
-    def __init__(self, number_of_rounds: int = 0, refresh_rate: int = 1):
+    def __init__(self, number_of_rounds: int = 0, refresh_rate: float = 0):
         super().__init__()
         self.number_of_rounds = number_of_rounds
         self.refresh_rate = refresh_rate    # Taxa de atualização da GUI
