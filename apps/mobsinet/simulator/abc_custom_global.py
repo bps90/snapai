@@ -18,56 +18,47 @@ class AbcCustomGlobal(ABC):
         """
         Determines if the simulation should terminate.
         """
-        pass
 
 
     def on_exit(self):
         """
         Called when the application is exiting.
         """
-        pass
 
     def on_fatal_error_exit(self):
         """
         Called when the framework crashes with a fatal error.
         """
-        pass
 
     def pre_run(self):
         """
         Called before executing the first round of the simulation.
         """
-        pass
 
     def pre_round(self):
         """
         Called before each round of the simulation.
         """
-        pass
 
     def post_round(self):
         """
         Called after each round of the simulation.
         """
-        pass
 
     def check_project_requirements(self):
         """
         Called at startup to check the project requirements.
         """
-        pass
 
     def node_added_event(self, node: 'AbcNode'):
         """
         Called whenever a node is added to the framework.
         """
-        pass
 
     def node_removed_event(self, node: 'AbcNode'):
         """
         Called whenever a node is removed from the framework.
         """
-        pass
 
     def handle_global_timers(self):
         """

@@ -4,22 +4,9 @@ from datetime import datetime
 from threading import Thread
 from .global_vars import Global
 from .models.nodes.abc_node import AbcNode
-from .models.nodes.packet import Packet
 from .network_simulator import simulation
-from networkx.readwrite import json_graph
-import json
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 import time
-from multiprocessing import Pool, cpu_count
-import random
-from .tools.position import Position
-from .configuration.sim_config import config
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor,as_completed
-from multiprocessing import Manager
-from typing import Any
-import dill
-from math import ceil
+
 
 class SynchronousThread(Thread):
 
@@ -27,20 +14,32 @@ class SynchronousThread(Thread):
         super().__init__()
         self.number_of_rounds = number_of_rounds
         self.refresh_rate = refresh_rate    # Taxa de atualização da GUI
+        self.__should_stop = False  # Controle local para parar a thread
+
+    def stop(self):
+        self.__should_stop = True
+        simulation.running_thread = None
 
     def run(self):
+        self.__should_stop = False
+
         Global.log.info(
             f'Starting simulation thread for {self.number_of_rounds} rounds...')
 
         Global.is_running = True
         Global.start_time = datetime.now()
-        
 
-        end = time.time()
+        ts = time.time()
         for i in range(self.number_of_rounds):
-            # time.sleep(0.1)
-            if (Global.is_running == False): break
-            
+            if (self.refresh_rate != 0):
+                slept_time = 1/self.refresh_rate - (time.time() - ts)
+                time.sleep(slept_time if slept_time > 0 else 0)
+
+            ts = time.time()
+            if (Global.is_running == False or self.__should_stop):
+                Global.is_running = False
+                break
+
             Global.current_time += 1
             Global.is_even_round = not Global.is_even_round
             Global.start_time_of_round = datetime.now()
@@ -52,24 +51,22 @@ class SynchronousThread(Thread):
             Global.custom_global.post_round()
             # print(f'{time.time() - ts} s for round')
 
+            Global.number_of_messages_over_all += Global.number_of_messages_in_this_round
+
             if (Global.custom_global.has_terminated()):
                 break
 
-            Global.number_of_messages_over_all += Global.number_of_messages_in_this_round
-
             # TODO: Remove after
-            # if (i % 50 == 0): 
+            # if (i % 50 == 0):
             #     Global.log.info(
             #     f'Round {i} finished. Number of messages in this round: {Global.number_of_messages_in_this_round}')
-                
-            #     print(f'{time.time() - end} s since last 50 rounds')
-                
-            #     # GUI.set_fps(100 / ((time.time() - end) or 1))
-                
-            #     end = time.time()
-                
 
-        
+            #     print(f'{time.time() - end} s since last 50 rounds')
+
+            #     # GUI.set_fps(100 / ((time.time() - end) or 1))
+
+            #     end = time.time()
+
         Global.is_running = False
 
     def __round(self):
@@ -81,7 +78,7 @@ class SynchronousThread(Thread):
         # tmove = time.time()
         self.__move_nodes()
         # print('Time to move nodes: ', time.time() - tmove)
-        
+
         # tconn = time.time()
         self.__update_connections()
         # print('Time to update connections: ', time.time() - tconn)
@@ -101,9 +98,6 @@ class SynchronousThread(Thread):
             node.set_position(node.mobility_model.get_next_position(node))
 
             # TODO: Criar logging para movimentação de nós
-
-
-
 
     def __update_connections(self):
         """(private) Updates the connections in the network graph."""

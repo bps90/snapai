@@ -13,7 +13,7 @@ from .global_vars import Global
 
 
 from .tools.models_normalizer import ModelsNormalizer
-from typing import Type, Any, TYPE_CHECKING
+from typing import Type, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .models.nodes.abc_node import AbcNode
@@ -26,6 +26,7 @@ class NetworkSimulator(object):
         self.graph: nx.DiGraph = nx.DiGraph()
         self.packets_in_the_air = PacketsInTheAirBuffer()
         self.arrived_packets: list[Packet] = []
+        self.running_thread = None
 
     def reset(self):
         NetworkSimulator.last_node_id = 0
@@ -33,20 +34,20 @@ class NetworkSimulator(object):
 
     def nodes(self) -> list['AbcNode']:
         return list(self.graph.nodes)
-    
+
     def has_edge(self, node_from: 'AbcNode', node_to: 'AbcNode'):
         return self.graph.has_edge(node_from, node_to)
 
     def add_project_nodes(self):
         """Initialize the simulator with the config parameters."""
-        
+
         self.add_nodes(num_nodes=config.num_nodes,
                        distribution_model=config.distribution_model,
                        node_constructor=config.node,
                        mobility_model=config.mobility_model,
                        connectivity_model=config.connectivity_model,
-                       interference_model=config.interference_model,        
-                       reliability_model=config.reliability_model)   
+                       interference_model=config.interference_model,
+                       reliability_model=config.reliability_model)
 
     def add_nodes(
         self,
@@ -119,7 +120,7 @@ class NetworkSimulator(object):
         """
 
         Global.log.info(f'Adding {num_nodes} nodes with the following configuration:\n    Distribution Model: {distribution_model}\n    Node Constructor: {node_constructor}\n    Mobility Model: {mobility_model}\n    Connectivity Model: {connectivity_model}\n    Interference Model: {interference_model}\n    Reliability Model: {reliability_model}')
-        
+
         distribution_model: AbcDistributionModel = ModelsNormalizer.normalize_distribution_model(
             distribution_model)
         node_constructor = ModelsNormalizer.normalize_node_constructor(
@@ -168,7 +169,6 @@ class NetworkSimulator(object):
             raise ValueError(
                 f"Node with ID {node.id} already exists.")
 
-   
     def remove_node(self, node_id: int):
         """Remove a node from the network graph by their ID.
 
@@ -177,8 +177,7 @@ class NetworkSimulator(object):
         ValueError
             If the node is not in the graph.
         """
-        
-        
+
         for n in self.nodes():
             if n.id == node_id:
                 self.graph.remove_node(n)
@@ -187,7 +186,6 @@ class NetworkSimulator(object):
         else:
             raise ValueError(
                 f"Node with ID {node_id} already removed or do not exists.")
-
 
     def add_edge(self, node_from: 'AbcNode', node_to: 'AbcNode'):
         """Add an edge between two nodes in the network graph.
@@ -199,8 +197,6 @@ class NetworkSimulator(object):
         node_to : AbcNode
             The destination node.
         """
-
-
 
         # TODO: Criar EdgeImplementation (talvez)
         self.graph.add_edge(node_from, node_to, number_of_packets=0)
@@ -230,8 +226,6 @@ class NetworkSimulator(object):
         self.remove_edge(node1, node2)
         self.remove_edge(node2, node1)
 
-
-
     def __str__(self) -> str:
         return str(self.graph)
 
@@ -244,28 +238,30 @@ class NetworkSimulator(object):
 
     def pre_run(self):
         """Called before executing the first round of the simulation."""
-        
+
         Global.custom_global.pre_run()
-        
-    def run(self, rounds = config.simulation_rounds):
+
+    def run(self, rounds=config.simulation_rounds, refresh_rate=config.simulation_refresh_rate):
         from .synchronous_thread import SynchronousThread
-        
+
         if Global.is_running:
             return
-        
-        thread = SynchronousThread(rounds, config.simulation_refresh_rate)
-        
-        thread.start()
-        
+
+        self.running_thread = SynchronousThread(
+            rounds, refresh_rate)
+
+        self.running_thread.start()
+
     def stop(self):
         Global.log.info('Stopping simulation...')
-        
+
         Global.is_running = False
-        
+
     def get_node_by_id(self, node_id: int):
         for node in self.nodes():
             if node.id == node_id:
                 return node
+
 
 simulation = NetworkSimulator()
 

@@ -14,4 +14,3 @@ class AbcDistributionModel(AbcModel):
         """(abstract) This method should return a Position object that 
         represents the first position of the node."""
 
-        pass

@@ -21,4 +21,3 @@ class AbcReliabilityModel(AbcModel):
             `True` if the packet will reach the destination, `False` otherwise.
         """
 
-        pass

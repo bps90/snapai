@@ -21,4 +21,3 @@ class AbcConnectivityModel(AbcModel):
         node_b : AbcNode
             The second node.
         """
-        pass

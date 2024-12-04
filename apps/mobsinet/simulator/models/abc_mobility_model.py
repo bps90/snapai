@@ -20,4 +20,3 @@ class AbcMobilityModel(AbcModel):
             The node object.
         """
 
-        pass

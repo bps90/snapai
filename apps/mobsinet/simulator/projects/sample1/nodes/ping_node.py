@@ -15,6 +15,9 @@ class PingNode(AbcNode):
         message = PongMessage()
 
         for packet in inbox.packet_list:
+            if (not isinstance(packet.message, PingMessage)):
+                continue
+
             self.send(message, packet.origin)
 
     def handle_nack_messages(self, nack_box):

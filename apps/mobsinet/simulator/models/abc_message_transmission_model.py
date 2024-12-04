@@ -24,4 +24,3 @@ class AbcMessageTransmissionModel(AbcModel):
         int
             The time that the packet will take to reach the destination node.
         """
-        pass

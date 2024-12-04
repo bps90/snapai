@@ -3,10 +3,7 @@ from django.shortcuts import render, HttpResponse
 from .simulator.network_simulator import simulation
 import json
 from networkx.readwrite import json_graph
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 from .simulator.global_vars import Global
-import time
 import os
 from django.views.decorators.csrf import csrf_exempt
 from .simulator.main import Main
@@ -26,15 +23,21 @@ def graph_view(request):
 
 def update_graph(request):
 
-    node_link_data = json_graph.node_link_data(simulation.graph)
+    node_link_data = json_graph.node_link_data(simulation.graph, edges="edges")
 
     nodes = list(map(lambda node: [node['id'].id, round(node['id'].position.x, 2), round(
         node['id'].position.y, 2)], node_link_data.get('nodes')))
     links = list(map(lambda link: [
-                 link['source'].id, link['target'].id], node_link_data.get('links')))
+                 link['source'].id, link['target'].id, link['number_of_packets']], node_link_data.get('edges')))
 
-    graph_data = {'t': Global.current_time,
-                  'r': Global.is_running, 'n': nodes, 'l': links}
+    graph_data = {
+        'msg_r': Global.number_of_messages_in_this_round,
+        'msg_a': Global.number_of_messages_over_all,
+        't': Global.current_time,
+        'r': Global.is_running,
+        'n': nodes,
+        'l': links
+    }
 
     return JsonResponse(graph_data)
 
@@ -52,15 +55,17 @@ def init_simulation(request):
 
 
 def run_simulation(request):
-    rounds = request.GET.get('rounds')
+    rounds = int(request.GET.get('rounds'))
+    refresh_rate = int(request.GET.get('refresh_rate'))
 
-    simulation.run(int(rounds))
+    simulation.run(rounds, refresh_rate)
 
     return HttpResponse(status=200)
 
 
 def stop_simulation(request):
-    simulation.stop()
+    if (simulation.running_thread):
+        simulation.running_thread.stop()
 
     return HttpResponse(status=200)
 

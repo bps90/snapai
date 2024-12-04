@@ -22,4 +22,3 @@ class AbcInterferenceModel(AbcModel):
 
         """
 
-        pass

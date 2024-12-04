@@ -1,14 +1,11 @@
 # THIS FILE IS TEMPORARY AND SHOULD BE REMOVED AFTERWARDS
 
 from .global_vars import Global
-from .network_simulator import simulation, NetworkSimulator
+from .network_simulator import simulation
 from .tools.models_normalizer import ModelsNormalizer
 from .configuration.sim_config import config
 from importlib import import_module
 import logging
-from .defaults.mobility_models.random_walk import RandomWalk
-from .defaults.distribution_models.circular_dist import CircularDist
-from .tools.position import Position
 from time import sleep
 
 class Main:
@@ -28,7 +25,6 @@ class Main:
             Global.custom_global = import_module(config.PROJECT_DIR.replace('/', '.') + project_name + '.custom_global').CustomGlobal()
         except Exception as e:
             print('No custom global', e)
-            pass
 
         console_handler = logging.StreamHandler()
         console_handler.setLevel(logging.DEBUG) 

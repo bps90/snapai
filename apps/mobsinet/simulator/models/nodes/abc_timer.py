@@ -98,4 +98,3 @@ class AbcTimer(ABC):
     @abstractmethod
     def fire(self):
         """Fires the timer."""
-        pass
