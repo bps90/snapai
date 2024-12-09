@@ -128,8 +128,16 @@
     height: 100vh;
   }
 
+  #runtime_container {
+    display: flex;
+    justify-content: center;
+  }
+
   #runtime {
     display: flex;
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px 0px 0px 20px;
   }
 
   #runtime_panel {
@@ -479,58 +487,60 @@
   <button type="submit">Submit</button>
 </form>
 
-<div id="runtime">
-  <div id="runtime_panel">
-    <button onClick="initSimulation()">Inicializar</button>
+<div id="runtime_container">
+  <div id="runtime">
+    <div id="runtime_panel">
+      <button onClick="initSimulation()">Inicializar</button>
 
-    <label for="simulation_rounds">Rodadas</label>
-    <input
-      type="number"
-      id="simulation_rounds"
-      name="simulation_rounds"
-      value="{{ project_data.simulation_rounds }}"
-      placeholder="Rodadas"
-    />
+      <label for="simulation_rounds">Rodadas</label>
+      <input
+        type="number"
+        id="simulation_rounds"
+        name="simulation_rounds"
+        value="{{ project_data.simulation_rounds }}"
+        placeholder="Rodadas"
+      />
 
-    <label for="simulation_refresh_rate"
-      >Taxa de atualização (Rodadas por segundo) (0 para não haver
-      limitação)</label
-    >
-    <input
-      type="number"
-      id="simulation_refresh_rate"
-      name="simulation_refresh_rate"
-      value="{{ project_data.simulation_refresh_rate }}"
-      placeholder="Taxa de atualização"
-    />
+      <label for="simulation_refresh_rate"
+        >Taxa de atualização (Rodadas por segundo) (0 para não haver
+        limitação)</label
+      >
+      <input
+        type="number"
+        id="simulation_refresh_rate"
+        name="simulation_refresh_rate"
+        value="{{ project_data.simulation_refresh_rate }}"
+        placeholder="Taxa de atualização"
+      />
 
-    <select
-      id="GUI_refresh_rate"
-      name="GUI_refresh_rate"
-      onchange="changeGUIRefreshRate()"
-    >
-      <option value="24">24 fps</option>
-      <option value="30">30 fps</option>
-      <option value="50">50 fps</option>
-      <option selected value="60">60 fps</option>
-      <option value="75">75 fps</option>
-      <option value="100">100 fps</option>
-      <option value="120">120 fps</option>
-      <option value="144">144 fps</option>
-      <option value="200">200 fps</option>
-    </select>
+      <select
+        id="GUI_refresh_rate"
+        name="GUI_refresh_rate"
+        onchange="changeGUIRefreshRate()"
+      >
+        <option value="24">24 fps</option>
+        <option value="30">30 fps</option>
+        <option value="50">50 fps</option>
+        <option selected value="60">60 fps</option>
+        <option value="75">75 fps</option>
+        <option value="100">100 fps</option>
+        <option value="120">120 fps</option>
+        <option value="144">144 fps</option>
+        <option value="200">200 fps</option>
+      </select>
 
-    <button onClick="runSimulation()">Rodar</button>
-    <button onClick="stopSimulation()">Parar</button>
-    <div>Time: <span id="time"></span></div>
-    <div>
-      Mensagens nesta rodada: <span id="numberOfMessagesInThisRound"></span>
+      <button onClick="runSimulation()">Rodar</button>
+      <button onClick="stopSimulation()">Parar</button>
+      <div>Time: <span id="time"></span></div>
+      <div>
+        Mensagens nesta rodada: <span id="numberOfMessagesInThisRound"></span>
+      </div>
+      <div>
+        Total de mensagens enviadas: <span id="numberOfMessagesOverAll"></span>
+      </div>
     </div>
-    <div>
-      Total de mensagens enviadas: <span id="numberOfMessagesOverAll"></span>
-    </div>
+    <div id="graph"></div>
   </div>
-  <div id="graph"></div>
 </div>
 <script>
   let running = false;
@@ -611,7 +621,10 @@
         range: currentLayout?.yaxis.range || [dimY * -0.1, dimY * 1.1],
         zeroline: false,
       },
-      shapes: [...createEdgeShapes(nodes, links), ...boundaryShapes], // Adiciona bordas e arestas
+      shapes: [
+        ...createEdgeShapes(nodes, links, numberOfMessagesInThisRound),
+        ...boundaryShapes,
+      ], // Adiciona bordas e arestas
       showlegend: false,
     };
 
@@ -649,9 +662,9 @@
   }
 
   // Função para criar as arestas como shapes (linhas com setas)
-  function createEdgeShapes(nodes, links) {
+  function createEdgeShapes(nodes, links, numberOfMessagesInThisRound) {
     const shapes = [];
-    links.forEach((link) => {
+    links.forEach((link, index) => {
       const sourceNode = nodes.find((node) => node.id === link.source);
       const targetNode = nodes.find((node) => node.id === link.target);
 
@@ -663,10 +676,7 @@
           x1: targetNode.x,
           y1: targetNode.y,
           line: {
-            color: link.number_of_packets
-              .toString(16)
-              .toUpperCase()
-              .padStart(4, 0),
+            color: "#313131",
             width: 1,
           },
         });
@@ -687,15 +697,9 @@
             targetNode.y - arrowSize * Math.sin(angle + Math.PI / 6)
           }
               Z`,
-          fillcolor: link.number_of_packets
-            .toString(16)
-            .toUpperCase()
-            .padStart(4, 0),
+          fillcolor: "#313131",
           line: {
-            color: link.number_of_packets
-              .toString(16)
-              .toUpperCase()
-              .padStart(4, 0),
+            color: "#313131",
           },
         });
       }
@@ -766,7 +770,79 @@
       numberOfMessagesOverAll;
   }*/
 
-  // Criar o Worker
+  function wavelengthToRGB(wavelength) {
+    /**
+     * Convert a wavelength in nanometers to an approximate RGB color.
+     */
+    const gamma = 0.8;
+    const intensityMax = 255;
+    let factor = 0.0;
+    let R = 0,
+      G = 0,
+      B = 0;
+
+    if (wavelength >= 380 && wavelength < 440) {
+      R = -(wavelength - 440) / (440 - 380);
+      G = 0.0;
+      B = 1.0;
+    } else if (wavelength >= 440 && wavelength < 490) {
+      R = 0.0;
+      G = (wavelength - 440) / (490 - 440);
+      B = 1.0;
+    } else if (wavelength >= 490 && wavelength < 510) {
+      R = 0.0;
+      G = 1.0;
+      B = -(wavelength - 510) / (510 - 490);
+    } else if (wavelength >= 510 && wavelength < 580) {
+      R = (wavelength - 510) / (580 - 510);
+      G = 1.0;
+      B = 0.0;
+    } else if (wavelength >= 580 && wavelength < 645) {
+      R = 1.0;
+      G = -(wavelength - 645) / (645 - 580);
+      B = 0.0;
+    } else if (wavelength >= 645 && wavelength <= 750) {
+      R = 1.0;
+      G = 0.0;
+      B = 0.0;
+    } else {
+      R = G = B = 0.0; // Wavelength outside visible range
+    }
+
+    // Adjust intensity
+    if (wavelength >= 380 && wavelength < 420) {
+      factor = 0.3 + (0.7 * (wavelength - 380)) / (420 - 380);
+    } else if (wavelength >= 645 && wavelength <= 750) {
+      factor = 0.3 + (0.7 * (750 - wavelength)) / (750 - 645);
+    } else {
+      factor = 1.0;
+    }
+
+    R = Math.round(intensityMax * Math.pow(R * factor, gamma));
+    G = Math.round(intensityMax * Math.pow(G * factor, gamma));
+    B = Math.round(intensityMax * Math.pow(B * factor, gamma));
+
+    return [R, G, B];
+  }
+
+  function mapNumberToColor(value, minValue, maxValue) {
+    // Normalize value to 0–1
+    const normalized = (value - minValue) / (maxValue - minValue);
+    // Map to wavelength
+    const wavelength = 380 + normalized * (750 - 380);
+    // Convert wavelength to RGB
+    console.log(
+      value,
+      minValue,
+      maxValue,
+      wavelength,
+      wavelengthToRGB(wavelength)
+    );
+    return wavelengthToRGB(wavelength)
+      .map((c) => c.toString(16).padStart(2, "0"))
+      .join("");
+  }
+
   let chamadasHTTP = 0;
   let currentRound = -1;
   function getUpdatedGraph() {

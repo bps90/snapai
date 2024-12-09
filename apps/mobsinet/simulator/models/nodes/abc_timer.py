@@ -35,7 +35,7 @@ class AbcTimer(ABC):
 
         Global.custom_global.global_timers.append(self)
 
-    def start_relative(self, time: int, node: AbcNode):
+    def start_relative(self, time: int, node: 'AbcNode'):
         """Starts a relative timer.
 
         Parameters
@@ -59,7 +59,7 @@ class AbcTimer(ABC):
 
         node.add_timer(self)
 
-    def start_absolute(self, global_time: int, node: AbcNode):
+    def start_absolute(self, global_time: int, node: 'AbcNode'):
         """Starts an absolute timer.
 
         Parameters
