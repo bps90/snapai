@@ -533,6 +533,10 @@
         name="GUI_refresh_rate"
         onchange="changeGUIRefreshRate()"
       >
+        <option value="1">1 fps</option>
+        <option value="2">2 fps</option>
+        <option value="5">5 fps</option>
+        <option value="10">10 fps</option>
         <option value="24">24 fps</option>
         <option value="30">30 fps</option>
         <option value="50">50 fps</option>
@@ -548,6 +552,9 @@
       <button onClick="stopSimulation()">Parar</button>
       <button onMouseDown="showArrows()" onMouseUp="hideArrows()">
         Mostrar setas
+      </button>
+      <button onMouseDown="showNodesIds()" onMouseUp="hideNodesIds()">
+        Mostrar IDs
       </button>
       <div>Time: <span id="time"></span></div>
       <div>
@@ -565,6 +572,7 @@
   let running = false;
   let interval_update = null;
   let arrows = false;
+  let showIds = false;
 
   async function renderGraph(
     nodes,
@@ -579,11 +587,9 @@
     const nodeScatter = {
       x: nodes.map((node) => node.x),
       y: nodes.map((node) => node.y),
-      customdata: nodes.map((node) => "node-" + node.id),
       text: nodes.map((node) => node.id),
-      mode: "markers+text",
+      mode: showIds ? "markers+text" : "markers",
       marker: { size: 5, color: "blue", symbol: "circle" },
-      textposition: "top center",
       type: "scatter",
     };
 
@@ -698,7 +704,7 @@
           x1: targetNode.x,
           y1: targetNode.y,
           line: {
-            color: "#313131",
+            color: "#0000003a",
             width: 1,
           },
         });
@@ -952,6 +958,16 @@
 
   function hideArrows() {
     arrows = false;
+    getUpdatedGraph();
+  }
+
+  function showNodesIds() {
+    showIds = true;
+    getUpdatedGraph();
+  }
+
+  function hideNodesIds() {
+    showIds = false;
     getUpdatedGraph();
   }
 
