@@ -56,17 +56,6 @@ class SynchronousThread(Thread):
             if (Global.custom_global.has_terminated()):
                 break
 
-            # TODO: Remove after
-            # if (i % 50 == 0):
-            #     Global.log.info(
-            #     f'Round {i} finished. Number of messages in this round: {Global.number_of_messages_in_this_round}')
-
-            #     print(f'{time.time() - end} s since last 50 rounds')
-
-            #     # GUI.set_fps(100 / ((time.time() - end) or 1))
-
-            #     end = time.time()
-
         Global.is_running = False
 
     def __round(self):

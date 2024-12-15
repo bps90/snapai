@@ -4,6 +4,7 @@
     "PROJECT_DIR": "apps/mobsinet/simulator/projects/",
     "simulation_name": "My Network Simulation",
     "num_nodes": 1,
+    "simulation_rounds": 1,
     "dimX": 10000,
     "dimY": 10000,
     "dimZ": 10000,

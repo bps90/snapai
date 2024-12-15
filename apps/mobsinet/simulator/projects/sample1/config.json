@@ -2,9 +2,9 @@
     "PROJECT_DIR": "apps/mobsinet/simulator/projects/",
     "project_name": "sample1",
     "simulation_name": "My Network Simulation",
-    "simulation_rounds": 10000,
+    "simulation_rounds": 1,
     "simulation_refresh_rate": 0,
-    "num_nodes": 50,
+    "num_nodes": 10,
     "dimX": 7000,
     "dimY": 7000,
     "dimZ": 10000,
@@ -17,7 +17,7 @@
     "distribution_model_parameters": {
         "orientation": "horizontal",
         "line_position": 0,
-        "number_of_nodes": 100,
+        "number_of_nodes": 10,
         "midpoint": [
             5000,
             5000

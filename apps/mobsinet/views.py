@@ -7,6 +7,7 @@ from .simulator.global_vars import Global
 import os
 from django.views.decorators.csrf import csrf_exempt
 from .simulator.main import Main
+from .simulator.tools.network_algorithms import NetworkAlgorithms
 
 # Create your views here.
 # Caminho para a pasta PROJECTS
@@ -27,8 +28,16 @@ def update_graph(request):
 
     nodes = list(map(lambda node: [node['id'].id, round(node['id'].position.x, 2), round(
         node['id'].position.y, 2)], node_link_data.get('nodes')))
-    links = list(map(lambda link: [
-                 link['source'].id, link['target'].id, link['number_of_packets']], node_link_data.get('edges')))
+    links = []
+
+    for link in node_link_data.get('edges'):
+        # [source, target, bidirectional]
+        opposite = [link['target'].id, link['source'].id, 0]
+        try:
+            opposite_index = links.index(opposite)
+            links[opposite_index][2] = 1
+        except ValueError:
+            links.append([link['source'].id, link['target'].id, 0])
 
     graph_data = {
         'msg_r': Global.number_of_messages_in_this_round,
@@ -36,7 +45,7 @@ def update_graph(request):
         't': Global.current_time,
         'r': Global.is_running,
         'n': nodes,
-        'l': links
+        'l': links,
     }
 
     return JsonResponse(graph_data)
