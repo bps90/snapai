@@ -111,14 +111,10 @@ class SynchronousThread(Thread):
                 has_edge = simulation.has_edge(node, possible_neighbor)
 
                 if (is_connected and not has_edge):
-                    # Global.log.info(
-                    #    f'Connected node {node.id} with node {possible_neighbor.id}')
                     simulation.add_edge(node, possible_neighbor)
                     node.neighborhood_changed = True
 
                 elif (not is_connected and has_edge):
-                    # Global.log.info(
-                    #    f'Disconnected node {node.id} with node {possible_neighbor.id}')
                     simulation.remove_edge(node, possible_neighbor)
                     node.neighborhood_changed = True
 

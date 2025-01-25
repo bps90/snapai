@@ -27,7 +27,7 @@ def update_graph(request):
     node_link_data = json_graph.node_link_data(simulation.graph, edges="edges")
 
     nodes = list(map(lambda node: [node['id'].id, round(node['id'].position.x, 2), round(
-        node['id'].position.y, 2)], node_link_data.get('nodes')))
+        node['id'].position.y, 2), round(node['id'].position.z, 2)], node_link_data.get('nodes')))
     links = []
 
     for link in node_link_data.get('edges'):
@@ -46,9 +46,20 @@ def update_graph(request):
         'r': Global.is_running,
         'n': nodes,
         'l': links,
+        # 'algorithms': convert_keys_to_strings(NetworkAlgorithms.round_algorithms())
     }
 
     return JsonResponse(graph_data)
+
+
+def convert_keys_to_strings(input_dict):
+    if isinstance(input_dict, dict):
+        return {str(key): convert_keys_to_strings(value)
+                for key, value in input_dict.items()}
+    elif isinstance(input_dict, list):
+        return [convert_keys_to_strings(item) for item in input_dict]
+    else:
+        return input_dict
 
 
 def get_projects_names(request):
