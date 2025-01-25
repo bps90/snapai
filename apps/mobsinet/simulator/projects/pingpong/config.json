@@ -40,7 +40,7 @@
     },
     "connectivity_model": "udg_connectivity",
     "connectivity_model_parameters": {
-        "max_radius": 10000,
+        "max_radius": 500,
         "min_radius": 200,
         "big_radius_probability": 0.5
     },
