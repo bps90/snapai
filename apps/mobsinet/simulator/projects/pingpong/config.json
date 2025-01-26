@@ -1,7 +1,7 @@
 {
     "PROJECT_DIR": "apps/mobsinet/simulator/projects/",
     "project_name": "pingpong",
-    "simulation_rounds": 1,
+    "simulation_rounds": 100000000000,
     "simulation_refresh_rate": 0,
     "num_nodes": 10,
     "dimX": 1000,
@@ -36,7 +36,7 @@
         ],
         "prioritize_speed": false,
         "travel_distance": null,
-        "travel_time": 50
+        "travel_time": 70
     },
     "connectivity_model": "udg_connectivity",
     "connectivity_model_parameters": {
@@ -46,14 +46,16 @@
     },
     "message_transmission_model": "constant_time",
     "message_transmission_model_parameters": {
-        "constant_transmission_time": 1,
+        "constant_transmission_time": 3,
         "random_transmission_min_time": 1,
         "random_transmission_max_time": 10
     },
     "reliability_model": "reliable_delivery",
     "reliability_model_parameters": {},
-    "interference_model": "no_interference",
-    "interference_model_parameters": {},
+    "interference_model": "probability_interference",
+    "interference_model_parameters": {
+        "intensity": 40
+    },
     "message_protocol": "TCP",
     "verbose_logging": false,
     "csrfmiddlewaretoken": "nYFp0kAhhRByX7rBZz54RZDJVBbIk5RS5LXSYvGlLIeYWo2JB8s9WFNDUezwtMpB",

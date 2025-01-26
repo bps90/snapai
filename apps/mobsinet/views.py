@@ -87,7 +87,7 @@ def run_simulation(request):
 
 def stop_simulation(request):
     if (simulation.running_thread):
-        simulation.running_thread.stop()
+        simulation.stop()
 
     return HttpResponse(status=200)
 

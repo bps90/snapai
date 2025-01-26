@@ -253,8 +253,11 @@ class NetworkSimulator(object):
         self.running_thread.start()
 
     def stop(self):
-        Global.log.info('Stopping simulation...')
+        if (not self.running_thread):
+            return
 
+        Global.log.info('Stopping simulation...')
+        self.running_thread.stop()
         Global.is_running = False
 
     def get_node_by_id(self, node_id: int):

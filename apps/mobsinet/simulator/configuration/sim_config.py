@@ -53,7 +53,9 @@ class SimulationConfig:
         self.reliability_model = 'no_reliability'
         self.reliability_model_parameters = {}
         self.interference_model = 'no_interference'
-        self.interference_model_parameters = {}
+        self.interference_model_parameters = {
+            'intensity': 50
+        }
         self.message_protocol = 'TCP'
         self.verbose_logging = False
 
@@ -124,7 +126,7 @@ class SimulationConfig:
 
     def set_simulation_rounds(self, rounds):
         self.simulation_rounds = rounds
-        
+
     def set_simulation_refresh_rate(self, refresh_rate):
         self.simulation_refresh_rate = refresh_rate
 
@@ -139,13 +141,11 @@ class SimulationConfig:
     def set_network_parameters(self, params):
         self.network_parameters = params
 
-
     def set_distribution_model(self, model):
         self.distribution_model = model
-        
+
     def set_distribution_model_parameters(self, params):
         self.distribution_model_parameters = params
-
 
     def set_mobility_model(self, model):
         self.mobility_model = model
@@ -158,13 +158,13 @@ class SimulationConfig:
 
     def set_connectivity_model(self, model):
         self.connectivity_model = model
-        
+
     def set_connectivity_model_parameters(self, params):
         self.connectivity_model_parameters = params
-        
+
     def set_message_transmission_model(self, model):
         self.message_transmission_model = model
-        
+
     def set_message_transmission_model_parameters(self, params):
         self.message_transmission_model_parameters = params
 
@@ -186,8 +186,6 @@ class SimulationConfig:
     def set_verbose_logging(self, verbose):
         self.verbose_logging = verbose
 
-
-
     def print_config(self):
         print("Simulation Configuration:")
         print(f"Simulation Name: {self.simulation_name}")
@@ -198,17 +196,22 @@ class SimulationConfig:
         print(f"Network Parameters: {self.network_parameters}")
         print(f"Node: {self.node}")
         print(f"Distribution Model: {self.distribution_model}")
-        print(f"Distribution Model Parameters: {self.distribution_model_parameters}")
+        print(
+            f"Distribution Model Parameters: {self.distribution_model_parameters}")
         print(f"Mobility Model: {self.mobility_model}")
         print(f"Mobility Model Parameters: {self.mobility_model_parameters}")
         print(f"Connectivity Model: {self.connectivity_model}")
-        print(f"Connectivity Model Parameters: {self.connectivity_model_parameters}")
+        print(
+            f"Connectivity Model Parameters: {self.connectivity_model_parameters}")
         print(f"Message Transmission Model: {self.message_transmission_model}")
-        print(f"Message Transmission Model Parameters: {self.message_transmission_model_parameters}")
+        print(
+            f"Message Transmission Model Parameters: {self.message_transmission_model_parameters}")
         print(f"Reliability Model: {self.reliability_model}")
-        print(f"Reliability Model Parameters: {self.reliability_model_parameters}")
+        print(
+            f"Reliability Model Parameters: {self.reliability_model_parameters}")
         print(f"Interference Model: {self.interference_model}")
-        print(f"Interference Model Parameters: {self.interference_model_parameters}")
+        print(
+            f"Interference Model Parameters: {self.interference_model_parameters}")
         print(f"Message Protocol: {self.message_protocol}")
         print(f"Verbose Logging: {self.verbose_logging}")
 
