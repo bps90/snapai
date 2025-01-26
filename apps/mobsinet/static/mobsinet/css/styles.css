@@ -82,3 +82,12 @@ text {
   stroke-opacity: 0.6;
   stroke-width: 2px;
 }
+
+.algorithm-div {
+  display: flex;
+}
+
+.algorithm-div button {
+  width: 100%;
+  white-space: nowrap;
+}

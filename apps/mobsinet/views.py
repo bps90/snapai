@@ -8,6 +8,8 @@ import os
 from django.views.decorators.csrf import csrf_exempt
 from .simulator.main import Main
 from .simulator.tools.network_algorithms import NetworkAlgorithms
+import networkx as nx
+from .simulator.models.nodes.abc_node import AbcNode
 
 # Create your views here.
 # Caminho para a pasta PROJECTS
@@ -173,3 +175,52 @@ def get_config(request):
     except json.JSONDecodeError:
         # Retorna um erro se o JSON for inválido
         return JsonResponse({"error": "Erro ao decodificar o arquivo JSON."}, status=500)
+
+
+def calculate_degree(request):
+    node_id = request.GET.get('node_id')
+
+    if (node_id == "" or not node_id.isdigit()):
+        return JsonResponse({"message": "ID inválido."}, status=400)
+
+    node = simulation.get_node_by_id(int(node_id))
+
+    if not isinstance(node, AbcNode):
+        return JsonResponse({"message": "Não encontrado."}, status=404)
+
+    try:
+        degree: int = simulation.graph.degree(node)
+
+        return JsonResponse({"degree": degree})
+    except Exception as e:
+        print(e)
+        return JsonResponse({"message": e.args}, status=400)
+
+
+def calculate_diameter(request):
+    try:
+        diameter = nx.diameter(simulation.graph)
+        return JsonResponse({"diameter": diameter})
+    except Exception as e:
+        print(e)
+        return JsonResponse({"message": e.args}, status=400)
+
+
+def calculate_eccentricity(request):
+    node_id = request.GET.get('node_id')
+
+    if (node_id == "" or not node_id.isdigit()):
+        return JsonResponse({"message": "ID inválido."}, status=400)
+
+    node = simulation.get_node_by_id(int(node_id))
+
+    if not isinstance(node, AbcNode):
+        return JsonResponse({"message": "Não encontrado."}, status=404)
+
+    try:
+        eccentricity: int = nx.eccentricity(simulation.graph, node)
+
+        return JsonResponse({"eccentricity": eccentricity})
+    except Exception as e:
+        print(e)
+        return JsonResponse({"message": e.args}, status=400)

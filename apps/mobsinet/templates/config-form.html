@@ -1,0 +1,349 @@
+<form
+  id="options-form"
+  enctype="application/x-www-form-urlencoded"
+  method="post"
+  action="{% url 'update_config' %}"
+>
+  {% csrf_token %}
+
+  <!-- Dropdown for projects -->
+  <label for="project">Select Project:</label>
+  <select id="project" name="project" onchange="changeProject()">
+    {% for project in projects %}
+    <option value="{{ project }}">{{ project }}</option>
+    {% endfor %}
+  </select>
+
+  <fieldset>
+    <!-- Top-level fields -->
+    <legend>Node configuration:</legend>
+    <label for="project_dir" hidden>PROJECT_DIR:</label>
+    <input
+      hidden
+      type="text"
+      id="project_dir"
+      name="PROJECT_DIR"
+      value="{{ project_data.PROJECT_DIR }}"
+    />
+
+    <label for="simulation_name" hidden>Simulation Name:</label>
+    <input
+      hidden
+      type="text"
+      id="simulation_name"
+      name="simulation_name"
+      value="{{ project_data.simulation_name }}"
+    />
+
+    <!-- node -->
+    <label for="node"
+      >Node (Use only the name if is a default implementation or
+      <i>project_name:node_implementation</i> if is a custom
+      implementation):</label
+    >
+    <input type="text" id="node" name="node" value="{{ project_data.node }}" />
+
+    <label for="num_nodes">Number of Nodes:</label>
+    <input
+      type="number"
+      id="num_nodes"
+      name="num_nodes"
+      value="{{ project_data.num_nodes }}"
+    />
+  </fieldset>
+
+  <fieldset>
+    <label for="dimX">Dimension X:</label>
+    <input
+      type="number"
+      id="dimX"
+      name="dimX"
+      value="{{ project_data.dimX }}"
+    />
+
+    <label for="dimY">Dimension Y:</label>
+    <input
+      type="number"
+      id="dimY"
+      name="dimY"
+      value="{{ project_data.dimY }}"
+    />
+
+    <label for="dimZ" hidden>Dimension Z:</label>
+    <input
+      hidden
+      type="number"
+      id="dimZ"
+      name="dimZ"
+      value="{{ project_data.dimZ }}"
+    />
+  </fieldset>
+
+  <!-- Nested fields for network parameters -->
+  <fieldset hidden>
+    <legend>Network Parameters:</legend>
+    <label for="network_type">Type:</label>
+    <input
+      type="text"
+      id="network_type"
+      name="network_parameters[type]"
+      value="{{ project_data.network_parameters.type }}"
+    />
+
+    <label for="avg_degree">Average Degree:</label>
+    <input
+      type="number"
+      id="avg_degree"
+      name="network_parameters[avg_degree]"
+      value="{{ project_data.network_parameters.avg_degree }}"
+    />
+  </fieldset>
+
+  <!-- distribution_model -->
+
+  <!-- Nested fields for distribution model parameters -->
+  <fieldset>
+    <legend>Distribution Model Parameters:</legend>
+
+    <label for="distribution_model">Distribution Model:</label>
+    <input
+      type="text"
+      id="distribution_model"
+      name="distribution_model"
+      value="{{ project_data.distribution_model }}"
+    />
+    <label for="orientation">Orientation:</label>
+    <input
+      type="text"
+      id="orientation"
+      name="distribution_model_parameters[orientation]"
+      value="{{ project_data.distribution_model_parameters.orientation }}"
+    />
+
+    <label for="line_position">Line Position:</label>
+    <input
+      type="number"
+      id="line_position"
+      name="distribution_model_parameters[line_position]"
+      value="{{ project_data.distribution_model_parameters.line_position }}"
+    />
+
+    <label for="number_of_nodes"
+      >Number of Nodes (expected to be equal to the number of nodes in the
+      simulation, but may be different to obtain a semi-circle for
+      example):</label
+    >
+    <input
+      type="number"
+      id="number_of_nodes"
+      name="distribution_model_parameters[number_of_nodes]"
+      value="{{ project_data.distribution_model_parameters.number_of_nodes }}"
+    />
+
+    <label for="midpoint">Midpoint:</label>
+    <input
+      type="text"
+      id="midpoint"
+      name="distribution_model_parameters[midpoint]"
+      value="{{ project_data.distribution_model_parameters.midpoint|join:',' }}"
+    />
+
+    <label for="rotation_direction">Rotation Direction:</label>
+    <input
+      type="text"
+      id="rotation_direction"
+      name="distribution_model_parameters[rotation_direction]"
+      value="{{ project_data.distribution_model_parameters.rotation_direction }}"
+    />
+
+    <label for="radius">Radius:</label>
+    <input
+      type="number"
+      id="radius"
+      name="distribution_model_parameters[radius]"
+      value="{{ project_data.distribution_model_parameters.radius }}"
+    />
+  </fieldset>
+
+  <!-- mobility_model -->
+
+  <!-- mobility_model_parameters -->
+  <fieldset>
+    <legend>Mobility Model Parameters:</legend>
+
+    <label for="mobility_model">Mobility Model:</label>
+    <input
+      type="text"
+      id="mobility_model"
+      name="mobility_model"
+      value="{{ project_data.mobility_model }}"
+    />
+    <label for="speed_range">Speed Range:</label>
+    <input
+      type="text"
+      id="speed_range"
+      name="mobility_model_parameters[speed_range]"
+      value="{{ project_data.mobility_model_parameters.speed_range|join:',' }}"
+    />
+
+    <label for="direction_range">Direction Range (radians):</label>
+    <input
+      type="text"
+      id="direction_range"
+      name="mobility_model_parameters[direction_range]"
+      value="{{ project_data.mobility_model_parameters.direction_range|join:',' }}"
+    />
+
+    <label for="prioritize_speed">Prioritize Speed:</label>
+
+    <select
+      id="prioritize_speed"
+      name="mobility_model_parameters[prioritize_speed]"
+    >
+      <option
+        value="true"
+        {%
+        if
+        project_data.mobility_model_parameters.prioritize_speed
+        %}selected{%
+        endif
+        %}
+      >
+        Sim
+      </option>
+      <option
+        value="false"
+        {%
+        if
+        not
+        project_data.mobility_model_parameters.prioritize_speed
+        %}selected{%
+        endif
+        %}
+      >
+        Não
+      </option>
+    </select>
+
+    <label for="travel_distance">Travel Distance:</label>
+    <input
+      type="number"
+      id="travel_distance"
+      name="mobility_model_parameters[travel_distance]"
+      value="{{ project_data.mobility_model_parameters.travel_distance }}"
+    />
+
+    <label for="travel_time">Travel Time:</label>
+    <input
+      type="number"
+      id="travel_time"
+      name="mobility_model_parameters[travel_time]"
+      value="{{ project_data.mobility_model_parameters.travel_time }}"
+    />
+  </fieldset>
+
+  <!-- Connectivity Model -->
+
+  <fieldset>
+    <legend>Connectivity Model Parameters:</legend>
+    <label for="connectivity_model">Connectivity Model:</label>
+    <input
+      type="text"
+      id="connectivity_model"
+      name="connectivity_model"
+      value="{{ project_data.connectivity_model }}"
+    />
+    <label for="max_radius">Max Radius:</label>
+    <input
+      type="number"
+      id="max_radius"
+      name="connectivity_model_parameters[max_radius]"
+      value="{{ project_data.connectivity_model_parameters.max_radius }}"
+    />
+
+    <label for="min_radius">Min Radius:</label>
+    <input
+      type="number"
+      id="min_radius"
+      name="connectivity_model_parameters[min_radius]"
+      value="{{ project_data.connectivity_model_parameters.min_radius }}"
+    />
+
+    <label for="big_radius_probability">Big Radius Probability:</label>
+    <input
+      type="number"
+      step="0.01"
+      id="big_radius_probability"
+      name="connectivity_model_parameters[big_radius_probability]"
+      value="{{ project_data.connectivity_model_parameters.big_radius_probability }}"
+    />
+  </fieldset>
+
+  <!-- Reliability Model -->
+
+  <fieldset>
+    <legend>Reliability Model Parameters:</legend>
+    <!-- Nenhum parâmetro fornecido, mas o espaço está reservado -->
+    <label for="reliability_model">Reliability Model:</label>
+    <input
+      type="text"
+      id="reliability_model"
+      name="reliability_model"
+      value="{{ project_data.reliability_model }}"
+    />
+  </fieldset>
+
+  <fieldset>
+    <legend>Interference Model Parameters:</legend>
+    <!-- Interference Model -->
+    <label for="interference_model">Interference Model:</label>
+    <input
+      type="text"
+      id="interference_model"
+      name="interference_model"
+      value="{{ project_data.interference_model }}"
+    />
+  </fieldset>
+
+  <fieldset>
+    <legend>Message Transmission Model Parameters:</legend>
+    <!-- Message Transmission Model -->
+    <label for="message_transmission_model">Message Transmission Model:</label>
+    <input
+      type="text"
+      id="message_transmission_model"
+      name="message_transmission_model"
+      value="{{ project_data.message_transmission_model }}"
+    />
+    <label for="constant_transmission_time">Constant Transmission Time:</label>
+    <input
+      type="number"
+      id="constant_transmission_time"
+      name="message_transmission_model_parameters[constant_transmission_time]"
+      value="{{ project_data.message_transmission_model_parameters.constant_transmission_time }}"
+    />
+
+    <label for="random_transmission_min_time"
+      >Random Transmission Min Time:</label
+    >
+    <input
+      type="number"
+      id="random_transmission_min_time"
+      name="message_transmission_model_parameters[random_transmission_min_time]"
+      value="{{ project_data.message_transmission_model_parameters.random_transmission_min_time }}"
+    />
+
+    <label for="random_transmission_max_time"
+      >Random Transmission Max Time:</label
+    >
+    <input
+      type="number"
+      id="random_transmission_max_time"
+      name="message_transmission_model_parameters[random_transmission_max_time]"
+      value="{{ project_data.message_transmission_model_parameters.random_transmission_max_time }}"
+    />
+  </fieldset>
+
+  <button type="submit">Submit</button>
+  <span id="submitted" class="confirmation-check">✓</span>
+</form>
