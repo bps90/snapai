@@ -29,7 +29,7 @@ def update_graph(request):
     node_link_data = json_graph.node_link_data(simulation.graph, edges="edges")
 
     nodes = list(map(lambda node: [node['id'].id, round(node['id'].position.x, 2), round(
-        node['id'].position.y, 2), round(node['id'].position.z, 2)], node_link_data.get('nodes')))
+        node['id'].position.y, 2), round(node['id'].position.z, 2), node['id'].size, node['id'].node_color.get_hex()], node_link_data.get('nodes')))
     links = []
 
     for link in node_link_data.get('edges'):
@@ -48,6 +48,7 @@ def update_graph(request):
         'r': Global.is_running,
         'n': nodes,
         'l': links,
+        'logs': Global.round_logs,
         # 'algorithms': convert_keys_to_strings(NetworkAlgorithms.round_algorithms())
     }
 

@@ -16,19 +16,28 @@ class PingPongNode(AbcNode):
         self.__local_r: int = 0
         self.__local_g: int = 0
         self.__local_b: int = 0
-        init_pingpong_timer = InitPingPongTimer()
-        init_pingpong_timer.start_relative(1, self)
+        self.size = 3
+        if (len(simulation.nodes()) == 0):
+            init_pingpong_timer = InitPingPongTimer()
+            init_pingpong_timer.start_relative(1, self)
 
     def init_pingpong(self):
         if (not self.pingpong_inited):
             self.pingpong_inited = True
-            timer = PingPongTimer(PingPongMessage())
+            message = PingPongMessage()
+            message.set_r(randint(0, 255))
+            message.set_g(randint(0, 255))
+            message.set_b(randint(0, 255))
+
+            timer = PingPongTimer(message, 10)
             timer.start_relative(1, self)
 
     def handle_messages(self, inbox):
+        received_from = []
+
         for packet in inbox.packet_list:
             message = packet.message
-            if (isinstance(message, PingPongMessage)):
+            if (isinstance(message, PingPongMessage) and packet.origin not in received_from):
                 self.__local_r = message.get_r()
                 self.__local_g = message.get_g()
                 self.__local_b = message.get_b()
@@ -43,6 +52,8 @@ class PingPongNode(AbcNode):
                 timer = PingPongTimer(message)
                 timer.start_relative(1, self)
 
+                received_from.append(packet.origin)
+
     def check_requirements(self):
         return super().check_requirements()
 
@@ -53,8 +64,7 @@ class PingPongNode(AbcNode):
         return super().on_neighboorhood_change()
 
     def post_step(self):
-        if (simulation.packets_in_the_air.size() == 0 and Global.current_time > 5):
-            simulation.stop()
+        return super().post_step()
 
     def pre_step(self):
         return super().pre_step()

@@ -44,6 +44,7 @@ class AbcNode(ABC):
         self.inbox: 'Inbox' | None = None
         self.intensity: float = 1.0
         self.node_color: Color = Color(0, 0, 0)
+        self.size = 1
 
     def __str__(self):
         return f'{self.id}@{self.position}'
@@ -57,6 +58,9 @@ class AbcNode(ABC):
 
     def set_color(self, color: Color):
         self.node_color = color
+
+    def set_size(self, size: int):
+        self.size = size
 
     def set_mobility_model(self, mobility_model: 'AbcMobilityModel'):
         self.mobility_model = mobility_model

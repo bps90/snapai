@@ -6,9 +6,14 @@ if TYPE_CHECKING:
 
 
 class PingPongTimer(AbcTimer):
-    def __init__(self, msg: 'PingPongMessage', *args, **kwargs):
+    def __init__(self, msg: 'PingPongMessage', period: int = 0, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.period = period
         self.__msg = msg
 
     def fire(self):
         self.node.broadcast(self.__msg)
+
+        if (self.period > 0):
+            timer = PingPongTimer(self.__msg, self.period)
+            timer.start_relative(self.period, self.node)

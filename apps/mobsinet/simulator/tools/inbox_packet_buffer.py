@@ -45,6 +45,9 @@ class InboxPacketBuffer:
 
                 if p.positive_delivery:
                     self.arriving_packets.append(p)
+                    Global.round_logs.append(
+                        f"Packet \"{p.message.content}\" ({p.origin.id}->{p.destination.id}) arrived at time {Global.current_time}"
+                    )
                 else:
                     # if sim_config_env.generate_nack_messages:
                     # Retorna o pacote ao remetente
@@ -55,19 +58,18 @@ class InboxPacketBuffer:
     def waiting_packets(self) -> int:
         """Retorna o número de pacotes que estão esperando."""
         return len(self.arriving_packets)
-    
+
     def invalidade_packets_over_this_edge(self, node_from: 'AbcNode', node_to: 'AbcNode', bidirectional: bool = False):
         has_edge = simulation.has_edge(node_from, node_to)
-        
+
         if (not has_edge):
             return
-        
-        # Invalida os pacotes       
+
+        # Invalida os pacotes
         for packet in self.buffer:
-            if ((packet.origin == node_from and packet.destination == node_to) or 
-                (bidirectional and packet.origin == node_to and packet.destination == node_from)):
+            if ((packet.origin == node_from and packet.destination == node_to) or
+                    (bidirectional and packet.origin == node_to and packet.destination == node_from)):
                 packet.deny_delivery()
-                
 
     def get_inbox(self) -> 'Inbox':
         """Obtém a Inbox com os pacotes que chegaram."""

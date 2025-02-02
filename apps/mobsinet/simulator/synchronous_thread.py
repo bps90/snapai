@@ -40,6 +40,7 @@ class SynchronousThread(Thread):
                 Global.is_running = False
                 break
 
+            Global.round_logs = []
             Global.current_time += 1
             Global.is_even_round = not Global.is_even_round
             Global.start_time_of_round = datetime.now()
@@ -113,10 +114,18 @@ class SynchronousThread(Thread):
                 if (is_connected and not has_edge):
                     simulation.add_edge(node, possible_neighbor)
                     node.neighborhood_changed = True
+                    Global.round_logs.append(
+                        f'Node {node.id} connected to node {possible_neighbor.id} at time {Global.current_time}'
+                    )
 
                 elif (not is_connected and has_edge):
                     simulation.remove_edge(node, possible_neighbor)
+                    simulation.packets_in_the_air.denyFromEdge(
+                        node, possible_neighbor)
                     node.neighborhood_changed = True
+                    Global.round_logs.append(
+                        f'Node {node.id} disconnected from node {possible_neighbor.id} at time {Global.current_time}'
+                    )
 
     def __step_nodes(self):
         """(private) Performs a step for each node in the network graph."""

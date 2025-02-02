@@ -1,4 +1,9 @@
 from ..models.nodes.packet import Packet
+from ..global_vars import Global
+from typing import TYPE_CHECKING
+
+if (TYPE_CHECKING):
+    from ..models.nodes.abc_node import AbcNode
 
 
 class PacketsInTheAirBuffer(object):
@@ -19,12 +24,16 @@ class PacketsInTheAirBuffer(object):
         if packet.positive_delivery:
             packet.positive_delivery = not packet.destination.interference_model.is_disturbed(
                 packet)
+            if not packet.positive_delivery:
+                Global.round_logs.append(
+                    f"Packet \"{packet.message.content}\" ({packet.origin.id}->{packet.destination.id}) was denied delivery"
+                )
 
     def add(self, packet: Packet, is_passive: bool = False):
         if is_passive:
             self.passive_packets.append(packet)
             return
-        
+
         self.new_added = True
         self.active_packets.append(packet)
 
@@ -33,11 +42,15 @@ class PacketsInTheAirBuffer(object):
             self.active_packets.remove(packet)
         except ValueError:
             self.passive_packets.remove(packet)
-            
+
+    def denyFromEdge(self, origin: 'AbcNode', destination: 'AbcNode'):
+        for packet in self.active_packets:
+            if (packet.origin == origin and packet.destination == destination):
+                packet.deny_delivery()
+
     def upgrade_to_active(self, packet: Packet):
         self.passive_packets.remove(packet)
         self.add(packet)
-        
+
     def size(self):
         return len(self.active_packets)
-    

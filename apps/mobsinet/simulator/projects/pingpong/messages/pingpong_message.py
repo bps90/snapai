@@ -19,9 +19,12 @@ class PingPongMessage(AbcMessage):
 
     def set_r(self, r: int):
         self.__r = r
+        self.content = f"Change color to #{self.__r:02x}{self.__g:02x}{self.__b:02x}"
 
     def set_g(self, g: int):
         self.__g = g
+        self.content = f"Change color to #{self.__r:02x}{self.__g:02x}{self.__b:02x}"
 
     def set_b(self, b: int):
         self.__b = b
+        self.content = f"Change color to #{self.__r:02x}{self.__g:02x}{self.__b:02x}"

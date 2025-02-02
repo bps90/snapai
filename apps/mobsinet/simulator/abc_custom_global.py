@@ -12,13 +12,11 @@ class AbcCustomGlobal(ABC):
     def __init__(self):
         self.global_timers: list['AbcTimer'] = []
 
-    
     @abstractmethod
     def has_terminated(self) -> bool:
         """
         Determines if the simulation should terminate.
         """
-
 
     def on_exit(self):
         """
@@ -65,13 +63,15 @@ class AbcCustomGlobal(ABC):
         Handles all global timers scheduled to execute before or at the current time.
         """
         from .global_vars import Global
-        
+
         if not self.global_timers or len(self.global_timers) == 0:
             return
-        
+
         self.global_timers.sort(key=lambda t: t.fire_time)
-        
+
         while self.global_timers[0].fire_time <= Global.current_time:
             timer = self.global_timers[0]
             self.global_timers.remove(timer)
             timer.fire()
+            Global.round_logs.append(
+                f'Global timer {timer.__class__.__name__} {timer.node.id} fired at time {Global.current_time}')

@@ -91,3 +91,16 @@ text {
   width: 100%;
   white-space: nowrap;
 }
+
+.round_logs {
+  border: 2px solid gray;
+  border-radius: 8px;
+  background-color: #f4f4f9;
+  color: #222;
+  font-weight: bold;
+  font-family: monospace;
+  margin: 0 4em;
+  padding: 1em;
+  height: 200px;
+  overflow-y: scroll;
+}

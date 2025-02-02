@@ -4,12 +4,9 @@ let arrows = false;
 let showIds = false;
 let nodes = [];
 let links = [];
+let logs = [];
 
-async function renderGraph(
-    round,
-    numberOfMessagesInThisRound,
-    numberOfMessagesOverAll
-) {
+async function renderGraph() {
     running = true;
 
     // Cria os dados para o scatter plot (nós)
@@ -18,7 +15,7 @@ async function renderGraph(
         y: nodes.map((node) => node.y),
         text: nodes.map((node) => node.id),
         mode: showIds ? "markers+text" : "markers",
-        marker: { size: 5, color: "blue", symbol: "circle" },
+        marker: { size: nodes.map((node) => 5 * node.size), color: nodes.map((node) => node.color), symbol: "circle" },
         type: "scatter",
         textposition: "top center",
     };
@@ -103,11 +100,7 @@ async function renderGraph(
     // Renderiza o gráfico
     Plotly.react(graph, [nodeScatter], layout);
 
-    document.getElementById("time").innerText = round;
-    document.getElementById("numberOfMessagesInThisRound").innerText =
-        numberOfMessagesInThisRound;
-    document.getElementById("numberOfMessagesOverAll").innerText =
-        numberOfMessagesOverAll;
+
     running = false;
 }
 
@@ -263,6 +256,15 @@ function createEdgeShapes(
     numberOfMessagesOverAll;
 }*/
 
+function updateGUIInfo(round, numberOfMessagesInThisRound, numberOfMessagesOverAll) {
+    document.getElementById("time").innerText = round;
+    document.getElementById("numberOfMessagesInThisRound").innerText =
+        numberOfMessagesInThisRound;
+    document.getElementById("numberOfMessagesOverAll").innerText =
+        numberOfMessagesOverAll;
+    $('.round_logs').html(logs.slice().reverse().map((round_logs, index, array) => round_logs.map((log) => `${array.length - index - 1}: ${log}`).join('<br>') + (round_logs.length ? '<br>' : '')).join(''));
+}
+
 let chamadasHTTP = 0;
 let currentRound = -1;
 function getUpdatedGraph() {
@@ -281,14 +283,16 @@ function getUpdatedGraph() {
 
                 let lastts = Date.now();
                 currentRound = data.t;
-                nodes = data.n.map(([id, x, y]) => ({ id, x, y }));
+                nodes = data.n.map(([id, x, y, z, size, color]) => ({ id, x, y, z, size, color }));
                 links = data.l.map(([source, target, bidirectional]) => ({
                     source,
                     target,
                     bidirectional,
                 }));
-                renderGraph(data.t, data.msg_r, data.msg_a);
+                logs[data.t] = data.logs.reverse();
+                renderGraph();
                 console.log("Tempo gasto pra renderizar", Date.now() - lastts, "ms");
+                updateGUIInfo(data.t, data.msg_r, data.msg_a);
 
                 running = false;
             } else console.warn(running);
@@ -421,6 +425,7 @@ function initSimulation() {
                 $("#initialized").hide();
             }, 2000);
             currentRound = -1;
+            logs = [];
             getUpdatedGraph();
         },
         error: function (xhr, status, error) {
