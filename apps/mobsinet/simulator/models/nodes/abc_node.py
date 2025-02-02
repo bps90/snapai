@@ -47,7 +47,7 @@ class AbcNode(ABC):
         self.size = 1
 
     def __str__(self):
-        return f'{self.id}@{self.position}'
+        return f'{self.id}'
 
     def __repr__(self) -> str:
         return self.__str__()

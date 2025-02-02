@@ -113,12 +113,12 @@
               Distance
             </button>
             <button
-              hidden
+              title="The number of edges in the shortest path between two nodes."
               class="white-button"
               type="button"
-              onClick="calculateNetworkxConnectivityBetweenTwoNodes()"
+              onClick="calculateShortestPathBetweenTwoNodes()"
             >
-              Connectivity
+              Shortest path
               <img
                 src="{% static 'mobsinet/images/networkx-logo.svg' %}"
                 alt="NetworkX logo"
@@ -132,6 +132,9 @@
       <div>
         <div id="graph"></div>
         <div class="round_logs">texto</div>
+        <button type="button" onClick="clearLogs()" id="clear-logs">
+          Limpar logs
+        </button>
       </div>
     </div>
   </div>

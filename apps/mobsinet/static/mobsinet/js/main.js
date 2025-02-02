@@ -5,6 +5,7 @@ let showIds = false;
 let nodes = [];
 let links = [];
 let logs = [];
+let highlightedLinks = [];
 
 async function renderGraph() {
     running = true;
@@ -112,7 +113,7 @@ function createEdgeShapes(
     currentLayout
 ) {
     const shapes = [];
-    const arrowDegrees = Math.PI / 12;
+    const arrowDegrees = Math.PI / 24;
     if (!currentLayout) return shapes;
 
     links.forEach((link, index) => {
@@ -121,6 +122,22 @@ function createEdgeShapes(
         );
         const sourceNode = filteredNodes.find((node) => node.id === link.source);
         const targetNode = filteredNodes.find((node) => node.id === link.target);
+        let highlightedInOpositeDirection;
+
+        const highlighted = highlightedLinks.find(
+            (highlightedLink) => {
+                if (highlightedLink.source === link.target &&
+                    highlightedLink.target === link.source) {
+                    highlightedInOpositeDirection = true;
+                    return true;
+                }
+                if (highlightedLink.source === link.source &&
+                    highlightedLink.target === link.target) {
+                    highlightedInOpositeDirection = false;
+                    return true;
+                }
+            }
+        );
 
         if (sourceNode && targetNode) {
             shapes.push({
@@ -131,13 +148,13 @@ function createEdgeShapes(
                 x1: targetNode.x,
                 y1: targetNode.y,
                 line: {
-                    color: "#0000003a",
-                    width: 1,
+                    color: highlighted ? "#ff0000" : "#0000003a",
+                    width: highlighted ? 2 : 1,
                 },
             });
 
             // Adiciona uma seta
-            if (arrows) {
+            if (arrows || highlighted) {
                 const arrowSize =
                     Math.min(
                         Math.abs(
@@ -158,20 +175,22 @@ function createEdgeShapes(
                     targetNode.y - sourceNode.y,
                     targetNode.x - sourceNode.x
                 );
-                shapes.push({
-                    type: "path",
-                    path: `M ${targetNode.x - arrowSize * Math.cos(angle - arrowDegrees)
-                        } ${targetNode.y - arrowSize * Math.sin(angle - arrowDegrees)}
+                if (arrows || highlightedInOpositeDirection === false) {
+                    shapes.push({
+                        type: "path",
+                        path: `M ${targetNode.x - arrowSize * Math.cos(angle - arrowDegrees)
+                            } ${targetNode.y - arrowSize * Math.sin(angle - arrowDegrees)}
               L ${targetNode.x - arrowSize * Math.cos(angle + arrowDegrees)} ${targetNode.y - arrowSize * Math.sin(angle + arrowDegrees)
-                        }
+                            }
               L ${targetNode.x} ${targetNode.y}
               Z`,
-                    fillcolor: "#813131",
-                    line: {
-                        color: "#813131",
-                    },
-                });
-                if (link.bidirectional) {
+                        fillcolor: (highlightedInOpositeDirection === false) ? "#ff0000" : "#813131",
+                        line: {
+                            color: (highlightedInOpositeDirection === false) ? "#ff0000" : "#813131",
+                        },
+                    });
+                }
+                if ((arrows && link.bidirectional) || highlightedInOpositeDirection) {
                     angle = angle + Math.PI;
                     shapes.push({
                         type: "path",
@@ -181,9 +200,9 @@ function createEdgeShapes(
               L ${sourceNode.x - arrowSize * Math.cos(angle + arrowDegrees)} ${sourceNode.y - arrowSize * Math.sin(angle + arrowDegrees)
                             }
               Z`,
-                        fillcolor: "#813131",
+                        fillcolor: highlightedInOpositeDirection ? "#ff0000" : "#813131",
                         line: {
-                            color: "#813131",
+                            color: highlightedInOpositeDirection ? "#ff0000" : "#813131",
                         },
                     });
                 }
@@ -277,6 +296,9 @@ function getUpdatedGraph() {
             if (!data.n || !data.l) return clearInterval(interval_update);
             if (!data.r) clearInterval(interval_update);
             if (data.t < currentRound) return;
+            if (data.t != currentRound) {
+                highlightedLinks = [];
+            }
 
             if (!running) {
                 running = true;
@@ -341,9 +363,7 @@ function calculateDistanceBetweenTwoNodes() {
     const distance = Math.sqrt(
         Math.pow(node2.x - node1.x, 2) + Math.pow(node2.y - node1.y, 2)
     );
-    console.log(distance);
     $("#two-nodes-algorithms-result").val(distance);
-    console.log($("#two-nodes-algorithms-result"));
 }
 
 async function onReady() {
@@ -368,7 +388,6 @@ async function onReady() {
 
         // Usar plotly_click para identificar o ponto
         plotElement.on("plotly_relayout", function (data) {
-            console.log(data);
             if (data.points.length > 0) {
                 const point = data.points[0];
                 const x = point.x;
@@ -395,6 +414,11 @@ function getSelectedGUIRefreshRate() {
     const option = select.children[select.selectedIndex];
 
     return Number(option.value);
+}
+
+function clearLogs() {
+    $(".round_logs").text("");
+    logs = [];
 }
 
 function initForm() {
@@ -425,7 +449,7 @@ function initSimulation() {
                 $("#initialized").hide();
             }, 2000);
             currentRound = -1;
-            logs = [];
+            clearLogs();
             getUpdatedGraph();
         },
         error: function (xhr, status, error) {

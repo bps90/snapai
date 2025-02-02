@@ -46,3 +46,33 @@ function calculateEccentricity() {
         },
     });
 }
+
+function calculateShortestPathBetweenTwoNodes() {
+    const node1Id = $("#two-nodes-algorithms-node-1").val();
+    const node2Id = $("#two-nodes-algorithms-node-2").val();
+
+    $.ajax({
+        url: "calculate_shortest_path_between_two_nodes/?node1_id=" + node1Id + "&node2_id=" + node2Id,
+        type: "GET",
+        success: function (data) {
+            ''
+            $("#two-nodes-algorithms-result").val(data.shortest_path);
+            highlightedLinks = [];
+            data.shortest_path.reduce((prev, curr) => {
+                const link = {
+                    source: prev,
+                    target: curr,
+                    bidirectional: 0,
+                };
+                highlightedLinks.push(link);
+                return curr;
+            });
+            getUpdatedGraph();
+        },
+        error: function (xhr, status, error) {
+            console.error(error, xhr?.responseJSON?.message);
+            $("#two-nodes-algorithms-result").attr("title", xhr?.responseJSON?.message || "Erro ao calcular caminho mais curto");
+            $("#two-nodes-algorithms-result").val(xhr?.responseJSON?.message || "Erro ao calcular caminho mais curto");
+        },
+    });
+}

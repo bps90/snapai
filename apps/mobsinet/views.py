@@ -225,3 +225,26 @@ def calculate_eccentricity(request):
     except Exception as e:
         print(e)
         return JsonResponse({"message": e.args}, status=400)
+
+
+def calculate_shortest_path_between_two_nodes(request):
+    node1_id = request.GET.get('node1_id')
+    node2_id = request.GET.get('node2_id')
+
+    if (node1_id == "" or not node1_id.isdigit() or node2_id == "" or not node2_id.isdigit()):
+        return JsonResponse({"message": "ID inválido."}, status=400)
+
+    node1 = simulation.get_node_by_id(int(node1_id))
+    node2 = simulation.get_node_by_id(int(node2_id))
+
+    if not isinstance(node1, AbcNode) or not isinstance(node2, AbcNode):
+        return JsonResponse({"message": "Não encontrado."}, status=404)
+
+    try:
+        shortest_path: list = nx.shortest_path(
+            simulation.graph, node1, node2)
+
+        return JsonResponse({"shortest_path": [node.id for node in shortest_path]})
+    except Exception as e:
+        print(e)
+        return JsonResponse({"message": e.args}, status=400)

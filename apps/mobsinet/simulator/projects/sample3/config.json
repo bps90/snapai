@@ -1,23 +1,23 @@
 {
     "PROJECT_DIR": "apps/mobsinet/simulator/projects/",
-    "project_name": "sample1",
+    "project_name": "sample3",
     "simulation_name": "My Network Simulation",
     "simulation_rounds": 1,
     "simulation_refresh_rate": 0,
-    "num_nodes": 100,
-    "dimX": 7000,
-    "dimY": 7000,
+    "num_nodes": 500,
+    "dimX": 15000,
+    "dimY": 15000,
     "dimZ": 10000,
     "network_parameters": {
         "type": "random_graph",
         "avg_degree": 4
     },
-    "node": "sample1:ping_node",
-    "distribution_model": "circular_dist",
+    "node": "inert_node",
+    "distribution_model": "linear_dist",
     "distribution_model_parameters": {
-        "orientation": "horizontal",
-        "line_position": 0,
-        "number_of_nodes": 100,
+        "orientation": "vertical",
+        "line_position": 7000,
+        "number_of_nodes": 500,
         "midpoint": [
             5000,
             5000
@@ -29,7 +29,7 @@
     "mobility_model_parameters": {
         "speed_range": [
             0,
-            20
+            50
         ],
         "direction_range": [
             0,
@@ -41,15 +41,15 @@
     },
     "connectivity_model": "qudg_connectivity",
     "connectivity_model_parameters": {
-        "max_radius": 500,
-        "min_radius": 200,
-        "big_radius_probability": 0.5
+        "max_radius": 800,
+        "min_radius": 500,
+        "big_radius_probability": 0.4
     },
-    "message_transmission_model": "constant_time",
+    "message_transmission_model": "random_time",
     "message_transmission_model_parameters": {
         "constant_transmission_time": 1,
         "random_transmission_min_time": 1,
-        "random_transmission_max_time": 10
+        "random_transmission_max_time": 3
     },
     "reliability_model": "reliable_delivery",
     "reliability_model_parameters": {},
@@ -60,5 +60,5 @@
     "message_protocol": "TCP",
     "verbose_logging": false,
     "csrfmiddlewaretoken": "nYFp0kAhhRByX7rBZz54RZDJVBbIk5RS5LXSYvGlLIeYWo2JB8s9WFNDUezwtMpB",
-    "project": "sample1"
+    "project": "sample3"
 }
