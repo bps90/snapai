@@ -53,9 +53,9 @@
     },
     "reliability_model": "reliable_delivery",
     "reliability_model_parameters": {},
-    "interference_model": "no_interference",
+    "interference_model": "probability_interference",
     "interference_model_parameters": {
-        "intensity": null
+        "intensity": 100
     },
     "message_protocol": "TCP",
     "verbose_logging": false,
