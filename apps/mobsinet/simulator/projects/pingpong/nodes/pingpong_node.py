@@ -16,7 +16,7 @@ class PingPongNode(AbcNode):
         self.__local_r: int = 0
         self.__local_g: int = 0
         self.__local_b: int = 0
-        self.size = 3
+        self.size = 10
         if (len(simulation.nodes()) == 0):
             init_pingpong_timer = InitPingPongTimer()
             init_pingpong_timer.start_relative(1, self)

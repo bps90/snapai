@@ -7,6 +7,7 @@ from ....global_vars import Global
 class PingNode(AbcNode):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.size = 3
 
     def check_requirements(self):
         return super().check_requirements()

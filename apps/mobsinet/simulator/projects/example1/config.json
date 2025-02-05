@@ -28,8 +28,8 @@
     "mobility_model": "random_walk",
     "mobility_model_parameters": {
         "speed_range": [
-            199,
-            200
+            100,
+            120
         ],
         "direction_range": [
             0,
@@ -41,7 +41,7 @@
     },
     "connectivity_model": "qudg_connectivity",
     "connectivity_model_parameters": {
-        "max_radius": 300,
+        "max_radius": 500,
         "min_radius": 200,
         "big_radius_probability": 0.2
     },
