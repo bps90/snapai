@@ -6,6 +6,8 @@
 >
   {% csrf_token %}
 
+  <h2>Project Configuration</h2>
+
   <!-- Dropdown for projects -->
   <label for="project">Select Project:</label>
   <select id="project" name="project" onchange="changeProject()">
@@ -209,7 +211,7 @@
         endif
         %}
       >
-        Sim
+        Yes
       </option>
       <option
         value="false"
@@ -221,7 +223,7 @@
         endif
         %}
       >
-        Não
+        No
       </option>
     </select>
 

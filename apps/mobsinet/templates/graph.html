@@ -12,35 +12,39 @@
 <h1 id="page-title">Simulation Visualization</h1>
 {% endblock header %} {% block content %}
 <div class="page-content">
-  <button onClick="toggleConfigurations()">Show/Hide configurations</button>
-
+  <button type="button" onClick="toggleConfigurations()">
+    Show/Hide configurations
+  </button>
   {% include "config-form.html" %}
+  <button type="button" onClick="toggleAddNodesForm()">
+    Show/Hide add nodes form
+  </button>
+  {% include "add-nodes-form.html" %}
 
   <div id="runtime_container">
     <div id="runtime">
       <div id="runtime_panel">
-        <button type="button" onClick="initSimulation()">Inicializar</button>
+        <button type="button" onClick="initSimulation()">Initialize</button>
         <span id="initialized" class="confirmation-check">✓</span>
 
-        <label for="simulation_rounds">Rodadas</label>
+        <label for="simulation_rounds">Rounds</label>
         <input
           type="number"
           id="simulation_rounds"
           name="simulation_rounds"
           value="{{ project_data.simulation_rounds }}"
-          placeholder="Rodadas"
+          placeholder="Rounds"
         />
 
         <label for="simulation_refresh_rate"
-          >Taxa de atualização (Rodadas por segundo) (0 para não haver
-          limitação)</label
+          >Refresh rate (Rounds per second) (0 for no limit)</label
         >
         <input
           type="number"
           id="simulation_refresh_rate"
           name="simulation_refresh_rate"
           value="{{ project_data.simulation_refresh_rate }}"
-          placeholder="Taxa de atualização"
+          placeholder="Refresh rate"
         />
 
         <select
@@ -63,21 +67,20 @@
           <option value="200">200 fps</option>
         </select>
 
-        <button onClick="runSimulation()">Rodar</button>
-        <button onClick="stopSimulation()">Parar</button>
+        <button onClick="runSimulation()">Run</button>
+        <button onClick="stopSimulation()">Stop</button>
         <button onMouseDown="showArrows()" onMouseUp="hideArrows()">
-          Mostrar setas
+          Show arrows
         </button>
         <button onMouseDown="showNodesIds()" onMouseUp="hideNodesIds()">
-          Mostrar IDs
+          Show IDs
         </button>
         <div>Time: <span id="time"></span></div>
         <div>
-          Mensagens nesta rodada: <span id="numberOfMessagesInThisRound"></span>
+          Messages in this round: <span id="numberOfMessagesInThisRound"></span>
         </div>
         <div>
-          Total de mensagens enviadas:
-          <span id="numberOfMessagesOverAll"></span>
+          Total messages sent: <span id="numberOfMessagesOverAll"></span>
         </div>
         <div class="two-nodes-algorithms">
           <form id="two-nodes-algorithms-form">
@@ -88,7 +91,7 @@
                   type="number"
                   id="two-nodes-algorithms-node-1"
                   name="two-nodes-algorithms-node-1"
-                  placeholder="Nó 1"
+                  placeholder="Node 1"
                 />
               </div>
               <div>
@@ -96,7 +99,7 @@
                   type="number"
                   id="two-nodes-algorithms-node-2"
                   name="two-nodes-algorithms-node-2"
-                  placeholder="Nó 2"
+                  placeholder="Node 2"
                 />
               </div>
             </div>
@@ -126,25 +129,34 @@
             </button>
           </form>
         </div>
-        {% include "networkx-algorithms.html" %}
+        <div class="round_logs">texto</div>
+        <button type="button" onClick="clearLogs()" id="clear-logs">
+          Clear logs
+        </button>
       </div>
 
       <div>
         <div id="graph"></div>
-        <div class="round_logs">texto</div>
-        <button type="button" onClick="clearLogs()" id="clear-logs">
-          Limpar logs
-        </button>
       </div>
     </div>
-  </div>
+    {% include "networkx-algorithms.html" %}
 
-  <div class="node2vec-container">
-    <button type="button" onclick="node2vecAlgorithm()">
-      Run Node2Vec algorithm
-    </button>
+    <div class="node2vec-container">
+      <div>
+        <input
+          type="number"
+          id="node2vec-dimensions"
+          name="node2vec-dimensions"
+          placeholder="Dimensions"
+          default="2"
+        />
+      </div>
+      <button type="button" onclick="node2vecAlgorithm()">
+        Run Node2Vec algorithm
+      </button>
 
-    <div id="node2vec-graph"></div>
+      <div id="node2vec-graph"></div>
+    </div>
   </div>
 </div>
 

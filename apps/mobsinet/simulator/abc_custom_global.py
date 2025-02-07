@@ -74,4 +74,4 @@ class AbcCustomGlobal(ABC):
             self.global_timers.remove(timer)
             timer.fire()
             Global.round_logs.append(
-                f'Global timer {timer.__class__.__name__} {timer.node.id} fired at time {Global.current_time}')
+                f'Global timer {timer.__class__.__name__} {timer.node.id} fired')

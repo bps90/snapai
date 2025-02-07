@@ -99,6 +99,8 @@ class SynchronousThread(Thread):
 
             # reset neighboorhood_changed flag
             node.neighborhood_changed = False
+            connections = 0
+            disconnections = 0
 
             # update the connections
             for possible_neighbor in simulation.nodes():
@@ -114,18 +116,18 @@ class SynchronousThread(Thread):
                 if (is_connected and not has_edge):
                     simulation.add_edge(node, possible_neighbor)
                     node.neighborhood_changed = True
-                    Global.round_logs.append(
-                        f'Node {node.id} connected to node {possible_neighbor.id} at time {Global.current_time}'
-                    )
+                    connections += 1
 
                 elif (not is_connected and has_edge):
                     simulation.remove_edge(node, possible_neighbor)
                     simulation.packets_in_the_air.denyFromEdge(
                         node, possible_neighbor)
                     node.neighborhood_changed = True
-                    Global.round_logs.append(
-                        f'Node {node.id} disconnected from node {possible_neighbor.id} at time {Global.current_time}'
-                    )
+                    disconnections += 1
+
+            if node.neighborhood_changed:
+                Global.round_logs.append(
+                    f'Node {node.id} had {connections} connections and {disconnections} disconnections')
 
     def __step_nodes(self):
         """(private) Performs a step for each node in the network graph."""

@@ -46,7 +46,7 @@ class InboxPacketBuffer:
                 if p.positive_delivery:
                     self.arriving_packets.append(p)
                     Global.round_logs.append(
-                        f"Packet \"{p.message.content}\" ({p.origin.id}->{p.destination.id}) arrived at time {Global.current_time}"
+                        f"Packet \"{p.message.content}\" ({p.origin.id}->{p.destination.id}) arrived"
                     )
                 else:
                     # if sim_config_env.generate_nack_messages:

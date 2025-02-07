@@ -13,6 +13,7 @@ from .simulator.models.nodes.abc_node import AbcNode
 from node2vec import Node2Vec
 import numpy as np
 import gensim
+from copy import deepcopy
 
 # Create your views here.
 # Caminho para a pasta PROJECTS
@@ -271,7 +272,13 @@ def new_fit_for_node2vec(self, **skip_gram_params):
 
 
 def node2vec_algorithm(request):
-    node2vec = Node2Vec(simulation.graph, dimensions=3, workers=4)
+    dimensions = request.GET.get('dimensions')
+
+    if (dimensions == "" or not dimensions.isdigit()):
+        return JsonResponse({"message": "Invalid dimensions."}, status=400)
+
+    node2vec = Node2Vec(
+        simulation.graph, dimensions=int(dimensions), workers=4)
 
     # For compatibility with the project version of gensim
     node2vec.fit = new_fit_for_node2vec
@@ -284,3 +291,80 @@ def node2vec_algorithm(request):
                        for word in words])  # Vetores (já em 2D)
 
     return JsonResponse({"words": words, "vectors": vectors.tolist()})
+
+
+def add_nodes(request):
+    if request.method == "POST":
+
+        from .simulator.configuration.sim_config import config
+        # Carrega os dados enviados no formulário
+        form_data = parse_nested_dict(request.POST.dict())
+
+        print(form_data)
+
+        original_config = deepcopy(config)
+
+        config.set_node(form_data['node'])
+        config.set_distribution_model(form_data['distribution_model'])
+        config.set_mobility_model(form_data['mobility_model'])
+        config.set_connectivity_model(form_data['connectivity_model'])
+        config.set_interference_model(form_data['interference_model'])
+        config.set_reliability_model(form_data['reliability_model'])
+        config.set_distribution_model_parameters(
+            form_data['distribution_model_parameters'] if 'distribution_model_parameters' in form_data else None)
+        config.set_mobility_model_parameters(
+            form_data['mobility_model_parameters'] if 'mobility_model_parameters' in form_data else None)
+        config.set_connectivity_model_parameters(
+            form_data['connectivity_model_parameters'] if 'connectivity_model_parameters' in form_data else None)
+        config.set_interference_model_parameters(
+            form_data['interference_model_parameters'] if 'interference_model_parameters' in form_data else None)
+        config.set_reliability_model_parameters(
+            form_data['reliability_model_parameters'] if 'reliability_model_parameters' in form_data else None)
+
+        simulation.add_nodes(
+            num_nodes=int(form_data['num_nodes']),
+            distribution_model=config.distribution_model,
+            node_constructor=config.node,
+            mobility_model=config.mobility_model,
+            connectivity_model=config.connectivity_model,
+            interference_model=config.interference_model,
+            reliability_model=config.reliability_model,
+        )
+
+        config = original_config
+
+        # Retorna uma resposta de sucesso
+        return JsonResponse({"status": "success", "message": "JSON atualizado com sucesso!"})
+
+    else:
+        return HttpResponse("Método não permitido", status=405)
+
+
+def parse_nested_dict(flat_dict):
+    nested_dict = {}
+
+    for key, value in flat_dict.items():
+        # Divide os parâmetros aninhados
+        keys = key.replace("]", "").split("[")
+        current_level = nested_dict
+
+        for part in keys[:-1]:  # Percorre os níveis do dicionário
+            if part not in current_level:
+                current_level[part] = {}
+            current_level = current_level[part]
+
+        # Converte valores numéricos e booleanos
+        if value.isdigit():
+            value = int(value)
+        elif value.replace(".", "", 1).isdigit():
+            value = float(value)
+        elif value.lower() in ["true", "false"]:
+            value = value.lower() == "true"
+        elif "," in value:
+            value = value.split(",")
+            value = [int(v) if v.isdigit() else float(v) if v.replace(
+                ".", "", 1).isdigit() else v for v in value]
+
+        current_level[keys[-1]] = value
+
+    return nested_dict

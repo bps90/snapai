@@ -1,3 +1,7 @@
+:root {
+  font-size: 27px;
+}
+
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f4f9;
@@ -7,7 +11,7 @@ body {
 }
 
 text {
-  font-size: 12px;
+  font-size: 10px;
   font-family: sans-serif;
 }
 
@@ -28,20 +32,19 @@ text {
 
 #graph {
   width: 100vh;
-  max-width: 1000px;
+  max-width: 900px;
   height: 100vh;
-  max-height: 1000px;
+  max-height: 900px;
 }
 
 #runtime_container {
-  display: flex;
-  justify-content: center;
+  background-color: white;
+  border-radius: 8px;
 }
 
 #runtime {
   display: flex;
-  background-color: white;
-  border-radius: 8px;
+
   padding: 20px 0px 0px 20px;
 }
 
@@ -64,6 +67,11 @@ text {
 
 .two-nodes-algorithms-inputs-container {
   display: flex;
+}
+
+.networkx-algorithms {
+  padding: 0 20px;
+  max-width: 800px;
 }
 
 .networkx-icon {
@@ -101,14 +109,10 @@ text {
   color: #222;
   font-weight: bold;
   font-family: monospace;
-  margin: 0 4em;
-  padding: 1em;
+  padding: 12px;
   height: 200px;
   overflow-y: scroll;
-}
-
-#clear-logs {
-  margin: 0 4em;
+  min-width: 500px;
 }
 
 #node2vec-graph {

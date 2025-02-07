@@ -149,7 +149,7 @@ function createEdgeShapes(
                 y1: targetNode.y,
                 line: {
                     color: highlighted ? "#ff0000" : "#0000003a",
-                    width: highlighted ? 2 : 1,
+                    width: highlighted ? 5 : 2,
                 },
             });
 
@@ -354,6 +354,10 @@ function toggleConfigurations() {
     $("#options-form").toggle();
 }
 
+function toggleAddNodesForm() {
+    $("#add-nodes-form").toggle();
+}
+
 function calculateDistanceBetweenTwoNodes() {
     const node1Id = $("#two-nodes-algorithms-node-1").val();
     const node2Id = $("#two-nodes-algorithms-node-2").val();
@@ -400,6 +404,7 @@ async function onReady() {
 
     $(".confirmation-check").hide();
     toggleConfigurations();
+    toggleAddNodesForm();
 }
 
 function getSelectedProject() {
@@ -429,7 +434,8 @@ function initForm() {
         type: "GET",
         success: function (data) {
             console.log(data);
-            populateForm(data);
+            populateForm(data, 'options-form');
+            populateForm(data, 'add-nodes-form');
         },
         error: function (xhr, status, error) {
             console.error(error);
@@ -498,10 +504,10 @@ function changeGUIRefreshRate(e) {
     intervalUpdate();
 }
 
-function listenForm() {
+function listenForm(formId) {
     // Função que será executada quando o formulário for submetido
     document
-        .getElementById("options-form")
+        .getElementById(formId)
         .addEventListener("submit", function (event) {
             // Impede o envio do formulário para poder processar os dados com JS
             event.preventDefault();
@@ -517,9 +523,11 @@ function listenForm() {
                     "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').val(), // Adiciona o CSRF token
                 },
                 success: function (response) {
-                    $("#submitted").show();
+                    $(formId === 'add-nodes-form' ? '#submitted-add-nodes' : "#submitted").show();
+                    if (formId === 'add-nodes-form')
+                        getUpdatedGraph()
                     setTimeout(() => {
-                        $("#submitted").hide();
+                        $(formId === 'add-nodes-form' ? '#submitted-add-nodes' : "#submitted").hide();
                     }, 2000);
                 },
                 error: function (xhr, status, error) {
@@ -530,14 +538,15 @@ function listenForm() {
         });
 }
 
-listenForm()
+listenForm("options-form")
+listenForm("add-nodes-form")
 
 /**
      * Preenche o formulário com os valores do arquivo JSON.
      * @param {Object} jsonData - Dados do JSON a serem aplicados ao formulário.
      */
-function populateForm(jsonData) {
-    const form = document.getElementById("options-form");
+function populateForm(jsonData, formId) {
+    const form = document.getElementById(formId);
 
     Object.entries(jsonData).forEach(([key, value]) => {
         // Verifica se o valor é um objeto aninhado
@@ -586,10 +595,14 @@ function setFieldValue(field, value) {
 
 function node2vecAlgorithm() {
     $.ajax({
-        url: "node2vec_algorithm/",
+        url: "node2vec_algorithm/?dimensions=" + $("#node2vec-dimensions").val(),
         type: "GET",
         success: function (data) {
-            plot_node2vec(data.words, data.vectors);
+            if (data.vectors[0].length == 2)
+                return plot_node2vec_2d(data.words, data.vectors);
+            if (data.vectors[0].length == 3)
+                return plot_node2vec_3d(data.words, data.vectors, false);
+            return plot_node2vec_3d(data.words, data.vectors, true);
         },
         error: function (xhr, status, error) {
             console.error(error);
@@ -597,10 +610,40 @@ function node2vecAlgorithm() {
     });
 }
 
-function plot_node2vec(words, vectors) {
+function plot_node2vec_2d(words, vectors) {
     let x = vectors.map(v => v[0]);
     let y = vectors.map(v => v[1]);
-    let z = vectors.map(v => v[2]); // Nova dimensão Z
+
+    // Encontrar os maiores valores absolutos para ajustar os eixos simetricamente
+    let maxAbs = Math.max(
+        Math.max(...x.map(Math.abs)),
+        Math.max(...y.map(Math.abs))
+    );
+
+    let trace = {
+        x: x,
+        y: y,
+        text: words, // Rótulos nos pontos
+        mode: "markers+text",
+        textposition: "top center",
+        marker: { size: 10, color: "black" }
+    };
+
+    let layout = {
+        title: "Node2Vec Embeddings (2D)",
+        xaxis: { title: "Dimensão 1", range: [-maxAbs * 1.1, maxAbs * 1.1] },
+        yaxis: { title: "Dimensão 2", range: [-maxAbs * 1.1, maxAbs * 1.1] },
+        showlegend: false
+    };
+
+    Plotly.newPlot("node2vec-graph", [trace], layout);
+}
+
+function plot_node2vec_3d(words, vectors, fourthDimension) {
+    let x = vectors.map(v => v[0]);
+    let y = vectors.map(v => v[1]);
+    let z = vectors.map(v => v[2]);
+    let w = fourthDimension ? vectors.map(v => v[3]) : null;
 
     // Encontrar o maior valor absoluto para eixos simétricos
     let maxAbs = Math.max(
@@ -616,7 +659,7 @@ function plot_node2vec(words, vectors) {
         text: words,
         mode: "markers+text",
         textposition: "top center",
-        marker: { size: 6, color: z, colorscale: "Viridis" }, // Cor baseada em Z
+        marker: { size: 6, color: fourthDimension ? w : "black", colorscale: "Viridis" }, // Cor baseada em W
         type: "scatter3d"
     };
 
