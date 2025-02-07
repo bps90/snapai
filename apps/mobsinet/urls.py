@@ -19,5 +19,6 @@ urlpatterns = [
          views.calculate_eccentricity, name='calculate_eccentricity'),
     path('graph/calculate_shortest_path_between_two_nodes/',
          views.calculate_shortest_path_between_two_nodes, name='calculate_shortest_path_between_two_nodes'),
-
+    path('graph/node2vec_algorithm/',
+         views.node2vec_algorithm, name='node2vec_algorithm'),
 ]

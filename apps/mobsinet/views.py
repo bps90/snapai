@@ -10,6 +10,9 @@ from .simulator.main import Main
 from .simulator.tools.network_algorithms import NetworkAlgorithms
 import networkx as nx
 from .simulator.models.nodes.abc_node import AbcNode
+from node2vec import Node2Vec
+import numpy as np
+import gensim
 
 # Create your views here.
 # Caminho para a pasta PROJECTS
@@ -248,3 +251,36 @@ def calculate_shortest_path_between_two_nodes(request):
     except Exception as e:
         print(e)
         return JsonResponse({"message": e.args}, status=400)
+
+
+def new_fit_for_node2vec(self, **skip_gram_params):
+    """
+    Creates the embeddings using gensim's Word2Vec.
+    :param skip_gram_params: Parameteres for gensim.models.Word2Vec - do not supply 'size' it is taken from the Node2Vec 'dimensions' parameter
+    :type skip_gram_params: dict
+    :return: A gensim word2vec model
+    """
+
+    if 'workers' not in skip_gram_params:
+        skip_gram_params['workers'] = self.workers
+
+    if 'vector_size' not in skip_gram_params:
+        skip_gram_params['vector_size'] = self.dimensions
+
+    return gensim.models.Word2Vec(self.walks, **skip_gram_params)
+
+
+def node2vec_algorithm(request):
+    node2vec = Node2Vec(simulation.graph, dimensions=3, workers=4)
+
+    # For compatibility with the project version of gensim
+    node2vec.fit = new_fit_for_node2vec
+
+    model = node2vec.fit(node2vec, window=10, min_count=1, batch_words=4)
+
+    # Obtém os nós e os vetores
+    words = list(model.wv.index_to_key)  # Lista de nós
+    vectors = np.array([model.wv[word]
+                       for word in words])  # Vetores (já em 2D)
+
+    return JsonResponse({"words": words, "vectors": vectors.tolist()})

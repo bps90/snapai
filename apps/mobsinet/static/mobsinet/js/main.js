@@ -498,40 +498,44 @@ function changeGUIRefreshRate(e) {
     intervalUpdate();
 }
 
-// Função que será executada quando o formulário for submetido
-document
-    .getElementById("options-form")
-    .addEventListener("submit", function (event) {
-        // Impede o envio do formulário para poder processar os dados com JS
-        event.preventDefault();
+function listenForm() {
+    // Função que será executada quando o formulário for submetido
+    document
+        .getElementById("options-form")
+        .addEventListener("submit", function (event) {
+            // Impede o envio do formulário para poder processar os dados com JS
+            event.preventDefault();
 
-        // Serializa os dados do formulário
-        const formData = $(this).serialize();
+            // Serializa os dados do formulário
+            const formData = $(this).serialize();
 
-        $.ajax({
-            url: $(this).attr("action"), // URL definida no atributo 'action' do formulário
-            type: "POST", // Método HTTP
-            data: formData, // Dados do formulário
-            headers: {
-                "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').val(), // Adiciona o CSRF token
-            },
-            success: function (response) {
-                $("#submitted").show();
-                setTimeout(() => {
-                    $("#submitted").hide();
-                }, 2000);
-            },
-            error: function (xhr, status, error) {
-                console.error("Erro ao enviar o formulário:", error);
-                alert("Erro ao enviar o formulário.");
-            },
+            $.ajax({
+                url: $(this).attr("action"), // URL definida no atributo 'action' do formulário
+                type: "POST", // Método HTTP
+                data: formData, // Dados do formulário
+                headers: {
+                    "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').val(), // Adiciona o CSRF token
+                },
+                success: function (response) {
+                    $("#submitted").show();
+                    setTimeout(() => {
+                        $("#submitted").hide();
+                    }, 2000);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Erro ao enviar o formulário:", error);
+                    alert("Erro ao enviar o formulário.");
+                },
+            });
         });
-    });
+}
+
+listenForm()
 
 /**
- * Preenche o formulário com os valores do arquivo JSON.
- * @param {Object} jsonData - Dados do JSON a serem aplicados ao formulário.
- */
+     * Preenche o formulário com os valores do arquivo JSON.
+     * @param {Object} jsonData - Dados do JSON a serem aplicados ao formulário.
+     */
 function populateForm(jsonData) {
     const form = document.getElementById("options-form");
 
@@ -579,3 +583,53 @@ function setFieldValue(field, value) {
         field.value = value;
     }
 }
+
+function node2vecAlgorithm() {
+    $.ajax({
+        url: "node2vec_algorithm/",
+        type: "GET",
+        success: function (data) {
+            plot_node2vec(data.words, data.vectors);
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+        },
+    });
+}
+
+function plot_node2vec(words, vectors) {
+    let x = vectors.map(v => v[0]);
+    let y = vectors.map(v => v[1]);
+    let z = vectors.map(v => v[2]); // Nova dimensão Z
+
+    // Encontrar o maior valor absoluto para eixos simétricos
+    let maxAbs = Math.max(
+        Math.max(...x.map(Math.abs)),
+        Math.max(...y.map(Math.abs)),
+        Math.max(...z.map(Math.abs))
+    );
+
+    let trace = {
+        x: x,
+        y: y,
+        z: z, // Adicionando terceira dimensão
+        text: words,
+        mode: "markers+text",
+        textposition: "top center",
+        marker: { size: 6, color: z, colorscale: "Viridis" }, // Cor baseada em Z
+        type: "scatter3d"
+    };
+
+    let layout = {
+        title: "Node2Vec Embeddings (3D)",
+        scene: {
+            xaxis: { title: "Dimensão 1", range: [-maxAbs * 1.1, maxAbs * 1.1] },
+            yaxis: { title: "Dimensão 2", range: [-maxAbs * 1.1, maxAbs * 1.1] },
+            zaxis: { title: "Dimensão 3", range: [-maxAbs * 1.1, maxAbs * 1.1] }
+        },
+        showlegend: false
+    };
+
+    Plotly.newPlot("node2vec-graph", [trace], layout);
+}
+
