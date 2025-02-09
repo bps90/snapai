@@ -30,7 +30,7 @@ def graph_view(request):
 
 
 def update_graph(request):
-
+    with_logs = request.GET.get('with_logs') == 'true'
     node_link_data = json_graph.node_link_data(simulation.graph, edges="edges")
 
     nodes = list(map(lambda node: [node['id'].id, round(node['id'].position.x, 2), round(
@@ -53,7 +53,7 @@ def update_graph(request):
         'r': Global.is_running,
         'n': nodes,
         'l': links,
-        'logs': Global.round_logs,
+        'logs': Global.round_logs if with_logs else [],
         # 'algorithms': convert_keys_to_strings(NetworkAlgorithms.round_algorithms())
     }
 

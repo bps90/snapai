@@ -5,6 +5,7 @@ let showIds = false;
 let node2vecIds = false;
 let nodes = [];
 let links = [];
+let showLogs = true;
 let logs = [];
 let highlightedLinks = [];
 let node2vecData = {
@@ -294,7 +295,7 @@ let currentRound = -1;
 function getUpdatedGraph() {
     chamadasHTTP++;
     $.ajax({
-        url: "update_graph/",
+        url: "update_graph/?with_logs=" + showLogs,
         type: "GET",
         success: function (data) {
             chamadasHTTP--;
@@ -316,7 +317,7 @@ function getUpdatedGraph() {
                     target,
                     bidirectional,
                 }));
-                logs[data.t] = data.logs.reverse();
+                if (showLogs) logs[data.t] = data.logs.reverse();
                 renderGraph();
                 console.log("Tempo gasto pra renderizar", Date.now() - lastts, "ms");
                 updateGUIInfo(data.t, data.msg_r, data.msg_a);
@@ -712,4 +713,14 @@ function download_graph(graphId) {
         document.body.removeChild(link);
     });
 }
+
+$('#show-logs').change(function () {
+    if (this.checked) {
+        $('.round_logs').show();
+        showLogs = true;
+    } else {
+        $('.round_logs').hide();
+        showLogs = false;
+    }
+});
 
