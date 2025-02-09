@@ -9,6 +9,7 @@ from ...global_vars import Global
 from ...network_simulator import simulation
 from ...tools.models_normalizer import ModelsNormalizer
 from ...tools.color import Color
+from ...configuration.sim_config import config
 
 if TYPE_CHECKING:
     from .abc_timer import AbcTimer
@@ -295,21 +296,24 @@ class AbcNode(ABC):
         for timer in timers_to_handle:
             timer.fire()
 
-        if (self.nack_box is None):
-            self.nack_box = NackBox(
-                self.nack_buffer_even if Global.is_even_round else self.nack_buffer_odd)
-        else:
-            self.nack_box.reset_for_list(
-                self.nack_buffer_even if Global.is_even_round else self.nack_buffer_odd)
+        if (config.nack_messages_enabled):
+            if (self.nack_box is None):
+                self.nack_box = NackBox(
+                    self.nack_buffer_even if Global.is_even_round else self.nack_buffer_odd)
+            else:
+                self.nack_box.reset_for_list(
+                    self.nack_buffer_even if Global.is_even_round else self.nack_buffer_odd)
 
-        self.handle_nack_messages(self.nack_box)
+            self.handle_nack_messages(self.nack_box)
+
         self.inbox = self.packet_buffer.get_inbox()
         self.handle_messages(self.inbox)
 
         self.post_step()
 
         self.inbox.free_packets()
-        self.nack_box.free_packets()
+        if self.nack_box:
+            self.nack_box.free_packets()
 
     def add_nack_packet(self, packet: 'Packet'):
         # Verifica se o tipo de pacote é UNICAST

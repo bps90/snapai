@@ -60,5 +60,6 @@
     "verbose_logging": false,
     "csrfmiddlewaretoken": "nYFp0kAhhRByX7rBZz54RZDJVBbIk5RS5LXSYvGlLIeYWo2JB8s9WFNDUezwtMpB",
     "project": "pingpong",
-    "simulation_name": null
+    "simulation_name": "minha sim",
+    "nack_messages_enabled": false
 }

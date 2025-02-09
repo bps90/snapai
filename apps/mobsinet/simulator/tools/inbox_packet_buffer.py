@@ -5,6 +5,7 @@ from ..models.nodes.packet import Packet
 from .inbox import Inbox
 from ..global_vars import Global
 from typing import TYPE_CHECKING
+from ..configuration.sim_config import config
 
 if (TYPE_CHECKING):
     from ..models.nodes.abc_node import AbcNode
@@ -49,11 +50,12 @@ class InboxPacketBuffer:
                         f"Packet \"{p.message.content}\" ({p.origin.id}->{p.destination.id}) arrived"
                     )
                 else:
-                    # if sim_config_env.generate_nack_messages:
-                    # Retorna o pacote ao remetente
-                    p.origin.add_nack_packet(p)
-                    # else:
-                    #     AbcPacket.free(p)
+
+                    if config.nack_messages_enabled:
+                        # Retorna o pacote ao remetente
+                        p.origin.add_nack_packet(p)
+                    else:
+                        del p
 
     def waiting_packets(self) -> int:
         """Retorna o número de pacotes que estão esperando."""

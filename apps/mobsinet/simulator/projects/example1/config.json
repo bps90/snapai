@@ -60,5 +60,6 @@
     "message_protocol": "TCP",
     "verbose_logging": false,
     "csrfmiddlewaretoken": "nYFp0kAhhRByX7rBZz54RZDJVBbIk5RS5LXSYvGlLIeYWo2JB8s9WFNDUezwtMpB",
-    "project": "example1"
+    "project": "example1",
+    "nack_messages_enabled": true
 }

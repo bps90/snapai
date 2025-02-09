@@ -9,6 +9,7 @@ class SimulationConfig:
         self.simulation_name = "Network Simulation"
         self.simulation_rounds = 1000
         self.simulation_refresh_rate = 1
+        self.nack_messages_enabled = True
         self.num_nodes = 50
         self.dimX = 100
         self.dimY = 100
@@ -82,6 +83,8 @@ class SimulationConfig:
             'simulation_rounds', self.simulation_rounds))
         self.set_simulation_refresh_rate(config_data.get(
             'simulation_refresh_rate', self.simulation_refresh_rate))
+        self.set_nack_messages_enabled(config_data.get(
+            'nack_messages_enabled', self.nack_messages_enabled))
         self.set_num_nodes(config_data.get('num_nodes', self.num_nodes))
         self.set_network_dimensions(config_data.get('dimX', self.dimX),
                                     config_data.get('dimY', self.dimY),
@@ -129,6 +132,9 @@ class SimulationConfig:
 
     def set_simulation_refresh_rate(self, refresh_rate):
         self.simulation_refresh_rate = refresh_rate
+
+    def set_nack_messages_enabled(self, enabled):
+        self.nack_messages_enabled = enabled
 
     def set_num_nodes(self, num_nodes):
         self.num_nodes = num_nodes
@@ -191,6 +197,7 @@ class SimulationConfig:
         print(f"Simulation Name: {self.simulation_name}")
         print(f"Simulation Rounds: {self.simulation_rounds}")
         print(f"Simulation Refresh Rate: {self.simulation_refresh_rate}")
+        print(f"Nack Messages Enabled: {self.nack_messages_enabled}")
         print(f"Number of Nodes: {self.num_nodes}")
         print(f"Network Dimensions: {self.dimX} x {self.dimY} x {self.dimZ}")
         print(f"Network Parameters: {self.network_parameters}")
@@ -217,8 +224,3 @@ class SimulationConfig:
 
 
 config = SimulationConfig()
-
-# usage
-if __name__ == "__main__":
-    # TODO: Do something here
-    pass

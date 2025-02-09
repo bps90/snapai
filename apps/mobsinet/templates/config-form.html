@@ -17,8 +17,8 @@
   </select>
 
   <fieldset>
-    <!-- Top-level fields -->
-    <legend>Node configuration:</legend>
+    <legend>Simulation Parameters:</legend>
+
     <label for="project_dir" hidden>PROJECT_DIR:</label>
     <input
       hidden
@@ -28,14 +28,45 @@
       value="{{ project_data.PROJECT_DIR }}"
     />
 
-    <label for="simulation_name" hidden>Simulation Name:</label>
+    <label for="simulation_name">Simulation Name:</label>
     <input
-      hidden
       type="text"
       id="simulation_name"
       name="simulation_name"
       value="{{ project_data.simulation_name }}"
     />
+
+    <label for="nack_messages_enabled">NACK Messages Enabled:</label>
+    <select name="nack_messages_enabled" id="nack_messages_enabled">
+      <option
+        value="true"
+        {%
+        if
+        project_data.nack_messages_enabled
+        %}selected{%
+        endif
+        %}
+      >
+        Yes
+      </option>
+      <option
+        value="false"
+        {%
+        if
+        not
+        project_data.nack_messages_enabled
+        %}selected{%
+        endif
+        %}
+      >
+        No
+      </option>
+    </select>
+  </fieldset>
+
+  <fieldset>
+    <!-- Top-level fields -->
+    <legend>Node configuration:</legend>
 
     <!-- node -->
     <label for="node"
