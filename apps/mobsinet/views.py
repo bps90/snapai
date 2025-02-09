@@ -297,6 +297,7 @@ def node2vec_algorithm(request):
     return JsonResponse({"words": words, "vectors": vectors.tolist()})
 
 
+@csrf_exempt
 def add_nodes(request):
     if request.method == "POST":
 
