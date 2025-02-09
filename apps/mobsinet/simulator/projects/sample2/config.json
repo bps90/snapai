@@ -1,56 +1,64 @@
 {
-    "csrfmiddlewaretoken": "nYFp0kAhhRByX7rBZz54RZDJVBbIk5RS5LXSYvGlLIeYWo2JB8s9WFNDUezwtMpB",
-    "project": "sample2",
     "PROJECT_DIR": "apps/mobsinet/simulator/projects/",
-    "simulation_name": "My Network Simulation",
-    "num_nodes": 1,
+    "project_name": "sample2",
+    "simulation_name": "Sample2-Simulation",
     "simulation_rounds": 1,
-    "dimX": 10000,
-    "dimY": 10000,
+    "simulation_refresh_rate": 0,
+    "num_nodes": 500,
+    "dimX": 15000,
+    "dimY": 15000,
     "dimZ": 10000,
     "network_parameters": {
         "type": "random_graph",
-        "avg_degree": 2
+        "avg_degree": 4
     },
     "node": "inert_node",
-    "distribution_model": "circular_dist",
+    "distribution_model": "linear_dist",
     "distribution_model_parameters": {
-        "orientation": "horizontal",
-        "line_position": 0,
+        "orientation": "vertical",
+        "line_position": 7000,
         "number_of_nodes": 500,
         "midpoint": [
-            9500,
-            500
+            5000,
+            5000
         ],
         "rotation_direction": "anti-clockwise",
-        "radius": 0
+        "radius": 500
     },
     "mobility_model": "random_walk",
     "mobility_model_parameters": {
         "speed_range": [
-            0.03,
-            0.03
+            0,
+            50
         ],
         "direction_range": [
             0,
-            5.283185307179586
+            6.283185307179586
         ],
-        "travel_distance": 100000000000,
-        "travel_time": 50000000000000,
-        "prioritize_speed": true
+        "prioritize_speed": false,
+        "travel_distance": null,
+        "travel_time": 50
     },
     "connectivity_model": "qudg_connectivity",
     "connectivity_model_parameters": {
         "max_radius": 500,
         "min_radius": 200,
-        "big_radius_probability": 0.5
+        "big_radius_probability": 0.4
     },
-    "reliability_model": "reliable_delivery",
-    "interference_model": "no_interference",
-    "message_transmission_model": "constant_time",
+    "message_transmission_model": "random_time",
     "message_transmission_model_parameters": {
         "constant_transmission_time": 1,
         "random_transmission_min_time": 1,
-        "random_transmission_max_time": 10
-    }
+        "random_transmission_max_time": 3
+    },
+    "reliability_model": "reliable_delivery",
+    "reliability_model_parameters": {},
+    "interference_model": "no_interference",
+    "interference_model_parameters": {
+        "intensity": null
+    },
+    "message_protocol": "TCP",
+    "verbose_logging": false,
+    "csrfmiddlewaretoken": "nYFp0kAhhRByX7rBZz54RZDJVBbIk5RS5LXSYvGlLIeYWo2JB8s9WFNDUezwtMpB",
+    "project": "sample2"
 }

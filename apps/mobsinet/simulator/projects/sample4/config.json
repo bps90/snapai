@@ -1,7 +1,7 @@
 {
     "PROJECT_DIR": "apps/mobsinet/simulator/projects/",
-    "project_name": "example1",
-    "simulation_name": "My Network Simulation",
+    "project_name": "sample4",
+    "simulation_name": "Sample4-Simulation",
     "simulation_rounds": 1,
     "simulation_refresh_rate": 0,
     "num_nodes": 100,
@@ -12,7 +12,7 @@
         "type": "random_graph",
         "avg_degree": 4
     },
-    "node": "sample1:ping_node",
+    "node": "sample5:ping_node",
     "distribution_model": "circular_dist",
     "distribution_model_parameters": {
         "orientation": "horizontal",
@@ -60,6 +60,6 @@
     "message_protocol": "TCP",
     "verbose_logging": false,
     "csrfmiddlewaretoken": "nYFp0kAhhRByX7rBZz54RZDJVBbIk5RS5LXSYvGlLIeYWo2JB8s9WFNDUezwtMpB",
-    "project": "example1",
+    "project": "sample4",
     "nack_messages_enabled": true
 }

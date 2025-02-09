@@ -358,16 +358,16 @@ function hideNodesIds() {
 
 function showNode2vecIds() {
     node2vecIds = true;
-    if (node2vecData.vectors[0]?.length == 2) plot_node2vec_2d();
-    else if (node2vecData.vectors[0]?.length == 3) plot_node2vec_3d(false);
-    else plot_node2vec_3d(true);
+    if (node2vecData.vectors[0]?.length <= 2)
+        plot_node2vec_2d(node2vecData.vectors[0]?.length === 1);
+    else plot_node2vec_3d(node2vecData.vectors[0]?.length > 3);
 }
 
 function hideNode2vecIds() {
     node2vecIds = false;
-    if (node2vecData.vectors[0]?.length == 2) plot_node2vec_2d();
-    else if (node2vecData.vectors[0]?.length == 3) plot_node2vec_3d(false);
-    else plot_node2vec_3d(true);
+    if (node2vecData.vectors[0]?.length <= 2)
+        plot_node2vec_2d(node2vecData.vectors[0]?.length === 1);
+    else plot_node2vec_3d(node2vecData.vectors[0]?.length > 3);
 }
 
 function toggleConfigurations() {
@@ -619,11 +619,11 @@ function node2vecAlgorithm() {
         type: "GET",
         success: function (data) {
             node2vecData = data;
-            if (data.vectors[0].length == 2)
-                return plot_node2vec_2d();
-            if (data.vectors[0].length == 3)
-                return plot_node2vec_3d(false);
-            return plot_node2vec_3d(true);
+
+            if (data.vectors[0].length <= 2)
+                return plot_node2vec_2d(data.vectors[0].length === 1);
+            else
+                return plot_node2vec_3d(data.vectors[0].length > 3);
         },
         error: function (xhr, status, error) {
             console.error(error);
@@ -633,11 +633,11 @@ function node2vecAlgorithm() {
 
 
 
-function plot_node2vec_2d() {
+function plot_node2vec_2d(unidimensional) {
     const { words, vectors } = node2vecData;
 
     let x = vectors.map(v => v[0]);
-    let y = vectors.map(v => v[1]);
+    let y = vectors.map(v => unidimensional ? 0 : v[1]);
 
     // Encontrar os maiores valores absolutos para ajustar os eixos simetricamente
     let maxAbs = Math.max(

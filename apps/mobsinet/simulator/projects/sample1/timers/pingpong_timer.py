@@ -2,7 +2,7 @@ from ....models.nodes.abc_timer import AbcTimer
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ....projects.pingpong.messages.pingpong_message import PingPongMessage
+    from ..messages.pingpong_message import PingPongMessage
 
 
 class PingPongTimer(AbcTimer):
