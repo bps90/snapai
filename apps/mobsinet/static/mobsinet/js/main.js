@@ -2,10 +2,15 @@ let running = false;
 let interval_update = null;
 let arrows = false;
 let showIds = false;
+let node2vecIds = false;
 let nodes = [];
 let links = [];
 let logs = [];
 let highlightedLinks = [];
+let node2vecData = {
+    words: [],
+    vectors: []
+}
 
 async function renderGraph() {
     running = true;
@@ -350,6 +355,20 @@ function hideNodesIds() {
     getUpdatedGraph();
 }
 
+function showNode2vecIds() {
+    node2vecIds = true;
+    if (node2vecData.vectors[0]?.length == 2) plot_node2vec_2d();
+    else if (node2vecData.vectors[0]?.length == 3) plot_node2vec_3d(false);
+    else plot_node2vec_3d(true);
+}
+
+function hideNode2vecIds() {
+    node2vecIds = false;
+    if (node2vecData.vectors[0]?.length == 2) plot_node2vec_2d();
+    else if (node2vecData.vectors[0]?.length == 3) plot_node2vec_3d(false);
+    else plot_node2vec_3d(true);
+}
+
 function toggleConfigurations() {
     $("#options-form").toggle();
 }
@@ -598,11 +617,12 @@ function node2vecAlgorithm() {
         url: "node2vec_algorithm/?dimensions=" + $("#node2vec-dimensions").val(),
         type: "GET",
         success: function (data) {
+            node2vecData = data;
             if (data.vectors[0].length == 2)
-                return plot_node2vec_2d(data.words, data.vectors);
+                return plot_node2vec_2d();
             if (data.vectors[0].length == 3)
-                return plot_node2vec_3d(data.words, data.vectors, false);
-            return plot_node2vec_3d(data.words, data.vectors, true);
+                return plot_node2vec_3d(false);
+            return plot_node2vec_3d(true);
         },
         error: function (xhr, status, error) {
             console.error(error);
@@ -610,7 +630,11 @@ function node2vecAlgorithm() {
     });
 }
 
-function plot_node2vec_2d(words, vectors) {
+
+
+function plot_node2vec_2d() {
+    const { words, vectors } = node2vecData;
+
     let x = vectors.map(v => v[0]);
     let y = vectors.map(v => v[1]);
 
@@ -624,22 +648,24 @@ function plot_node2vec_2d(words, vectors) {
         x: x,
         y: y,
         text: words, // Rótulos nos pontos
-        mode: "markers+text",
+        mode: node2vecIds ? "markers+text" : "markers",
         textposition: "top center",
         marker: { size: 10, color: "black" }
     };
 
     let layout = {
         title: "Node2Vec Embeddings (2D)",
-        xaxis: { title: "Dimensão 1", range: [-maxAbs * 1.1, maxAbs * 1.1] },
-        yaxis: { title: "Dimensão 2", range: [-maxAbs * 1.1, maxAbs * 1.1] },
+        xaxis: { title: "Dimension 1", range: [-maxAbs * 1.1, maxAbs * 1.1] },
+        yaxis: { title: "Dimension 2", range: [-maxAbs * 1.1, maxAbs * 1.1] },
         showlegend: false
     };
 
     Plotly.newPlot("node2vec-graph", [trace], layout);
 }
 
-function plot_node2vec_3d(words, vectors, fourthDimension) {
+function plot_node2vec_3d(fourthDimension) {
+    const { words, vectors } = node2vecData;
+
     let x = vectors.map(v => v[0]);
     let y = vectors.map(v => v[1]);
     let z = vectors.map(v => v[2]);
@@ -657,7 +683,7 @@ function plot_node2vec_3d(words, vectors, fourthDimension) {
         y: y,
         z: z, // Adicionando terceira dimensão
         text: words,
-        mode: "markers+text",
+        mode: node2vecIds ? "markers+text" : "markers",
         textposition: "top center",
         marker: { size: 6, color: fourthDimension ? w : "black", colorscale: "Viridis" }, // Cor baseada em W
         type: "scatter3d"
@@ -666,13 +692,24 @@ function plot_node2vec_3d(words, vectors, fourthDimension) {
     let layout = {
         title: "Node2Vec Embeddings (3D)",
         scene: {
-            xaxis: { title: "Dimensão 1", range: [-maxAbs * 1.1, maxAbs * 1.1] },
-            yaxis: { title: "Dimensão 2", range: [-maxAbs * 1.1, maxAbs * 1.1] },
-            zaxis: { title: "Dimensão 3", range: [-maxAbs * 1.1, maxAbs * 1.1] }
+            xaxis: { title: "Dimension 1", range: [-maxAbs * 1.1, maxAbs * 1.1] },
+            yaxis: { title: "Dimension 2", range: [-maxAbs * 1.1, maxAbs * 1.1] },
+            zaxis: { title: "Dimension 3", range: [-maxAbs * 1.1, maxAbs * 1.1] }
         },
         showlegend: false
     };
 
     Plotly.newPlot("node2vec-graph", [trace], layout);
+}
+
+function download_graph(graphId) {
+    Plotly.toImage(graphId, { format: 'svg', width: 1000, height: 1000 }).then(function (dataUrl) {
+        let link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = 'grafico.svg';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
 }
 

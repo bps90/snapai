@@ -14,6 +14,7 @@ from node2vec import Node2Vec
 import numpy as np
 import gensim
 from copy import deepcopy
+from .simulator.configuration.sim_config import config
 
 # Create your views here.
 # Caminho para a pasta PROJECTS
@@ -284,6 +285,9 @@ def node2vec_algorithm(request):
     node2vec.fit = new_fit_for_node2vec
 
     model = node2vec.fit(node2vec, window=10, min_count=1, batch_words=4)
+
+    model.wv.save_word2vec_format(
+        f'{config.PROJECT_DIR}{Global.project_name}/node2vec-{config.simulation_name}-{dimensions}D.emb')
 
     # Obtém os nós e os vetores
     words = list(model.wv.index_to_key)  # Lista de nós

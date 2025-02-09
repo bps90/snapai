@@ -137,6 +137,9 @@
 
       <div>
         <div id="graph"></div>
+        <button type="button" onclick="download_graph('graph')">
+          Download graph
+        </button>
       </div>
     </div>
     {% include "networkx-algorithms.html" %}
@@ -148,11 +151,21 @@
           id="node2vec-dimensions"
           name="node2vec-dimensions"
           placeholder="Dimensions"
-          default="2"
+          value="2"
         />
       </div>
       <button type="button" onclick="node2vecAlgorithm()">
         Run Node2Vec algorithm
+      </button>
+      <button type="button" onclick="download_graph('node2vec-graph')">
+        Download chart
+      </button>
+      <button
+        type="button"
+        onMouseDown="showNode2vecIds()"
+        onMouseUp="hideNode2vecIds()"
+      >
+        Show IDs
       </button>
 
       <div id="node2vec-graph"></div>

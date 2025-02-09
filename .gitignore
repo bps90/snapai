@@ -126,3 +126,5 @@ dmypy.json
 .vscode/
 
 apps/mobsinet/log/
+
+*.emb

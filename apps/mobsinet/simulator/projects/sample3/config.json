@@ -41,8 +41,8 @@
     },
     "connectivity_model": "qudg_connectivity",
     "connectivity_model_parameters": {
-        "max_radius": 800,
-        "min_radius": 500,
+        "max_radius": 500,
+        "min_radius": 200,
         "big_radius_probability": 0.4
     },
     "message_transmission_model": "random_time",
