@@ -10,7 +10,7 @@ from .models.abc_interference_model import AbcInterferenceModel
 from .models.abc_reliability_model import AbcReliabilityModel
 from .configuration.sim_config import config
 from .global_vars import Global
-
+from .tools.color import Color
 
 from .tools.models_normalizer import ModelsNormalizer
 from typing import Type, TYPE_CHECKING
@@ -44,6 +44,8 @@ class NetworkSimulator(object):
         self.add_nodes(num_nodes=config.num_nodes,
                        distribution_model=config.distribution_model,
                        node_constructor=config.node,
+                       node_color=config.node_color,
+                       node_size=config.node_size,
                        mobility_model=config.mobility_model,
                        connectivity_model=config.connectivity_model,
                        interference_model=config.interference_model,
@@ -54,6 +56,8 @@ class NetworkSimulator(object):
         num_nodes: int,
         distribution_model: Type[AbcDistributionModel] | AbcDistributionModel | str = None,
         node_constructor: Type['AbcNode'] | str = None,
+        node_color: str = None,
+        node_size: int = None,
         mobility_model: Type[AbcMobilityModel] | AbcMobilityModel | str = None,
         connectivity_model: Type[AbcConnectivityModel] | AbcConnectivityModel | str = None,
         interference_model: Type[AbcInterferenceModel] | AbcInterferenceModel | str = None,
@@ -143,6 +147,8 @@ class NetworkSimulator(object):
                 interference_model=interference,
                 reliability_model=reliability
             )
+            node.set_color(Color(hex_str=node_color))
+            node.set_size(node_size)
 
             position = distribution_model.get_position()
 

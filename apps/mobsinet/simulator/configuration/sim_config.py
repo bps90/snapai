@@ -11,6 +11,8 @@ class SimulationConfig:
         self.simulation_refresh_rate = 1
         self.nack_messages_enabled = True
         self.num_nodes = 50
+        self.node_color = '#000000'
+        self.node_size = 1,
         self.dimX = 100
         self.dimY = 100
         self.dimZ = 100
@@ -33,6 +35,7 @@ class SimulationConfig:
             # TODO: maybe turn it dependent by the specific mobility model
             'speed_range': [0, sqrt(self.dimX**2 + self.dimY**2)],
             'direction_range': [0, 2 * pi],
+            'waiting_time_range': [0, 10],
             'prioritize_speed': False,
             'travel_distance': None,
             'travel_time': self.simulation_rounds * 0.1  # 10% of the simulation time
@@ -86,6 +89,8 @@ class SimulationConfig:
         self.set_nack_messages_enabled(config_data.get(
             'nack_messages_enabled', self.nack_messages_enabled))
         self.set_num_nodes(config_data.get('num_nodes', self.num_nodes))
+        self.set_node_color(config_data.get('node_color', self.node_color))
+        self.set_node_size(config_data.get('node_size', self.node_size))
         self.set_network_dimensions(config_data.get('dimX', self.dimX),
                                     config_data.get('dimY', self.dimY),
                                     config_data.get('dimZ', self.dimZ))
@@ -138,6 +143,12 @@ class SimulationConfig:
 
     def set_num_nodes(self, num_nodes):
         self.num_nodes = num_nodes
+
+    def set_node_color(self, color):
+        self.node_color = color
+
+    def set_node_size(self, size):
+        self.node_size = size
 
     def set_network_dimensions(self, dimX, dimY, dimZ):
         self.dimX = dimX

@@ -13,6 +13,7 @@
         "avg_degree": 4
     },
     "node": "inert_node",
+    "node_size": 3,
     "distribution_model": "linear_dist",
     "distribution_model_parameters": {
         "orientation": "vertical",

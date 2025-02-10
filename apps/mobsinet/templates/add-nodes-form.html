@@ -32,6 +32,22 @@
       name="num_nodes"
       value="{{ project_data.num_nodes }}"
     />
+
+    <label for="node_color">Color of nodes (hex):</label>
+    <input
+      type="text"
+      id="node_color"
+      name="node_color"
+      value="{{ project_data.node_color }}"
+    />
+
+    <label for="node_size">Size of nodes (int):</label>
+    <input
+      type="number"
+      id="node_size"
+      name="node_size"
+      value="{{ project_data.node_size }}"
+    />
   </fieldset>
 
   <!-- distribution_model -->
@@ -127,6 +143,14 @@
       id="direction_range-add-nodes"
       name="mobility_model_parameters[direction_range]"
       value="{{ project_data.mobility_model_parameters.direction_range|join:',' }}"
+    />
+
+    <label for="waiting_time_range">Waiting time Range (time steps):</label>
+    <input
+      type="text"
+      id="waiting_time_range"
+      name="mobility_model_parameters[waiting_time_range]"
+      value="{{ project_data.mobility_model_parameters.waiting_time_range|join:',' }}"
     />
 
     <label for="prioritize_speed-add-nodes">Prioritize Speed:</label>

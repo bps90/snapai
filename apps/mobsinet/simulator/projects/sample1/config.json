@@ -5,6 +5,7 @@
     "simulation_name": "PingPong",
     "simulation_refresh_rate": 0,
     "num_nodes": 2,
+    "node_size": 10,
     "dimX": 1000,
     "dimY": 1000,
     "dimZ": 500,

@@ -381,13 +381,17 @@ function toggleAddNodesForm() {
 function calculateDistanceBetweenTwoNodes() {
     const node1Id = $("#two-nodes-algorithms-node-1").val();
     const node2Id = $("#two-nodes-algorithms-node-2").val();
-    const node1 = nodes.find((node) => node.id == node1Id);
-    const node2 = nodes.find((node) => node.id == node2Id);
 
-    const distance = Math.sqrt(
-        Math.pow(node2.x - node1.x, 2) + Math.pow(node2.y - node1.y, 2)
-    );
-    $("#two-nodes-algorithms-result").val(distance);
+    $.ajax({
+        method: 'GET',
+        url: 'calculate_distance/?node1=' + node1Id + '&node2=' + node2Id,
+        success: function (data) {
+            $("#two-nodes-algorithms-result").val(data.distance);
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+        }
+    });
 }
 
 async function onReady() {

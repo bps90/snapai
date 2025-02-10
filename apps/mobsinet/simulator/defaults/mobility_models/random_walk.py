@@ -14,69 +14,6 @@ import matplotlib.pyplot as plt
 
 config.mobility_model_parameters = config.mobility_model_parameters
 
-# TODO: REMOVE IT AFTER TESTING
-colision_digraph = DiGraph()
-trace_graph = DiGraph()
-
-
-def add_colision(
-        old_coordinates: Tuple[float, float, float],
-        limit_point: Tuple[float, float, float],
-        new_coordinates: Tuple[float, float, float],
-        coordinates: Tuple[float, float, float],
-        traveled_distance_to_boundary: float,
-        remaining_distance: float):
-    old_node_id = f'{trace_graph.number_of_nodes() - 1.0:.1f}'
-    limit_node_id = f'{trace_graph.number_of_nodes() - 0.9:.1f}'
-    overmapped_node_id = f'{trace_graph.number_of_nodes() - 0.8:.1f}'
-    new_allocated_node_id = f'{
-        trace_graph.number_of_nodes() - 0.7:.1f}'
-
-    while (colision_digraph.has_node(old_node_id)):
-        old_node_id += '.0'
-
-    while (colision_digraph.has_node(limit_node_id)):
-        limit_node_id += '.1'
-
-    while (colision_digraph.has_node(overmapped_node_id)):
-        overmapped_node_id += '.2'
-
-    while (colision_digraph.has_node(new_allocated_node_id)):
-        new_allocated_node_id += '.3'
-
-    colision_digraph.add_node(
-        old_node_id,
-        position=old_coordinates[0:2],
-        color='#999999')
-
-    colision_digraph.add_node(
-        limit_node_id,
-        position=limit_point[0:2],
-        color='#f000f0')
-
-    colision_digraph.add_node(
-        overmapped_node_id,
-        position=new_coordinates[0:2],
-        color='#f00000')
-
-    colision_digraph.add_node(
-        new_allocated_node_id,
-        position=coordinates[0:2],
-        color='#f000f0')
-
-    colision_digraph.add_edge(
-        old_node_id,
-        limit_node_id,
-        distance=f'{traveled_distance_to_boundary:.1f}')
-    colision_digraph.add_edge(
-        limit_node_id,
-        overmapped_node_id,
-        distance=f'{sqrt((new_coordinates[0] - limit_point[0])**2 + (new_coordinates[1] - limit_point[1])**2):.1f}')
-    colision_digraph.add_edge(
-        limit_node_id,
-        new_allocated_node_id,
-        distance=f'{remaining_distance:.1f}')
-
 
 class RandomWalk(AbcMobilityModel):
 
@@ -396,14 +333,6 @@ class RandomWalk(AbcMobilityModel):
                 limit_point[2] + direction_vector[2]
             )
 
-            if (__name__ == "__main__"):
-                add_colision(old_coordinates,
-                             limit_point,
-                             new_coordinates,
-                             coordinates,
-                             traveled_distance_to_boundary,
-                             remaining_distance)
-
             return self._check_boundary(limit_point, coordinates)
         else:
             return new_coordinates
@@ -454,14 +383,6 @@ class RandomWalk(AbcMobilityModel):
                 limit_point[1] + direction_vector[1],
                 limit_point[2] + direction_vector[2]
             )
-
-            if (__name__ == "__main__"):
-                add_colision(old_coordinates,
-                             limit_point,
-                             new_coordinates,
-                             coordinates,
-                             traveled_distance_to_boundary,
-                             remaining_distance)
 
             return self._check_boundary(limit_point, coordinates)
         else:
@@ -514,14 +435,6 @@ class RandomWalk(AbcMobilityModel):
                 limit_point[2] + direction_vector[2]
             )
 
-            if (__name__ == "__main__"):
-                add_colision(old_coordinates,
-                             limit_point,
-                             new_coordinates,
-                             coordinates,
-                             traveled_distance_to_boundary,
-                             remaining_distance)
-
             return self._check_boundary(limit_point, coordinates)
         else:
             return new_coordinates
@@ -572,14 +485,6 @@ class RandomWalk(AbcMobilityModel):
                 limit_point[1] + direction_vector[1],
                 limit_point[2] + direction_vector[2]
             )
-
-            if (__name__ == "__main__"):
-                add_colision(old_coordinates,
-                             limit_point,
-                             new_coordinates,
-                             coordinates,
-                             traveled_distance_to_boundary,
-                             remaining_distance)
 
             return self._check_boundary(limit_point, coordinates)
         else:
@@ -669,140 +574,3 @@ class RandomWalk(AbcMobilityModel):
 
 
 model = RandomWalk
-
-if __name__ == '__main__':
-    print('asd')
-    random_walk = RandomWalk()
-
-    random_walk.set_travel_distance(70)
-    random_walk.set_speed_range(1, 50)
-
-    node = InertNode(
-        1,
-        Position(randint(0, config.dimX),
-                 randint(0, config.dimY),
-                 0),
-        random_walk,
-        NoConnectivity(),
-        NoInterference(),
-        NoReliability()
-    )
-
-    trace_file = open('random_walk_example_trace.csv', 'w')
-    trace_file.write('t, x, y, z\n')
-
-    for step in range(50):
-        print(step, node.get_coordinates())
-
-        trace_graph.add_node(
-            step,
-            position=node.get_coordinates()[0:2],
-            color='#303070')
-
-        if step > 0:
-            current_coordinates = node.get_coordinates()
-            last_coordinates = trace_graph.nodes[step - 1]['position']
-
-            trace_graph.add_edge(step - 1,
-                                 step,
-                                 distance="{:.1f}".format(
-                                     sqrt(
-                                         (current_coordinates[0] - last_coordinates[0])**2 +
-                                         (current_coordinates[1] - last_coordinates[1])**2)))
-
-        trace_file.write('{}, {}, {}, {}\n'.format(
-            step,
-            node.get_coordinates()[0],
-            node.get_coordinates()[1],
-            node.get_coordinates()[2]
-        ))
-
-        node.set_position(
-            node.mobility_model.get_next_position(node))
-
-    trace_file.close()
-
-    # draw a graph of the borders
-    border = Graph()
-    border.add_node('A', position=(0, 0))
-    border.add_node('B', position=(config.dimX, 0))
-    border.add_node('D', position=(0, config.dimY))
-    border.add_node('C', position=(config.dimX, config.dimY))
-    border.add_edge('A', 'B')
-    border.add_edge('B', 'C')
-    border.add_edge('C', 'D')
-    border.add_edge('D', 'A')
-    draw(border,
-         pos=get_node_attributes(
-             border, 'position'),
-         node_size=0)
-
-    another_digraph_labels = {}
-    another_digraph_color_map = []
-    trace_graph_color_map = []
-
-    for node in colision_digraph.nodes:
-        another_digraph_color_map.append(colision_digraph.nodes[node]['color'])
-        another_digraph_labels[node] = str(node).split('.')[0]
-
-        first_position = colision_digraph.nodes[node]['position']
-
-        for another_node in colision_digraph.nodes:
-            if another_node != node:
-                another_position = colision_digraph.nodes[another_node]['position']
-
-                distance = sqrt(
-                    (first_position[0] - another_position[0])**2 +
-                    (first_position[1] - another_position[1])**2)
-
-                if distance == 0:
-                    try:
-                        colision_digraph.remove_edge(node, another_node)
-                    except:
-                        pass
-
-    for node in trace_graph.nodes:
-        trace_graph_color_map.append(trace_graph.nodes[node]['color'])
-
-    draw(colision_digraph,
-         pos=get_node_attributes(colision_digraph, 'position'),
-         node_size=80,
-         node_color=another_digraph_color_map,
-         with_labels=False,
-         font_size=6,
-         edge_color="#dddddd",
-         font_color="black")
-    draw_networkx_labels(colision_digraph,
-                         pos=get_node_attributes(
-                             colision_digraph, 'position'),
-                         labels=another_digraph_labels,
-                         font_size=6,
-                         font_family='sans-serif')
-
-    draw(trace_graph,
-         pos=get_node_attributes(
-             trace_graph, 'position'),
-         node_size=80,
-         with_labels=True,
-         font_size=7,
-         font_color="white",
-         node_color=trace_graph_color_map)
-    draw_networkx_edge_labels(trace_graph,
-                              pos=get_node_attributes(
-                                  trace_graph, 'position'),
-                              edge_labels=get_edge_attributes(
-                                  trace_graph, 'distance'),
-                              font_size=5,
-                              font_family='sans-serif')
-
-    draw_networkx_edge_labels(
-        colision_digraph,
-        pos=get_node_attributes(colision_digraph, 'position'),
-        font_size=5,
-        font_family='sans-serif',
-        font_color="#aaaaaa",
-        edge_labels=get_edge_attributes(colision_digraph, 'distance'),
-        connectionstyle='arc3, rad=0.1')
-
-    plt.axis('equal')
-    plt.show()

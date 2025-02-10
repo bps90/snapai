@@ -334,6 +334,8 @@ def add_nodes(request):
             connectivity_model=config.connectivity_model,
             interference_model=config.interference_model,
             reliability_model=config.reliability_model,
+            node_color=form_data['node_color'],
+            node_size=form_data['node_size']
         )
 
         config = original_config
@@ -373,3 +375,19 @@ def parse_nested_dict(flat_dict):
         current_level[keys[-1]] = value
 
     return nested_dict
+
+
+def calculate_distance(request):
+    node1_id = request.GET.get('node1')
+    node2_id = request.GET.get('node2')
+
+    if (node1_id == "" or not node1_id.isdigit() or node2_id == "" or not node2_id.isdigit()):
+        return JsonResponse({"message": "ID inválido."}, status=400)
+
+    node1 = simulation.get_node_by_id(int(node1_id))
+    node2 = simulation.get_node_by_id(int(node2_id))
+
+    if not isinstance(node1, AbcNode) or not isinstance(node2, AbcNode):
+        return JsonResponse({"message": "Não encontrado."}, status=404)
+
+    return JsonResponse({"distance": node1.position.euclidean_distance(node2.position)})

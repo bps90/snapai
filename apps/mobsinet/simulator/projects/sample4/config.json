@@ -5,6 +5,7 @@
     "simulation_rounds": 1,
     "simulation_refresh_rate": 0,
     "num_nodes": 100,
+    "node_size": 3,
     "dimX": 10000,
     "dimY": 10000,
     "dimZ": 10000,
