@@ -3,7 +3,7 @@
 ## Getting Started
 
 1. Requirements:
-You need to have a modern browser (Chrome, Firefox, Edge, Opera, ...)
+You need to have a modern browser (Chrome, Firefox, Edge, Opera, ...) and python installed on your computer. You can download python from [here](https://www.python.org/downloads/).
 
 2. Install conda
 You can install anaconda or miniconda. We will use miniconda.
