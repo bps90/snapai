@@ -9,25 +9,29 @@ You need to have a modern browser (Chrome, Firefox, Edge, Opera, ...)
 You can install anaconda or miniconda. We will use miniconda.
 
 3. Create a new environment
-```bash
-$ conda env create -f env.yml
-$ conda activate mobenv
-```
+    ```bash
+    $ conda env create -f env.yml
+    ```
+    ```bash
+    $ conda activate mobenv
+    ```
 
 4. Making migrations
-```bash
-$ python manage.py makemigrations
-$ python manage.py migrate
-```
+    ```bash
+    $ python manage.py makemigrations
+    ```
+    ```bash
+    $ python manage.py migrate
+    ```
 
 5. Run server
-```bash
-$ python manage.py runserver
-```
+    ```bash
+    $ python manage.py runserver
+    ```
 
 6. Open browser and go to [http://localhost:8000/mobsinet/graph/](http://localhost:8000/mobsinet/graph/)
 ---
-### Comandos para exportar dependências
+### Commands to export dependencies
 
 ```bash
 $ conda env export --no-builds | grep -v "^prefix:"  > environment.yml
