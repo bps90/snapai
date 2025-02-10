@@ -7,7 +7,7 @@
     "num_nodes": 500,
     "dimX": 15000,
     "dimY": 15000,
-    "dimZ": 10000,
+    "dimZ": 0,
     "network_parameters": {
         "type": "random_graph",
         "avg_degree": 4

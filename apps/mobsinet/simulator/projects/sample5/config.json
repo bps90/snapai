@@ -5,9 +5,10 @@
     "simulation_rounds": 1,
     "simulation_refresh_rate": 0,
     "num_nodes": 20,
+    "node_size": 3,
     "dimX": 7000,
     "dimY": 7000,
-    "dimZ": 10000,
+    "dimZ": 0,
     "network_parameters": {
         "type": "random_graph",
         "avg_degree": 4

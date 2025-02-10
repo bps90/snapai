@@ -8,7 +8,7 @@
     "simulation_rounds": 1,
     "dimX": 10000,
     "dimY": 10000,
-    "dimZ": 10000,
+    "dimZ": 0,
     "network_parameters": {
         "type": "random_graph",
         "avg_degree": 2
