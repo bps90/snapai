@@ -153,6 +153,14 @@
       value="{{ project_data.mobility_model_parameters.waiting_time_range|join:',' }}"
     />
 
+    <label for="move_time_range">Move Time Range (time steps):</label>
+    <input
+      type="text"
+      id="move_time_range"
+      name="mobility_model_parameters[move_time_range]"
+      value="{{ project_data.mobility_model_parameters.move_time_range|join:',' }}"
+    />
+
     <label for="prioritize_speed-add-nodes">Prioritize Speed:</label>
 
     <select

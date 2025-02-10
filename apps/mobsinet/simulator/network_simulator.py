@@ -147,7 +147,8 @@ class NetworkSimulator(object):
                 interference_model=interference,
                 reliability_model=reliability
             )
-            node.set_color(Color(hex_str=node_color))
+            node.set_color(
+                Color(hex_str=node_color if node_color else config.node_color))
             node.set_size(node_size)
 
             position = distribution_model.get_position()

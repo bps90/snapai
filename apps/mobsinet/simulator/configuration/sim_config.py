@@ -36,6 +36,7 @@ class SimulationConfig:
             'speed_range': [0, sqrt(self.dimX**2 + self.dimY**2)],
             'direction_range': [0, 2 * pi],
             'waiting_time_range': [0, 10],
+            'move_time_range': [0, 10],
             'prioritize_speed': False,
             'travel_distance': None,
             'travel_time': self.simulation_rounds * 0.1  # 10% of the simulation time
