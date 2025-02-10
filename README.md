@@ -1,4 +1,4 @@
-# MobENV
+# SNAPPY: A Simulator for Network Algorithms and Protocols in Python
 
 ## Getting Started
 
