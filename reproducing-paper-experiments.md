@@ -108,7 +108,7 @@ $ python manage.py runserver
 11. Click on the "Add to the simulation" button to add the new batch of nodes to the simulation.
 12. Go back to the Add Nodes form and change the follow parameters in the form:
     * Radius (for section Distribution Model Parameters): 2500
-    * Max Radius (for section Connectivity Model Parameters): 1200
+    * Max Radius (for section Connectivity Model Parameters): 1500
 13. Click on the "Add to the simulation" button to add the new batch of nodes to the simulation.
 14. Set the number of rounds to 1.
 15. Click on "Run" button to start the simulation.
