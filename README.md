@@ -9,6 +9,10 @@ This is a simulator for network algorithms and protocols in Python. It is a web 
   - [Getting Started](#getting-started)
   - [Creating projects](#creating-projects)
   - [Executing projects](#executing-projects)
+    - [Adding new batches of nodes to the simulation](#adding-new-batches-of-nodes-to-the-simulation)
+    - [Executing shortest path algorithm](#executing-shortest-path-algorithm)
+    - [Executing Node2Vec algorithm](#executing-node2vec-algorithm)
+    - [Commands to export dependencies](#commands-to-export-dependencies)
 
 ## Getting Started
 
@@ -150,11 +154,9 @@ You must create a folder for each type of model in your project folder (`mobilit
 ```bash
 $ source activate mobenv
 ```
-and then
 ```bash
 $ python manage.py runserver
-```	
-
+```
 2. Open browser and go to [http://localhost:8000/mobsinet/graph/](http://localhost:8000/mobsinet/graph/) and select the project you want to run.
 ![alt text](docs/imgs/image.png "screenshot")
 
