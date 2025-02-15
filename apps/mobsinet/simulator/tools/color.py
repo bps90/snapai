@@ -13,7 +13,6 @@ class Color:
         return f'#{self.r:02x}{self.g:02x}{self.b:02x}'
 
     def set_hex(self, hex_str: str):
-        print(hex_str)
         hex_str = hex_str.lstrip('#')
         self.r = int(hex_str[0:2], 16)
         self.g = int(hex_str[2:4], 16)

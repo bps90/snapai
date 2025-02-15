@@ -279,7 +279,7 @@ def node2vec_algorithm(request):
         return JsonResponse({"message": "Invalid dimensions."}, status=400)
 
     node2vec = Node2Vec(
-        simulation.graph, dimensions=int(dimensions), workers=4)
+        simulation.graph, dimensions=int(dimensions), workers=1)
 
     # For compatibility with the project version of gensim
     node2vec.fit = new_fit_for_node2vec

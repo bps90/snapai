@@ -28,8 +28,6 @@ class RandomDirection(AbcMobilityModel):
             ) * (self.move_time_range[1] - self.move_time_range[0]) + self.move_time_range[0])
             fraction = random() * (wt + mt)
 
-            print('wt', wt, 'mt', mt, 'fraction', fraction)
-
             if (fraction < wt):
                 self._remaining_waiting_time = math.ceil(wt - fraction)
                 self._remaining_moves = 0
