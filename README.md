@@ -150,7 +150,7 @@ You must create a folder for each type of model in your project folder (`mobilit
 ```bash
 $ source activate mobenv
 ```
-
+and then
 ```bash
 $ python manage.py runserver
 ```	
