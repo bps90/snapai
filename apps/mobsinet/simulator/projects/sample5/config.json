@@ -38,7 +38,9 @@
         ],
         "prioritize_speed": false,
         "travel_distance": null,
-        "travel_time": 50
+        "travel_time": 50,
+        "waiting_time_range": null,
+        "move_time_range": null
     },
     "connectivity_model": "qudg_connectivity",
     "connectivity_model_parameters": {
@@ -62,5 +64,6 @@
     "verbose_logging": false,
     "csrfmiddlewaretoken": "nYFp0kAhhRByX7rBZz54RZDJVBbIk5RS5LXSYvGlLIeYWo2JB8s9WFNDUezwtMpB",
     "project": "sample5",
-    "nack_messages_enabled": true
+    "nack_messages_enabled": true,
+    "node_color": null
 }
