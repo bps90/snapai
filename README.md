@@ -1,5 +1,15 @@
 # SNAPPY: A Simulator for Network Algorithms and Protocols in Python
 
+This is a simulator for network algorithms and protocols in Python. It is a web application that allows the user to create and run simulations of network algorithms and protocols. The simulator is built using Django and JavaScript. The simulator is designed to be modular, allowing the user to create new models for nodes, mobility, distribution, connectivity, message transmission, reliability, and interference. The simulator also allows the user to create new projects with custom node implementations and models. The simulator includes a graph visualization tool that allows the user to visualize the network topology and the messages transmitted between nodes. The simulator also includes tools for analyzing the network, such as shortest path algorithms and node embedding algorithms.
+
+# Table of Contents
+
+- [SNAPPY: A Simulator for Network Algorithms and Protocols in Python](#snappy-a-simulator-for-network-algorithms-and-protocols-in-python)
+- [Table of Contents](#table-of-contents)
+  - [Getting Started](#getting-started)
+  - [Creating projects](#creating-projects)
+  - [Executing projects](#executing-projects)
+
 ## Getting Started
 
 1. Requirements:
@@ -152,7 +162,7 @@ $ python manage.py runserver
 5. Click on the "Run" button to start the simulation.
 ![alt text](docs/imgs/image2.png "screenshot")
 
-## Adding new batches of nodes to the simulation
+### Adding new batches of nodes to the simulation
 
 1. Start a simulation with the desired configuration.
 2. Click on button "Show/Hide add nodes form" to open the form.
@@ -161,14 +171,14 @@ $ python manage.py runserver
 5. Click on the "Run" button to start the simulation.
 ![alt text](docs/imgs/image3.png)
 
-## Executing shortest path algorithm
+### Executing shortest path algorithm
 1. Start a simulation with the desired configuration.
 2. Inputs the source and destination nodes.
 3. Click on the "Shortest path" button to run the shortest path algorithm.
 4. See the result in the output and in the graph.
 ![alt text](docs/imgs/tutorial-4.jpeg)
 
-## Executing Node2Vec algorithm
+### Executing Node2Vec algorithm
 
 1. Start a simulation with the desired configuration.
 2. Input the dimensions of the embedding.
@@ -177,7 +187,10 @@ $ python manage.py runserver
 ![alt text](docs/imgs/tutorial-5.jpeg)
 
 ---
+
+
 ### Commands to export dependencies
+If you modify the environment, you can export the dependencies with the following commands, but we recommend that you modify manually the env.yml file.
 
 ```bash
 $ conda env export --no-builds | grep -v "^prefix:"  > environment.yml
@@ -187,4 +200,20 @@ $ conda env export | grep -v "^prefix:" | sed -E 's/(=.+)//' > environment-nover
 ```
 ```bash
 $ conda env export | grep -v "^prefix:" > environment-builds.yml 
+```
+```yml
+name: mobenv
+channels:
+  - conda-forge
+  - defaults
+  # you can add more channels here
+dependencies:
+  - django=4.2.18
+  - networkx=3.4.2
+  - node2vec=0.3.0
+  - numpy=1.26.4
+  - gensim=4.3.2
+  - matplotlib=3.10.0
+  - scipy=1.12.0
+  - dependency_name=version # add your new dependencies like this...
 ```
