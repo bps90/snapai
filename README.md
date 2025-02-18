@@ -278,6 +278,8 @@ Você deverá ver o menor caminho entre os dois nós no grafo com setas vermelha
 17.Insira o número de dimensões no campo “Dimensions” e clique no botão “Run Node2Vec Algorithm” para rodar o algoritmo Node2Vec (no artigo, testamos com 4 dimensões).
 Você deverá ver o resultado do algoritmo Node2Vec no gráfico.
 
+*Um tutorial mais detalhado pode ser encontrado na pasta **[experimentos-reprodutiveis-tutorial/](experimentos-reprodutiveis-tutorial/)**.
+
 # LICENSE
 
 GNU General Public License v3.0 (GPL-3.0)
