@@ -1,216 +1,47 @@
-# SNAPPY: A Simulator for Network Algorithms and Protocols in Python
+# Um Framework Modular em Python para Simulação de Algoritmos de Redes
 
-This is a simulator for network algorithms and protocols in Python. It is a web application that allows the user to create and run simulations of network algorithms and protocols. The simulator is built using Django and JavaScript. The simulator is designed to be modular, allowing the user to create new models for nodes, mobility, distribution, connectivity, message transmission, reliability, and interference. The simulator also allows the user to create new projects with custom node implementations and models. The simulator includes a graph visualization tool that allows the user to visualize the network topology and the messages transmitted between nodes. The simulator also includes tools for analyzing the network, such as shortest path algorithms and node embedding algorithms.
+O objetivo deste software é ser um simulador de algoritmos de redes simples, construído em Python, modular, de facil uso e expansível.
+No artigo "Um Framework Modular em Python para Simulação de Algoritmos de Redes" apresentamos o funcionamento deste software e casos de uso sob o seguinte resumo: "*Para impulsionar os avanços nos algoritmos de redes de computadores, é essencial utilizar simuladores atualizados que permitam testes em ambientes controlados. Assim, propomos o SNAPPY, uma ferramenta de código aberto projetada para analisar e programar a troca de mensagens de nós, movimentação, conectividade e distribuição. SNAPPY é feito em Python, integrado com algoritmos de redes complexas e Inteligência Artificial. Sua arquitetura é modular, o que garante adaptabilidade para diversas pesquisas e extensibilidade. Como exemplo, apresentamos três casos de uso: troca de mensagens ping-pong, aplicação do algoritmo de Dijkstra e o Node2Vec embedding.*"
 
-# Table of Contents
+# Estrutura do readme.md
 
-- [SNAPPY: A Simulator for Network Algorithms and Protocols in Python](#snappy-a-simulator-for-network-algorithms-and-protocols-in-python)
-- [Table of Contents](#table-of-contents)
-  - [Getting Started](#getting-started)
-  - [Creating projects](#creating-projects)
-  - [Executing projects](#executing-projects)
-    - [Adding new batches of nodes to the simulation](#adding-new-batches-of-nodes-to-the-simulation)
-    - [Executing shortest path algorithm](#executing-shortest-path-algorithm)
-    - [Executing Node2Vec algorithm](#executing-node2vec-algorithm)
-    - [Commands to export dependencies](#commands-to-export-dependencies)
+Neste arquivo README.md, apresentamos a estrutura do artefato, com informações sobre a instalação, execução e reprodução dos experimentos.
 
-## Getting Started
+A estrutura do repositório é a seguinte:
 
-1. Requirements:
-You need to have a modern browser (Chrome, Firefox, Edge, Opera, ...) and python installed on your computer. You can download python from [here](https://www.python.org/downloads/).
+| Raiz
+| - README.md (este arquivo)
+| - env.yml (arquivo de dependências do ambiente conda)
+| - LICENSE (licença do software)
+| - *...[arquivos] (outros arquivos)*
+| - **doc/** (arquivos guia da documentação)
+| - **experimentos-reprodutiveis-tutorial/** (tutorial para reprodução dos experimentos)
+| - **how-to-install/** (tutorial para instalação do software)
+| - **apps/mobsinet/** (arquivos do software)
+| - ***...[pastas]** (arquivos de configuração do Django)*
 
-2. Install conda
-You can install anaconda or miniconda. We will use miniconda.
+# Selos Considerados
 
-3. Create a new environment
-```bash
-$ conda env create -f env.yml
-```
-```bash
-$ conda activate mobenv
-```
+- Artefatos Disponíveis (SeloD); 
+- Artefatos Funcionais (SeloF);
+- Artefatos Sustentáveis (SeloS);
+- Experimentos Reprodutíveis (SeloR)
 
-4. Making migrations
-```bash
-$ python manage.py makemigrations
-```
-```bash
-$ python manage.py migrate
-```
+# Informações básicas
 
-5. Run server
-```bash
-$ python manage.py runserver
-```
-
-6. Open browser and go to [http://localhost:8000/mobsinet/graph/](http://localhost:8000/mobsinet/graph/)
-
-## Creating projects
-
-1. Create a new folder in the projects directory
-2. Create a config.json file in the new folder
-```json
-{
-    "project": "project_name_here",
-    "simulation_rounds": 100,
-    "simulation_name": "NameOfTheSimulation",
-    "simulation_refresh_rate": 0,
-    "num_nodes": 30,
-    "node_size": 5,
-    "dimX": 1000,
-    "dimY": 1000,
-    "node": "project_name:node_implementation",
-    "distribution_model": "distribution_model",
-    "distribution_model_parameters": {
-        "orientation": "horizontal",
-        "line_position": 50,
-        "number_of_nodes": 30,
-        "midpoint": [400,400],
-        "rotation_direction": "anti-clockwise",
-        "radius": 200
-    },
-    "mobility_model": "mobility_model",
-    "mobility_model_parameters": {
-        "speed_range": [0,20],
-        "direction_range": [0,6.283185307179586],
-        "prioritize_speed": false,
-        "travel_distance": null,
-        "travel_time": 70
-    },
-    "connectivity_model": "connectivity_model",
-    "connectivity_model_parameters": {
-        "max_radius": 1000,
-        "min_radius": 800,
-        "big_radius_probability": 0.75
-    },
-    "message_transmission_model": "message_transmission_model",
-    "message_transmission_model_parameters": {
-        "constant_transmission_time": 3,
-        "random_transmission_min_time": 2,
-        "random_transmission_max_time": 4
-    },
-    "reliability_model": "reliability_model",
-    "reliability_model_parameters": {},
-    "interference_model": "interference_model",
-    "interference_model_parameters": {
-        "intensity": 5
-    },
-    "nack_messages_enabled": false
-}
-```
-3. Create a node implementation in your project (optional)
-You must create a `nodes` folder in your project folder and create a python file with the node implementation. The node implementation must inherit from the `AbcNode` class. You can see the available methods in the `AbcNode` class. Here is an example of a node implementation:
-```python
-from ....models.nodes.abc_node import AbcNode
-
-# Useful imports
-from ....global_vars import Global
-from ....network_simulator import simulation
-from ....configuration.sim_config import config
+- Python 3.12 ou superior
+- Um navegador moderno (Chrome, Firefox, Edge, Opera, ...)
+    O navegador deve ter JavaScript moderno ativado.
+- 4 GB de RAM ou mais
+- 1 GB de espaço livre em disco ou mais
+- Anaconda ou Miniconda instalados
+- Processador de 2,5 GHz ou mais rápido (recomendado)
+- Resolução de tela de 1440 x 900 ou superior (recomendado)
 
 
-class MyProjectNode(AbcNode):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.your_node_attribute = None
+# Dependências
 
-    def handle_messages(self, inbox):
-        # Handle received messages
-        pass
-
-    def check_requirements(self):
-        # Requirements to init the node in the simulation
-        return super().check_requirements()
-
-    def init(self):
-        # Initialize the node
-        return super().init()
-
-    def on_neighboorhood_change(self):
-        # Actions to be taken when the neighborhood changes
-        return super().on_neighboorhood_change()
-
-    def post_step(self):
-        # Actions to be taken after each step
-        return super().post_step()
-
-    def pre_step(self):
-        # Actions to be taken before each step
-        return super().pre_step()
-
-    # Add other methods here, you can see the available methods in the AbcNode class
-
-
-node = MyProjectNode # Every node implementation must have a node variable
-
-```
-4. Create a new model in your project (optional)
-You must create a folder for each type of model in your project folder (`mobility_models`,`distribution_models`, `connectivity_models`, `message_transmission_models`, `reliability_models`, `interference_models`), and create a python file with the model implementation. The model implementation must inherit from the the base class of each model type, (`AbcMobilityModel`, `AbcDistributionModel`, `AbcConnectivityModel`, `AbcMessageTransmissionModel`, `AbcReliabilityModel`, `AbcInterferenceModel`). You can see the available methods in the `AbcModel` class. You can see examples of model implementations in the `apps/mobsinet/simulator/defaults` folder.
-
-
-## Executing projects
-
-1. With the project installed, you can navigate to the project folder and run the following command:
-```bash
-$ source activate mobenv
-```
-```bash
-$ python manage.py runserver
-```
-2. Open browser and go to [http://localhost:8000/mobsinet/graph/](http://localhost:8000/mobsinet/graph/) and select the project you want to run.
-![alt text](docs/imgs/image.png "screenshot")
-
-3. Click on the "Initialize" button to initialize the simulation.
-4. Configure number of rounds, refresh rate and visualization fps.
-5. Click on the "Run" button to start the simulation.
-![alt text](docs/imgs/image2.png "screenshot")
-
-### Adding new batches of nodes to the simulation
-
-1. Start a simulation with the desired configuration.
-2. Click on button "Show/Hide add nodes form" to open the form.
-3. Fill the form with the desired configuration for the new batch of nodes.
-4. Click on the "Add to the simulation" button to add the new batch of nodes to the simulation.
-5. Click on the "Run" button to start the simulation.
-![alt text](docs/imgs/image3.png)
-
-### Executing shortest path algorithm
-1. Start a simulation with the desired configuration.
-2. Inputs the source and destination nodes.
-3. Click on the "Shortest path" button to run the shortest path algorithm.
-4. See the result in the output and in the graph.
-![alt text](docs/imgs/tutorial-4.jpeg)
-
-### Executing Node2Vec algorithm
-
-1. Start a simulation with the desired configuration.
-2. Input the dimensions of the embedding.
-3. Click on the "Run Node2Vec algorithm".
-4. See the result in the chart.
-![alt text](docs/imgs/tutorial-5.jpeg)
-
----
-
-
-### Commands to export dependencies
-If you modify the environment, you can export the dependencies with the following commands, but we recommend that you modify manually the env.yml file.
-
-```bash
-$ conda env export --no-builds | grep -v "^prefix:"  > environment.yml
-```
-```bash
-$ conda env export | grep -v "^prefix:" | sed -E 's/(=.+)//' > environment-noversion.yml
-```
-```bash
-$ conda env export | grep -v "^prefix:" > environment-builds.yml 
-```
-```yml
-name: mobenv
-channels:
-  - conda-forge
-  - defaults
-  # you can add more channels here
-dependencies:
+As dependências utilizadas estão listadas em **environment.yml**, mas grande parte delas são dependências das bibliotecas do Python listadas abaixo:
   - django=4.2.18
   - networkx=3.4.2
   - node2vec=0.3.0
@@ -218,5 +49,238 @@ dependencies:
   - gensim=4.3.2
   - matplotlib=3.10.0
   - scipy=1.12.0
-  - dependency_name=version # add your new dependencies like this...
+
+Essas mesmas dependências estão listadas no arquivo **env.yml**.
+
+# Preocupações com segurança
+
+O SNAPPY foi projeto para ser de uso seguro em qualquer plataforma e sistema que siga os requisitos mínimos, não havendo preocupações com segurança.
+
+# Instalação
+
+1.Instale o Python
+    Você pode baixar o Python aqui.
+
+2.Instale o Miniconda (ou Anaconda)
+    Você pode instalar o Miniconda aqui.
+
+3.Instale o Firefox (ou outro navegador moderno)
+    Você pode baixar o Firefox aqui.
+
+4.Instale o Git
+    Você pode baixar o Git aqui.
+
+5.Clone o repositório
+```bash
+$ git clone repository_url_here.git
 ```
+
+6.Crie um novo ambiente
+```bash
+$ conda env create-f env.yml
+```
+```bash
+$ conda activate mobenv
+```
+
+7.Faça as migrations
+```bash
+$ python manage.py makemigrations
+```
+```bash
+$ python manage.py migrate
+```
+
+#### Executando o servidor
+
+```
+$ python manage.py runserver
+```
+
+#### Acessando a aplicação
+
+Você pode acessar a aplicação através do link [http://localhost:8000/mobsinet/graph/](http://localhost:8000/mobsinet/graph/).
+
+
+*Um tutorial mais detalhado pode ser encontrado na pasta **[how-to-install/](how-to-install/)**.
+
+# Teste mínimo
+
+1. Com o SNAPPY instalado, você pode navegar até a pasta raíz e executar os seguintes comandos:
+```bash
+$ source activate mobenv
+```
+```bash
+$ python manage.py runserver
+```
+2. Abra o navegador e acesse [http://localhost:8000/mobsinet/graph/](http://localhost:8000/mobsinet/graph/) e selecione o projeto que deseja executar.
+![alt text](doc/imgs/image.png "screenshot")
+
+3. Clique no botão "Initialize" para inicializar a simulação.
+4. Configure o número de rodadas, a taxa de atualização e o fps da visualização.
+5. Clique no botão "Run" para iniciar a simulação.
+![alt text](doc/imgs/image2.png "screenshot")
+
+#### Adicionando novo lote de nós à simulação
+1. Inicie uma simulação com a configuração desejada.
+2. Clique no botão "Show/Hide add nodes form" para abrir o formulário.
+3. Preencha o formulário com a configuração desejada para a nova turma de nós.
+4. Clique no botão "Add to the simulation" para adicionar a nova turma de nós à simulação.
+5. Clique no botão "Run" para iniciar a simulação.
+![alt text](doc/imgs/image3.png)
+
+#### Executando o algoritmo de caminho mais curto
+1. Execute uma simulação com as configurações desejadas.
+2. Coloque os IDs de dois nós nos campos "Node 1" e "Node 2".
+3. Clique no botão "Shortest path" para executar o algoritmo de caminho mais curto.
+4. Veja o resultado na saída e no gráfico.
+![alt text](doc/imgs/tutorial-4.jpeg)
+
+#### Executando o algoritmo Node2Vec
+1. Execute uma simulação com as configurações desejadas.
+2. Coloque as dimensões dos "embeddings" no campo "Dimensions".
+3. Clique no botão "Run Node2Vec algorithm".
+4. Veja o resultado no gráfico.
+![alt text](doc/imgs/tutorial-5.jpeg)
+
+
+# Experimentos
+
+## Reivindicação Ping Pong
+
+Primeiramente, vamos reproduzir o experimento de ping pong. O experimento
+consiste em dois nós que enviam mensagens um para o outro. As mensagens
+são enviadas com uma cor aleatória no conteúdo, que é usada pelo nó receptor
+para se colorir.
+
+*Se você ainda não fez o tutorial #Getting Started no README, faça isso
+    antes de reproduzir o experimento.
+
+1.Navegue até a pasta raiz do SNAPPY no seu terminal.
+2.Execute o seguinte comando para iniciar o simulador:
+```bash
+$ source activate mobenv
+```
+```bash
+$ python manage.py runserver
+```
+3.Abra seu navegador e acesse [http://localhost:8000/mobsinet/graph/](http://localhost:8000/mobsinet/graph/).
+4.Abra o menu de configurações clicando no botão “Show/Hide configurations” caso ainda não esteja aberto.
+5.Selecione o projeto “Sample1” no dropdown de seleção de projeto.
+6.Verifique se o restante das configurações está definida conforme abaixo:
+    - Nó: sample1:pingpong_node
+    - Número de Nós: 2
+    - Tamanho dos nós: 10 # você pode alterar esse valor para visualizar melhor os nós
+    - Dimensão X: 1000
+    - Dimensão Y: 1000
+    - Modelo de Distribuição: linear_dist
+    - Orientação: horizontal
+    - Posição da linha: 0
+    - Número de nós (para a seção Parâmetros do Modelo de Distribuição): 2
+    - Modelo de Mobilidade: random_walk
+    - Intervalo de Velocidade: 0,
+    - Intervalo de Direção (radianos): 0,6.
+    - Priorizar Velocidade: Não
+    - Tempo de Viagem: 70
+    - Modelo de Conectividade: qudg_connectivity
+    - Raio Máximo: 1000
+    - Raio Mínimo: 800
+    - Probabilidade de Raio Grande: 0,
+    - Modelo de Confiabilidade: reliable_delivery
+    - Modelo de Interferência: probability_interference
+    - Intensidade: 5
+    - Modelo de Transmissão de Mensagem: random_time
+    - Tempo Mínimo de Transmissão Aleatória: 2
+    - Tempo Máximo de Transmissão Aleatória: 4
+7.Clique no botão “Submit” no final do formulário.
+8.Clique no botão “Initialize” para redefinir as variáveis da simulação e posicionar os nós no cenário.
+9.Defina o número de rodadas para 60.
+10.Defina a taxa de atualização para 15.
+11.Defina os FPS da simulação para 60.
+12.Clique no botão “Run” para iniciar a simulação.
+Você deverá ver os nós se movendo no cenário e enviando mensagens um para o
+outro. As mensagens são coloridas, e os nós receptores mudam sua cor para a
+cor da mensagem recebida. Você pode ver quando uma mensagem é descartada
+ou entregue com sucesso no console integrado. Quando os nós perdem a conexão
+ou se reconectam, uma mensagem é exibida no console de logs.
+13.Para manter os IDs dos nós sempre visíveis, clique e segure no botão
+“Show IDs”, mova o mouse para fora do botão e solte o botão do mouse.
+14.Para manter as setas sempre visíveis, repita o procedimento do passo 13,
+mas com o botão “Show Arrows”.
+15.Para parar a simulação, clique no botão “Stop”.
+16.Insira os IDs dos nós nos campos “Node 1” e “Node 2” e clique no botão
+“Distance” para visualizar a distância euclidiana entre os dois nós.
+
+## Reivindicação Shortest Path + Node2Vec
+
+Agora vamos reproduzir os experimentos do caminho mais curto com Node2Vec.
+O experimento de caminho mais curto consiste em encontrar o menor caminho
+entre dois nós no cenário. O experimento Node2Vec consiste em executar o
+algoritmo Node2Vec no cenário atual.
+
+- Se você ainda não fez o tutorial #Getting Started no README, faça isso antes de reproduzir o experimento.
+1.Navegue até a pasta raiz do SNAPPY no seu terminal.
+2.Execute o seguinte comando para iniciar o simulador:
+```bash
+    $ source activate mobenv
+```
+```bash
+$ python manage.py runserver
+```
+3.Abra seu navegador e acesse [http://localhost:8000/mobsinet/graph/](http://localhost:8000/mobsinet/graph/).
+4.Abra o menu de configurações clicando no botão “Show/Hide configurations” caso ainda não esteja aberto.
+5.Selecione o projeto “Sample4” no dropdown de seleção de projeto.
+6.Verifique se o restante das configurações estão definidas conforme abaixo:
+    - Mensagens NACK Ativadas: Sim
+    - Nó: sample5:ping_node
+    - Número de Nós: 100
+    - Tamanho dos nós: 3
+    - Dimensão X: 10000
+    - Dimensão Y: 10000
+    - Modelo de Distribuição: circular_dist
+    - Número de nós (para a seção Parâmetros do Modelo de Distribuição): 100
+    - Ponto Médio: 5000,
+    - Direção de Rotação: anti-horário
+    - Raio: 500
+    - Modelo de Mobilidade: random_walk
+    - Intervalo de Velocidade: 100,
+    - Intervalo de Direção (radianos): 0,6.
+    - Priorizar Velocidade: Não
+    - Distância de Viagem: 500
+    - Modelo de Conectividade: qudg_connectivity
+    - Raio Máximo: 500
+    - Raio Mínimo: 200
+    - Probabilidade de Raio Grande: 0,
+    - Modelo de Confiabilidade: reliable_delivery
+    - Modelo de Interferência: no_interference
+    - Modelo de Transmissão de Mensagem: random_time
+    - Tempo Mínimo de Transmissão Aleatória: 1
+    - Tempo Máximo de Transmissão Aleatória: 10
+7.Clique no botão “Submit” no final do formulário.
+8.Clique no botão “Initialize” para redefinir as variáveis da simulação e
+posicionar os nós no cenário.
+9.Clique no botão “Show/Hide add nodes form” para abrir o formulário.
+10.Altere os seguintes parâmetros no formulário:
+    - Raio (para a seção Parâmetros do Modelo de Distribuição): 1500
+    - Raio Máximo (para a seção Parâmetros do Modelo de Conectividade): 1000
+    - Raio Mínimo (para a seção Parâmetros do Modelo de Conectividade): 500
+11.Clique no botão "Add to the simulation" para adicionar o novo lote de nós à simulação.
+12.Volte ao formulário de Adicionar Nós e altere os seguintes parâmetros:
+    - Raio (para a seção Parâmetros do Modelo de Distribuição): 2500
+    - Raio Máximo (para a seção Parâmetros do Modelo de Conectividade): 1200
+13.Clique no botão "Add to the simulation" para adicionar o novo lote de
+nós à simulação.
+14.Defina o número de rodadas para 1.
+15.Clique no botão “Run” para iniciar a simulação.
+16.Insira os IDs dos nós nos campos “Node 1” e “Node 2” e clique no botão “Shortest Path” para executar o algoritmo de caminho mais curto
+(no artigo, testamos com os nós 150 e 300).
+Você deverá ver o menor caminho entre os dois nós no grafo com setas vermelhas.
+17.Insira o número de dimensões no campo “Dimensions” e clique no botão “Run Node2Vec Algorithm” para rodar o algoritmo Node2Vec (no artigo, testamos com 4 dimensões).
+Você deverá ver o resultado do algoritmo Node2Vec no gráfico.
+
+# LICENSE
+
+GNU General Public License v3.0 (GPL-3.0)
+
+Disponível em [LICENSE](LICENSE)
+

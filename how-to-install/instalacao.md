@@ -14,34 +14,49 @@
 
 ## Instalação
 
-```
 1.Instale o Python
-Você pode baixar o Pythonaqui.
+    Você pode baixar o Python aqui.
+
 2.Instale o Miniconda (ou Anaconda)
-Você pode instalar o Minicondaaqui.
+    Você pode instalar o Miniconda aqui.
+
 3.Instale o Firefox (ou outro navegador moderno)
-Você pode baixar o Firefoxaqui.
+    Você pode baixar o Firefox aqui.
+
 4.Instale o Git
-Você pode baixar o Gitaqui.
+    Você pode baixar o Git aqui.
+
 5.Clone o repositório
+```bash
 $ git clone repository_url_here.git
+```
+
 6.Crie um novo ambiente
+```bash
 $ conda env create-f env.yml
+```
+```bash
 $ conda activate mobenv
+```
+
 7.Faça as migrations
+```bash
 $ python manage.py makemigrations
+```
+```bash
 $ python manage.py migrate
 ```
+
 ## Executando o servidor
 
 ```
 $ python manage.py runserver
 ```
+
 ## Acessando a aplicação
 
-Você pode acessar a aplicação através do link:http://localhost:8000/mobsinet/
-graph/.
+Você pode acessar a aplicação através do link [http://localhost:8000/mobsinet/graph/](http://localhost:8000/mobsinet/graph/).
 
-### 1
+
 
 
