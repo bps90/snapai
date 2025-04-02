@@ -77,7 +77,7 @@ $ git clone repository_url_here.git
 
 6.Crie um novo ambiente
 ```bash
-$ conda env create-f env.yml
+$ conda env create -f env.yml
 ```
 ```bash
 $ conda activate mobenv
