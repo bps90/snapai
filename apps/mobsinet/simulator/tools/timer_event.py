@@ -38,8 +38,8 @@ class TimerEvent(Event):
         """
         if self.timer.node:
             if has_executed:
-                return f"Timer at node {self.timer.node.ID}"
-            return f"TE (Node:{self.timer.node.ID}, Time:{self.get_execution_time_string(4)})"
+                return f"Timer at node {self.timer.node.id}"
+            return f"TE (Node:{self.timer.node.id}, Time:{self.get_execution_time_string(4)})"
         else:
             if has_executed:
                 return "Global Timer"
@@ -52,9 +52,9 @@ class TimerEvent(Event):
         """
         if self.timer.node:  # a node timer
             if has_executed:
-                return (f"The timer fired at node {self.timer.node.ID}\n"
+                return (f"The timer fired at node {self.timer.node.id}\n"
                         f"The type of the timer was {self.timer.__class__.__name__}")
-            return (f"At time {self.time} a timer fires at node {self.timer.node.ID}\n"
+            return (f"At time {self.time} a timer fires at node {self.timer.node.id}\n"
                     f"The type of the timer is {self.timer.__class__.__name__}")
         else:  # a global timer
             if has_executed:
