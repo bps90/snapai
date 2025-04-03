@@ -10,6 +10,7 @@ from ...network_simulator import simulation
 from ...tools.models_normalizer import ModelsNormalizer
 from ...tools.color import Color
 from ...configuration.sim_config import config
+from ...tools.packet_event import PacketEvent
 
 if TYPE_CHECKING:
     from .abc_timer import AbcTimer
@@ -126,18 +127,23 @@ class AbcNode(ABC):
 
         Global.number_of_messages_in_this_round += 1
 
-        if (not Global.is_running):
-            raise Exception("The node " + str(self.id) +
-                            " tried to send a message with simulation not running.")
+        if (Global.is_async_mode):
+            simulation.event_queue.append(
+                PacketEvent(packet, Global.current_time + transmission_time)
+            )
+        else:
+            if (not Global.is_running):
+                raise Exception("The node " + str(self.id) +
+                                " tried to send a message with simulation not running.")
 
-        destination.packet_buffer.add_packet(packet)
+            destination.packet_buffer.add_packet(packet)
 
     def broadcast(self, message: 'AbcMessage', intensity: float = None):
         intensity = intensity if intensity != None else self.intensity
         self.__broadcast_message(message, intensity)
 
     def __broadcast_message(self, message: 'AbcMessage', intensity: float):
-        if (not Global.is_running):
+        if (not Global.is_running and not Global.is_async_mode):
             raise Exception("The node " + str(self.id) +
                             " tried to broadcast a message with simulation not running.")
 
@@ -165,7 +171,10 @@ class AbcNode(ABC):
             simulation.packets_in_the_air.add(self_sent_packet)
 
     def __send_message(self, msg: 'AbcMessage', has_edge: bool, sender: 'AbcNode', destination: 'AbcNode', intensity: float):
-        return self.__synchronousSending(msg, has_edge, sender, destination, intensity)
+        if (Global.is_async_mode):
+            return self.__asynchronousSending(msg, has_edge, sender, destination, intensity)
+        else:
+            return self.__synchronousSending(msg, has_edge, sender, destination, intensity)
 
     def __synchronousSending(self, msg: 'AbcMessage', has_edge: bool, sender: 'AbcNode', destination: 'AbcNode', intensity: float):
         if (not Global.is_running):
@@ -190,14 +199,46 @@ class AbcNode(ABC):
         if (has_edge):
             packet.positive_delivery = self.reliability_model.reaches_destination(
                 packet)
-            simulation.graph.edges[sender, destination]['number_of_packets'] = simulation.graph.edges[sender,
-                                                                                                      destination]['number_of_packets'] + 1
+            simulation.graph.edges[sender,
+                                   destination]['number_of_packets'] += 1
         else:
             packet.positive_delivery = False
 
         destination.packet_buffer.add_packet(packet)
 
         Global.number_of_messages_in_this_round += 1
+
+        return packet
+
+    def __asynchronousSending(self, msg: 'AbcMessage', has_edge: bool, sender: 'AbcNode', destination: 'AbcNode', intensity: float):
+        cloned_message = msg.clone()
+
+        if (cloned_message == None):
+            raise Exception("Cloned message is None")
+
+        packet = Packet(cloned_message)
+        transmission_time = Global.message_transmission_model.time_to_reach(
+            packet, sender, destination)
+
+        packet.arriving_time = Global.current_time + transmission_time
+        packet.sending_time = Global.current_time
+        packet.origin = sender
+        packet.destination = destination
+        packet.intensity = intensity
+        packet.type = PacketType['UNICAST']
+
+        if (has_edge):
+            packet.positive_delivery = self.reliability_model.reaches_destination(
+                packet)
+            simulation.graph.edges[sender,
+                                   destination]['number_of_packets'] += 1
+        else:
+            packet.positive_delivery = False
+
+        Global.number_of_messages_over_all += 1
+
+        simulation.event_queue.append(
+            PacketEvent(packet, Global.current_time + transmission_time))
 
         return packet
 

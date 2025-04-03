@@ -41,7 +41,10 @@ class PacketsInTheAirBuffer(object):
         try:
             self.active_packets.remove(packet)
         except ValueError:
-            self.passive_packets.remove(packet)
+            try:
+                self.passive_packets.remove(packet)
+            except ValueError:
+                pass
 
     def denyFromEdge(self, origin: 'AbcNode', destination: 'AbcNode'):
         for packet in self.active_packets:

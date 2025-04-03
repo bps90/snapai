@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING
 from abc import ABC, abstractmethod
 from ...global_vars import Global
+from ...network_simulator import simulation
+from ...tools.timer_event import TimerEvent
 
 if TYPE_CHECKING:
     from .abc_node import AbcNode
@@ -33,7 +35,11 @@ class AbcTimer(ABC):
         self.node = None
         self.fire_time = Global.current_time + time
 
-        Global.custom_global.global_timers.append(self)
+        if (Global.is_async_mode):
+            simulation.event_queue.append(
+                TimerEvent(self, self.fire_time))
+        else:
+            Global.custom_global.global_timers.append(self)
 
     def start_relative(self, time: int, node: 'AbcNode'):
         """Starts a relative timer.
@@ -57,7 +63,11 @@ class AbcTimer(ABC):
         self.node = node
         self.fire_time = Global.current_time + time
 
-        node.add_timer(self)
+        if (Global.is_async_mode):
+            simulation.event_queue.append(
+                TimerEvent(self, self.fire_time))
+        else:
+            node.add_timer(self)
 
     def start_absolute(self, global_time: int, node: 'AbcNode'):
         """Starts an absolute timer.
@@ -82,7 +92,11 @@ class AbcTimer(ABC):
         self.node = node
         self.fire_time = global_time
 
-        node.add_timer(self)
+        if (Global.is_async_mode):
+            simulation.event_queue.append(
+                TimerEvent(self, self.fire_time))
+        else:
+            node.add_timer(self)
 
     def isGlobalTimer(self) -> bool:
         """Checks if the timer is a global timer.

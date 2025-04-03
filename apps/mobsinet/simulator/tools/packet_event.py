@@ -49,7 +49,9 @@ class PacketEvent(Event):
         if config.interference_model != 'no_interference':  # There is interference
             simulation.packets_in_the_air.perform_interference_test_before_remove()
             simulation.packets_in_the_air.remove(self.packet)
-
+        if (simulation.has_edge(self.packet.origin, self.packet.destination)):
+            simulation.graph.edges[self.packet.origin,
+                                   self.packet.destination]['number_of_packets'] += 1
         if self.packet.positive_delivery:
             self.packet.destination.handle_messages(
                 self.inbox.reset_for_packet(self.packet))
@@ -61,6 +63,9 @@ class PacketEvent(Event):
     def drop(self):
         if config.interference_model != 'no_interference':  # There is interference
             simulation.packets_in_the_air.remove(self.packet)
+        if (simulation.has_edge(self.packet.origin, self.packet.destination)):
+            simulation.graph.edges[self.packet.origin,
+                                   self.packet.destination]['number_of_packets'] -= 1
 
     def __str__(self):
         return "PacketEvent"

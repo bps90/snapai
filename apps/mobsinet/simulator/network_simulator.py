@@ -27,6 +27,7 @@ class NetworkSimulator(object):
         self.packets_in_the_air = PacketsInTheAirBuffer()
         self.arrived_packets: list[Packet] = []
         self.running_thread = None
+        self.event_queue = []
 
     def reset(self):
         NetworkSimulator.last_node_id = 0

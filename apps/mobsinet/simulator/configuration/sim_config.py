@@ -63,6 +63,7 @@ class SimulationConfig:
         }
         self.message_protocol = 'TCP'
         self.verbose_logging = False
+        self.asynchronous = False
 
         if config_file:
             self.load_from_file(config_file)
@@ -126,6 +127,8 @@ class SimulationConfig:
             'message_protocol', self.message_protocol))
         self.set_verbose_logging(config_data.get(
             'verbose_logging', self.verbose_logging))
+        self.set_asynchronous(config_data.get(
+            'asynchronous', self.asynchronous))
 
     def set_project_dir(self, dirname):
         self.PROJECT_DIR = dirname
@@ -204,6 +207,9 @@ class SimulationConfig:
     def set_verbose_logging(self, verbose):
         self.verbose_logging = verbose
 
+    def set_asynchronous(self, async_mode):
+        self.asynchronous = async_mode
+
     def print_config(self):
         print("Simulation Configuration:")
         print(f"Simulation Name: {self.simulation_name}")
@@ -233,6 +239,8 @@ class SimulationConfig:
             f"Interference Model Parameters: {self.interference_model_parameters}")
         print(f"Message Protocol: {self.message_protocol}")
         print(f"Verbose Logging: {self.verbose_logging}")
+        print(f"Asynchronous: {self.asynchronous}")
+        print(f"Node Color: {self.node_color}")
 
 
 config = SimulationConfig()

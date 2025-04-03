@@ -41,8 +41,9 @@ class InboxPacketBuffer:
 
                 self.buffer.remove(p)
 
-                # if p.edge:
-                #     p.edge.remove_message_for_this_edge(p.message)
+                if (simulation.has_edge(p.origin, p.destination)):
+                    simulation.graph.edges[p.origin,
+                                           p.destination]['number_of_packets'] -= 1
 
                 if p.positive_delivery:
                     self.arriving_packets.append(p)

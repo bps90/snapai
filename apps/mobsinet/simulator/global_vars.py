@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 class Global:
     is_running = False
     is_even_round = False
+    is_async_mode = False
     start_time: datetime = None
     start_time_of_round: datetime = None
     log: logging.Logger = None
