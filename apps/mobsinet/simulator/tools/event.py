@@ -36,5 +36,9 @@ class Event(ABC):
         pass
 
     @abstractmethod
+    def drop(self):
+        pass
+
+    @abstractmethod
     def handle(self):
         pass
