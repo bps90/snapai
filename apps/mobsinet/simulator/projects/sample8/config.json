@@ -1,0 +1,65 @@
+{
+    "project": "sample8",
+    "PROJECT_DIR": "apps/mobsinet/simulator/projects/",
+    "simulation_name": "Sample8-Async-Simulation",
+    "num_nodes": 30,
+    "node_size": 3,
+    "simulation_rounds": 1,
+    "dimX": 1000,
+    "dimY": 1000,
+    "dimZ": 0,
+    "node": "sample8:s8_node",
+    "distribution_model": "random_dist",
+    "distribution_model_parameters": {
+        "orientation": "horizontal",
+        "line_position": 0,
+        "number_of_nodes": 60,
+        "midpoint": [
+            9500,
+            500
+        ],
+        "rotation_direction": "clockwise",
+        "radius": 400
+    },
+    "mobility_model": "no_mobility",
+    "mobility_model_parameters": {
+        "speed_range": [
+            3,
+            50
+        ],
+        "waiting_time_range": [
+            50,
+            500
+        ],
+        "direction_range": [
+            0,
+            6.283185307179586
+        ],
+        "move_time_range": [
+            1,
+            100
+        ],
+        "prioritize_speed": false,
+        "travel_distance": null,
+        "travel_time": 70
+    },
+    "connectivity_model": "qudg_connectivity",
+    "connectivity_model_parameters": {
+        "max_radius": 1000,
+        "min_radius": 500,
+        "big_radius_probability": 0.7
+    },
+    "reliability_model": "reliable_delivery",
+    "interference_model": "no_interference",
+    "message_transmission_model": "constant_time",
+    "message_transmission_model_parameters": {
+        "constant_transmission_time": 1,
+        "random_transmission_min_time": 1,
+        "random_transmission_max_time": 10
+    },
+    "nack_messages_enabled": true,
+    "interference_model_parameters": {
+        "intensity": null
+    },
+    "node_color": "#ffaa00"
+}

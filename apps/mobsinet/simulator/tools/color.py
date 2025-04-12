@@ -9,6 +9,16 @@ class Color:
             self.g = g
             self.b = b
 
+    def __init__(self, r: int = 0, g: int = 0, b: int = 0, hex_str: str = None, tuple: tuple = None):
+        if hex_str is not None:
+            self.set_hex(hex_str)
+        elif tuple is not None:
+            self.set_tuple(tuple)
+        else:
+            self.r = r
+            self.g = g
+            self.b = b
+
     def get_hex(self):
         return f'#{self.r:02x}{self.g:02x}{self.b:02x}'
 
@@ -25,3 +35,11 @@ class Color:
         self.r = tuple[0]
         self.g = tuple[1]
         self.b = tuple[2]
+
+
+# Define color constants after the class definition
+Color.GREEN = Color(0, 255, 0)
+Color.YELLOW = Color(255, 255, 0)
+Color.RED = Color(255, 0, 0)
+Color.BLUE = Color(0, 0, 255)
+Color.PURPLE = Color(128, 0, 128)
