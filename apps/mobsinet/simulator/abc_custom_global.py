@@ -75,3 +75,9 @@ class AbcCustomGlobal(ABC):
             timer.fire()
             Global.round_logs.append(
                 f'Global timer {timer.__class__.__name__} {timer.node.id} fired')
+
+    def handle_empty_event_queue(self):
+        """
+        Called when the event queue is empty.
+        """
+        pass

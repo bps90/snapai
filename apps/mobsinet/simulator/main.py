@@ -7,6 +7,7 @@ from .configuration.sim_config import config
 from importlib import import_module
 import logging
 from time import sleep
+from .asynchronous_thread import AsynchronousThread
 
 
 class Main:
@@ -45,6 +46,10 @@ class Main:
         Global.custom_global.check_project_requirements()
 
         simulation.add_project_nodes()
+
+        if (Global.is_async_mode and len(simulation.nodes()) > 0):
+            AsynchronousThread.reevaluate_connections()
+
         simulation.pre_run()
 
 

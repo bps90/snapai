@@ -11,12 +11,14 @@ from .models.abc_reliability_model import AbcReliabilityModel
 from .configuration.sim_config import config
 from .global_vars import Global
 from .tools.color import Color
+from .asynchronous_thread import AsynchronousThread
 
 from .tools.models_normalizer import ModelsNormalizer
 from typing import Type, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .models.nodes.abc_node import AbcNode
+    from .tools.event import Event
 
 
 class NetworkSimulator(object):
@@ -27,7 +29,7 @@ class NetworkSimulator(object):
         self.packets_in_the_air = PacketsInTheAirBuffer()
         self.arrived_packets: list[Packet] = []
         self.running_thread = None
-        self.event_queue = []
+        self.event_queue: list[Event] = []
 
     def reset(self):
         NetworkSimulator.last_node_id = 0
@@ -255,8 +257,12 @@ class NetworkSimulator(object):
         if Global.is_running:
             return
 
-        self.running_thread = SynchronousThread(
-            rounds, refresh_rate)
+        if Global.is_async_mode:
+            self.running_thread = AsynchronousThread(
+                rounds, refresh_rate)
+        else:
+            self.running_thread = SynchronousThread(
+                rounds, refresh_rate)
 
         self.running_thread.start()
 
@@ -272,6 +278,11 @@ class NetworkSimulator(object):
         for node in self.nodes():
             if node.id == node_id:
                 return node
+
+    def remove_all_async_events(self):
+        for event in self.event_queue:
+            event.drop()
+        self.event_queue.clear()
 
 
 simulation = NetworkSimulator()
