@@ -8,7 +8,10 @@ from .nack_box import NackBox
 from ..configuration.sim_config import config
 from ..network_simulator import simulation
 from .packet_type import PacketType
-from ..models.nodes.abc_node import AbcNode
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..models.nodes.abc_node import AbcNode
 
 
 class PacketEvent(Event):
@@ -87,7 +90,7 @@ class PacketEvent(Event):
                      if self.packet.positive_delivery else
                      "The message has already been disturbed and will not reach its destination."))
 
-    def get_event_node(self) -> AbcNode:
+    def get_event_node(self) -> 'AbcNode':
         return self.packet.destination
 
     def is_node_event(self) -> bool:

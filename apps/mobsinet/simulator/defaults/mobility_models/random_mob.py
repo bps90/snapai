@@ -22,7 +22,7 @@ class RandomMob(AbcMobilityModel):
 
         xcord = randint(0, config.dimX)
         ycord = randint(0, config.dimY)
-        zcord = randint(0, config.dimZ)
+        zcord = randint(0, config.dimZ) if config.dimZ > 0 else 0
 
         return Position(xcord, ycord, zcord)
 

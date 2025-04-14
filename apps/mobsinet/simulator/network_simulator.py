@@ -11,7 +11,7 @@ from .models.abc_reliability_model import AbcReliabilityModel
 from .configuration.sim_config import config
 from .global_vars import Global
 from .tools.color import Color
-from .asynchronous_thread import AsynchronousThread
+
 
 from .tools.models_normalizer import ModelsNormalizer
 from typing import Type, TYPE_CHECKING
@@ -253,6 +253,7 @@ class NetworkSimulator(object):
 
     def run(self, rounds=config.simulation_rounds, refresh_rate: float = config.simulation_refresh_rate):
         from .synchronous_thread import SynchronousThread
+        from .asynchronous_thread import AsynchronousThread
 
         if Global.is_running:
             return

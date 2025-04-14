@@ -18,6 +18,10 @@ class AsynchronousThread(Thread):
         self.last_event_node: AbcNode = None
         self.__should_stop = False  # Local control to stop the thread
 
+    def stop(self):
+        self.__should_stop = True
+        simulation.running_thread = None
+
     def run(self):
         Global.log.info(
             f'Starting simulation thread for {self.number_of_events} events...')
@@ -38,10 +42,10 @@ class AsynchronousThread(Thread):
                 Global.is_running = False
                 break
 
-            if (simulation.event_queue.empty()):
+            if (len(simulation.event_queue) == 0):
                 Global.custom_global.handle_empty_event_queue()
 
-            if (simulation.event_queue.empty()):
+            if (len(simulation.event_queue) == 0):
                 Global.log.info(
                     'No event to execute! Generate a event manually.')
                 break
@@ -54,10 +58,10 @@ class AsynchronousThread(Thread):
 
         Global.is_running = False
 
-    def reevaluate_connections(self):
+    def reevaluate_connections():
         """(private) Updates the connections in the network graph."""
 
-        for node in self.nodes():
+        for node in simulation.nodes():
             node: 'AbcNode'
 
             # reset neighboorhood_changed flag
@@ -66,7 +70,7 @@ class AsynchronousThread(Thread):
             disconnections = 0
 
             # update the connections
-            for possible_neighbor in self.nodes():
+            for possible_neighbor in simulation.nodes():
                 possible_neighbor: 'AbcNode'
 
                 if possible_neighbor == node:
@@ -74,16 +78,16 @@ class AsynchronousThread(Thread):
 
                 is_connected = node.connectivity_model.is_connected(
                     node, possible_neighbor)
-                has_edge = self.has_edge(node, possible_neighbor)
+                has_edge = simulation.has_edge(node, possible_neighbor)
 
                 if (is_connected and not has_edge):
-                    self.add_edge(node, possible_neighbor)
+                    simulation.add_edge(node, possible_neighbor)
                     node.neighborhood_changed = True
                     connections += 1
 
                 elif (not is_connected and has_edge):
-                    self.remove_edge(node, possible_neighbor)
-                    self.packets_in_the_air.denyFromEdge(
+                    simulation.remove_edge(node, possible_neighbor)
+                    simulation.packets_in_the_air.denyFromEdge(
                         node, possible_neighbor)
                     node.neighborhood_changed = True
                     disconnections += 1

@@ -1,11 +1,14 @@
 from .event import Event
-from ..models.nodes.abc_timer import AbcTimer
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..models.nodes.abc_timer import AbcTimer
 
 
 class TimerEvent(Event):
     num_timer_events_on_the_fly = 0
 
-    def __init__(self, timer: AbcTimer, time: float):
+    def __init__(self, timer: 'AbcTimer', time: float):
         """
         Creates a TimerEvent for the given timer, a given time, and a node.
         :param timer: The timer that will fire.

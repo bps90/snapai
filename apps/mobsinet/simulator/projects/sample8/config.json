@@ -2,7 +2,7 @@
     "project": "sample8",
     "PROJECT_DIR": "apps/mobsinet/simulator/projects/",
     "simulation_name": "Sample8-Async-Simulation",
-    "num_nodes": 30,
+    "num_nodes": 3,
     "node_size": 3,
     "simulation_rounds": 1,
     "dimX": 1000,
@@ -43,7 +43,7 @@
         "travel_distance": null,
         "travel_time": 70
     },
-    "connectivity_model": "qudg_connectivity",
+    "connectivity_model": "udg_connectivity",
     "connectivity_model_parameters": {
         "max_radius": 1000,
         "min_radius": 500,
@@ -61,5 +61,11 @@
     "interference_model_parameters": {
         "intensity": null
     },
-    "node_color": "#ffaa00"
+    "node_color": "#ffaa00",
+    "csrfmiddlewaretoken": "nYFp0kAhhRByX7rBZz54RZDJVBbIk5RS5LXSYvGlLIeYWo2JB8s9WFNDUezwtMpB",
+    "network_parameters": {
+        "type": "random_graph",
+        "avg_degree": 4
+    },
+    "asynchronous": true
 }

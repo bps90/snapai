@@ -25,8 +25,8 @@ class RandomDist(AbcDistributionModel):
         """
 
         p = Position(x=random.randrange(0, config.dimX),
-                     y=random.randrange(0, config.dimZ),
-                     z=random.randrange(0, config.dimZ))
+                     y=random.randrange(0, config.dimY),
+                     z=random.randrange(0, config.dimZ) if config.dimZ > 0 else 0)
 
         return p
 
