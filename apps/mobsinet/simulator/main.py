@@ -8,6 +8,7 @@ from importlib import import_module
 import logging
 from time import sleep
 from .asynchronous_thread import AsynchronousThread
+from .tools.event import Event
 
 
 class Main:
@@ -24,7 +25,7 @@ class Main:
         Global.is_async_mode = config.asynchronous
         Global.message_transmission_model = ModelsNormalizer.normalize_message_transmission_model(
             None)  # Default message transmission model
-
+        Event.next_id = 1
         try:
             Global.custom_global = import_module(config.PROJECT_DIR.replace(
                 '/', '.') + project_name + '.custom_global').CustomGlobal()
@@ -39,6 +40,7 @@ class Main:
         logging.basicConfig(filename='example.log',
                             encoding='utf-8', level=logging.DEBUG, filemode='w')
         Global.log = logging.getLogger(Global.project_name)
+        Global.log.handlers.clear()
         Global.log.addHandler(console_handler)
 
         Global.log.info('Starting simulation...')

@@ -2,7 +2,7 @@
     "project": "sample8",
     "PROJECT_DIR": "apps/mobsinet/simulator/projects/",
     "simulation_name": "Sample8-Async-Simulation",
-    "num_nodes": 3,
+    "num_nodes": 3000,
     "node_size": 3,
     "simulation_rounds": 1,
     "dimX": 1000,
@@ -45,9 +45,9 @@
     },
     "connectivity_model": "udg_connectivity",
     "connectivity_model_parameters": {
-        "max_radius": 1000,
+        "max_radius": 25,
         "min_radius": 500,
-        "big_radius_probability": 0.7
+        "big_radius_probability": 1
     },
     "reliability_model": "reliable_delivery",
     "interference_model": "no_interference",

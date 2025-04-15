@@ -24,4 +24,7 @@ urlpatterns = [
          views.node2vec_algorithm, name='node2vec_algorithm'),
     path('graph/calculate_distance/',
          views.calculate_distance, name='calculate_distance'),
+    path('graph/reevaluate_connections/',
+         views.reevaluate_connections, name='reevaluate_connections'),
+
 ]

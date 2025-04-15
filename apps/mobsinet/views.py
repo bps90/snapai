@@ -15,6 +15,7 @@ import numpy as np
 import gensim
 from copy import deepcopy
 from .simulator.configuration.sim_config import config
+from .simulator.asynchronous_thread import AsynchronousThread
 
 # Create your views here.
 # Caminho para a pasta PROJECTS
@@ -78,6 +79,13 @@ def init_simulation(request):
     project = request.GET.get('project')
 
     Main.init(project)
+
+    return HttpResponse(status=200)
+
+
+def reevaluate_connections(request):
+    if (Global.is_async_mode):
+        AsynchronousThread.reevaluate_connections()
 
     return HttpResponse(status=200)
 

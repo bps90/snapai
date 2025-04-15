@@ -489,6 +489,24 @@ function initSimulation() {
     });
 }
 
+function reevaluateConnections() {
+    $.ajax({
+        url: "reevaluate_connections/",
+        type: "GET",
+        success: function () {
+            $("#reevaluated").show();
+            setTimeout(() => {
+                $("#reevaluated").hide();
+            }, 2000);
+            getUpdatedGraph();
+        },
+        error: function (xhr, status, error) {
+            alert("Erro");
+            console.error(error);
+        },
+    });
+}
+
 function runSimulation() {
     const rounds = document.querySelector("#simulation_rounds").value;
     let refreshRate = document.querySelector("#simulation_refresh_rate").value;

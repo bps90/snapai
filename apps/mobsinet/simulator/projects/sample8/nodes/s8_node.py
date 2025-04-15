@@ -15,15 +15,30 @@ class S8Node(AbcNode):
         return super().check_requirements()
 
     def handle_messages(self, inbox):
-        for packet in inbox.packet_list:
-            if (not isinstance(packet.message, S8Message)):
-                continue
-            msg = packet.message
 
+        if (inbox.single_packet is not None):
+            packet = inbox.single_packet
+            if (not isinstance(packet.message, S8Message)):
+                return
+            msg = packet.message
+            print('No {} recebendo mensagem {} de Nó {}'.format(
+                self.id, msg.color.get_hex(), packet.origin.id))
             # green and yellow messages are forwarded to all neighbors
             if ((msg.color == Color.GREEN or msg.color == Color.YELLOW) and self.node_color != msg.color):
+                print('{} broadcasting {}'.format(
+                    self.id, msg.color.get_hex()))
                 self.broadcast(msg)
             self.set_color(msg.color)
+        if (inbox.packet_list is not None):
+            for packet in inbox.packet_list:
+                if (not isinstance(packet.message, S8Message)):
+                    continue
+                msg = packet.message
+
+                # green and yellow messages are forwarded to all neighbors
+                if ((msg.color == Color.GREEN or msg.color == Color.YELLOW) and self.node_color != msg.color):
+                    self.broadcast(msg)
+                self.set_color(msg.color)
 
     def __send_color_message(self, color: Color, to: AbcNode):
         msg = S8Message()
