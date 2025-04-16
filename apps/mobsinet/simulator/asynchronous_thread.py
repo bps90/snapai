@@ -64,7 +64,7 @@ class AsynchronousThread(Thread):
             print('event handled')
             print([event.id for event in simulation.event_queue])
 
-            simulation.event_queue.remove(event)
+            simulation.event_queue.remove()
 
         Global.is_running = False
 

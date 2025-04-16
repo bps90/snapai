@@ -11,7 +11,7 @@ from .models.abc_reliability_model import AbcReliabilityModel
 from .configuration.sim_config import config
 from .global_vars import Global
 from .tools.color import Color
-
+from .tools.event_queue import EventQueue
 
 from .tools.models_normalizer import ModelsNormalizer
 from typing import Type, TYPE_CHECKING
@@ -29,7 +29,7 @@ class NetworkSimulator(object):
         self.packets_in_the_air = PacketsInTheAirBuffer()
         self.arrived_packets: list[Packet] = []
         self.running_thread = None
-        self.event_queue: list[Event] = []
+        self.event_queue: EventQueue = EventQueue()
 
     def reset(self):
         NetworkSimulator.last_node_id = 0

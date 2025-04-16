@@ -7,7 +7,7 @@ class NoMobility(AbcMobilityModel):
     """A mobility model with no mobility."""
 
     def __init__(self):
-        super().__init__('RandomMob')
+        super().__init__('NoMobility')
 
     def get_next_position(self, node: AbcNode = None) -> Position:
         """
