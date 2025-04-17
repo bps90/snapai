@@ -34,8 +34,8 @@ def update_graph(request):
     with_logs = request.GET.get('with_logs') == 'true'
     node_link_data = json_graph.node_link_data(simulation.graph, edges="edges")
 
-    nodes = list(map(lambda node: [node['id'].id, round(node['id'].position.x, 2), round(
-        node['id'].position.y, 2), round(node['id'].position.z, 2), node['id'].size, node['id'].node_color.get_hex()], node_link_data.get('nodes')))
+    nodes = list(map(lambda node: [node['id'].id, node['id'].position.x,
+                                   node['id'].position.y, node['id'].position.z, node['id'].size, node['id'].node_color.get_hex()], node_link_data.get('nodes')))
     links = []
 
     for link in node_link_data.get('edges'):

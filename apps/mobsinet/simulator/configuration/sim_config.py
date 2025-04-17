@@ -29,6 +29,8 @@ class SimulationConfig:
             'midpoint': (self.dimX / 2, self.dimY / 2),
             'rotation_direction': 'anti-clockwise',
             'radius': None,
+            'is_lat_long': False,
+            'trace_file': None,
         }
         self.mobility_model = 'random_mob'
         self.mobility_model_parameters = {
@@ -39,7 +41,9 @@ class SimulationConfig:
             'move_time_range': [0, 10],
             'prioritize_speed': False,
             'travel_distance': None,
-            'travel_time': self.simulation_rounds * 0.1  # 10% of the simulation time
+            'travel_time': self.simulation_rounds * 0.1,  # 10% of the simulation time
+            'is_lat_long': False,
+            'trace_file': None,
         }
         self.connectivity_model = 'no_connectivity'
         self.connectivity_model_parameters = {
