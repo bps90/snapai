@@ -15,6 +15,8 @@ class FromTrace2DInMemory(AbcMobilityModel):
         super().__init__('FromTrace2DInMemory')
         self.is_lat_long: bool = config.mobility_model_parameters.get(
             'is_lat_long', False)
+        self.should_padding: bool = config.mobility_model_parameters.get(
+            'should_padding', False)
         self.__trace_index: int = 0
         self.trace_file: str = config.mobility_model_parameters.get(
             'trace_file')
@@ -31,6 +33,17 @@ class FromTrace2DInMemory(AbcMobilityModel):
             True if the trace is in latitude/longitude format, False otherwise.
         """
         self.is_lat_long = is_lat_long
+
+    def set_should_padding(self, should_padding: bool):
+        """
+        Set whether the trace should be padded to the simulation dimensions.
+
+        Parameters
+        ----------
+        should_padding : bool
+            True if the trace should be padded, False otherwise.
+        """
+        self.should_padding = should_padding
 
     def load_trace(self, filename: str):
         """
@@ -87,6 +100,13 @@ class FromTrace2DInMemory(AbcMobilityModel):
 
         trace_data = FromTrace2DInMemory.__traces[self.trace_file]
 
+        """
+        trace_data[0] is the list of positions
+        trace_data[1] is the min x
+        trace_data[2] is the max x
+        trace_data[3] is the min y
+        trace_data[4] is the max y
+        """
         if (self.is_lat_long):
             max_x = trace_data[2] - trace_data[1]
             max_y = trace_data[4] - trace_data[3]
@@ -97,7 +117,7 @@ class FromTrace2DInMemory(AbcMobilityModel):
         if max_x > config.dimX or max_y > config.dimY:
             raise ValueError("Trace coordinates exceed simulation dimensions.")
 
-        corresponding_position: list[float]
+        corresponding_position: list[float] = None
 
         for i in range(self.__trace_index, len(trace_data[0])):
             line = trace_data[0][i]
@@ -114,13 +134,31 @@ class FromTrace2DInMemory(AbcMobilityModel):
         if self.is_lat_long:
             lat = corresponding_position[1]
             long = corresponding_position[2]
-            x = (lat - trace_data[1]) / \
-                (trace_data[2] - trace_data[1]) * config.dimX
-            y = (long - trace_data[3]) / \
-                (trace_data[4] - trace_data[3]) * config.dimY
+
+            if (self.should_padding):
+                x = (lat - trace_data[1]) / \
+                    (trace_data[2] - trace_data[1]) * \
+                    config.dimX * 0.9 + (config.dimX * 0.05)
+                y = (long - trace_data[3]) / \
+                    (trace_data[4] - trace_data[3]) * \
+                    config.dimY * 0.9 + (config.dimY * 0.05)
+            else:
+                x = (lat - trace_data[1]) / \
+                    (trace_data[2] - trace_data[1]) * config.dimX
+                y = (long - trace_data[3]) / \
+                    (trace_data[4] - trace_data[3]) * config.dimY
+
         else:
-            x = corresponding_position[1] / (trace_data[2]) * config.dimX
-            y = corresponding_position[2] / (trace_data[4]) * config.dimY
+            if (self.should_padding):
+                x = corresponding_position[1] / \
+                    (trace_data[2]) * config.dimX * 0.9 + (config.dimX * 0.05)
+                y = corresponding_position[2] / \
+                    (trace_data[4]) * config.dimY * 0.9 + (config.dimY * 0.05)
+            else:
+                x = corresponding_position[1] / \
+                    (trace_data[2]) * config.dimX
+                y = corresponding_position[2] / \
+                    (trace_data[4]) * config.dimY
 
         position = Position(x, y)
 

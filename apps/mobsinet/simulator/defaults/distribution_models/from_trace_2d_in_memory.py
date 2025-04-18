@@ -19,6 +19,9 @@ class FromTrace2DInMemory(AbcDistributionModel):
         self.__trace: list[list[float]] = None
         self.is_lat_long = config.distribution_model_parameters.get(
             'is_lat_long', False)
+        self.should_padding = config.distribution_model_parameters.get(
+            'should_padding', False
+        )
         self.__min_x = None
         self.__max_x = None
         self.__min_y = None
@@ -38,6 +41,17 @@ class FromTrace2DInMemory(AbcDistributionModel):
             True if the trace is in latitude/longitude format, False otherwise.
         """
         self.is_lat_long = is_lat_long
+
+    def set_should_padding(self, should_padding: bool):
+        """
+        Set whether the trace should be padded to the simulation dimensions.
+
+        Parameters
+        ----------
+        should_padding : bool
+            True if the trace should be padded, False otherwise.
+        """
+        self.should_padding = should_padding
 
     def load_trace(self, filename: str):
         """
@@ -101,15 +115,29 @@ class FromTrace2DInMemory(AbcDistributionModel):
             # Convert latitude/longitude to x/y
             lat = corresponding_position[1]
             long = corresponding_position[2]
-            x = (lat - self.__min_x) / \
-                (self.__max_x - self.__min_x) * config.dimX
-            y = (long - self.__min_y) / \
-                (self.__max_y - self.__min_y) * config.dimY
+            if (self.should_padding):
+                x = (lat - self.__min_x) / \
+                    (self.__max_x - self.__min_x) * \
+                    config.dimX * 0.9 + config.dimX * 0.05
+                y = (long - self.__min_y) / \
+                    (self.__max_y - self.__min_y) * \
+                    config.dimY * 0.9 + config.dimY * 0.05
+            else:
+                x = (lat - self.__min_x) / \
+                    (self.__max_x - self.__min_x) * config.dimX
+                y = (long - self.__min_y) / \
+                    (self.__max_y - self.__min_y) * config.dimY
 
         else:
             # Use x/y directly
-            x = corresponding_position[1] / (self.__max_x) * config.dimX
-            y = corresponding_position[2] / (self.__max_y) * config.dimY
+            if (self.should_padding):
+                x = corresponding_position[1] / (self.__max_x) * \
+                    config.dimX * 0.9 + config.dimX * 0.05
+                y = corresponding_position[2] / (self.__max_y) * \
+                    config.dimY * 0.9 + config.dimY * 0.05
+            else:
+                x = corresponding_position[1] / (self.__max_x) * config.dimX
+                y = corresponding_position[2] / (self.__max_y) * config.dimY
 
         position = Position(x, y)
 

@@ -21,7 +21,6 @@ class Main:
         config.load_from_file(
             f'apps/mobsinet/simulator/projects/{project_name}/config.json')
 
-        Global.is_gui_mode = False
         Global.is_async_mode = config.asynchronous
         Global.message_transmission_model = ModelsNormalizer.normalize_message_transmission_model(
             None)  # Default message transmission model

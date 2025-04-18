@@ -68,7 +68,6 @@ class SynchronousThread(Thread):
         # tmove = time.time()
         self.__move_nodes()
         # print('Time to move nodes: ', time.time() - tmove)
-
         # tconn = time.time()
         self.__update_connections()
         # print('Time to update connections: ', time.time() - tconn)

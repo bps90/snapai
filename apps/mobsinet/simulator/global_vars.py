@@ -32,6 +32,7 @@ class Global:
     def reset():
         Global.is_running = False
         Global.is_even_round = False
+        Global.is_async_mode = False
         Global.start_time = None
         Global.start_time_of_round = None
         Global.log = None

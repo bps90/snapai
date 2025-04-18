@@ -197,6 +197,13 @@ class NetworkSimulator(object):
             raise ValueError(
                 f"Node with ID {node_id} already removed or do not exists.")
 
+    def remove_all_nodes(self):
+        """Remove all nodes from the network graph."""
+
+        for n in self.nodes():
+            self.graph.remove_node(n)
+            Global.custom_global.node_removed_event(n)
+
     def add_edge(self, node_from: 'AbcNode', node_to: 'AbcNode'):
         """Add an edge between two nodes in the network graph.
 
