@@ -10,6 +10,8 @@ from ...defaults.connectivity_models.no_connectivity import NoConnectivity
 from ...defaults.reliability_models.reliable_delivery import ReliableDelivery
 from ...defaults.interference_models.no_interference import NoInterference
 from ...global_vars import Global
+from ...tools.models_normalizer import ModelsNormalizer
+from ...configuration.sim_config import config
 
 
 class CustomGlobal(AbcCustomGlobal):
@@ -41,9 +43,12 @@ class CustomGlobal(AbcCustomGlobal):
                 mobility_model.set_lat_long(True)
                 mobility_model.load_trace('traces/filtered_anglova.csv')
                 mobility_model.set_should_padding(True)
-                connectivy_model = NoConnectivity()
-                reliability_model = ReliableDelivery()
-                interference_model = NoInterference()
+                connectivy_model = ModelsNormalizer.normalize_connectivity_model(
+                    config.connectivity_model)
+                reliability_model = ModelsNormalizer.normalize_reliability_model(
+                    config.reliability_model)
+                interference_model = ModelsNormalizer.normalize_interference_model(
+                    config.interference_model)
 
                 if (company_type == 'Tank'):
                     node = TankNode(vehicle_id, company_id, platoon_id,

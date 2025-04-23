@@ -52,7 +52,7 @@
             100
         ]
     },
-    "connectivity_model": "no_connectivity",
+    "connectivity_model": "sample9:s9_connectivity",
     "connectivity_model_parameters": {
         "max_radius": 5,
         "min_radius": 2,
