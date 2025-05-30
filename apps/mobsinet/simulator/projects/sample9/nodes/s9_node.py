@@ -19,6 +19,7 @@ class S9Node(AbcNode):
             function: str,
             type: str,
             command: str,
+            comm_channels: list = [],
             position: 'Position' = None,
             mobility_model: 'AbcMobilityModel' = None,
             connectivity_model: 'AbcConnectivityModel' = None,
@@ -37,6 +38,7 @@ class S9Node(AbcNode):
         self.function = function
         self.type = type
         self.command = command
+        self.comm_channels = comm_channels
         self.size = 3
 
     def check_requirements(self):
@@ -58,4 +60,4 @@ class S9Node(AbcNode):
         return super().pre_step()
 
 
-model = S9Node
+node = S9Node
