@@ -1,6 +1,7 @@
 from ...models.abc_distribution_model import AbcDistributionModel
 from ...configuration.sim_config import config
 from ...tools.position import Position
+import utm
 
 
 class FromTrace2DInMemory(AbcDistributionModel):
@@ -21,6 +22,9 @@ class FromTrace2DInMemory(AbcDistributionModel):
             'is_lat_long', False)
         self.should_padding = config.distribution_model_parameters.get(
             'should_padding', False
+        )
+        self.addapt_to_dimensions = config.distribution_model_parameters.get(
+            'addapt_to_dimensions', False
         )
         self.__min_x = None
         self.__max_x = None
@@ -53,6 +57,17 @@ class FromTrace2DInMemory(AbcDistributionModel):
         """
         self.should_padding = should_padding
 
+    def set_addapt_to_dimensions(self, addapt_to_dimensions: bool):
+        """
+        Set whether the trace should be addapted to the simulation dimensions.
+
+        Parameters
+        ----------
+        addapt_to_dimensions : bool
+            True if the trace should be addapted to the simulation dimensions, False otherwise.
+        """
+        self.addapt_to_dimensions = addapt_to_dimensions
+
     def load_trace(self, filename: str):
         """
         Load a trace file and parse it into a list of positions.
@@ -83,6 +98,7 @@ class FromTrace2DInMemory(AbcDistributionModel):
                     self.__min_y = line[2]
                 if (self.__max_y is None or line[2] > self.__max_y):
                     self.__max_y = line[2]
+
         self.__trace.sort(key=lambda x: x[3])
 
     def get_position(self):
@@ -94,9 +110,13 @@ class FromTrace2DInMemory(AbcDistributionModel):
         Position
             The position of the node.
         """
-        print(f"Trace index: {self.__trace_index}")
+
         if self.__trace is None:
             raise ValueError("Trace not loaded. Please load a trace first.")
+
+        if (self.should_padding and not self.addapt_to_dimensions):
+            raise ValueError(
+                "Should padding must be false if addapt to dimensions is false.")
 
         if (self.is_lat_long):
             max_x = self.__max_x - self.__min_x
@@ -113,19 +133,20 @@ class FromTrace2DInMemory(AbcDistributionModel):
 
         if self.is_lat_long:
             # Convert latitude/longitude to x/y
-            lat = corresponding_position[1]
-            long = corresponding_position[2]
+            x, y, _, _ = utm.from_latlon(
+                corresponding_position[1], corresponding_position[2])
+
             if (self.should_padding):
-                x = (lat - self.__min_x) / \
+                x = (x - self.__min_x) / \
                     (self.__max_x - self.__min_x) * \
                     config.dimX * 0.9 + config.dimX * 0.05
-                y = (long - self.__min_y) / \
+                y = (y - self.__min_y) / \
                     (self.__max_y - self.__min_y) * \
                     config.dimY * 0.9 + config.dimY * 0.05
-            else:
-                x = (lat - self.__min_x) / \
+            elif (self.addapt_to_dimensions):
+                x = (x - self.__min_x) / \
                     (self.__max_x - self.__min_x) * config.dimX
-                y = (long - self.__min_y) / \
+                y = (y - self.__min_y) / \
                     (self.__max_y - self.__min_y) * config.dimY
 
         else:
@@ -135,9 +156,12 @@ class FromTrace2DInMemory(AbcDistributionModel):
                     config.dimX * 0.9 + config.dimX * 0.05
                 y = corresponding_position[2] / (self.__max_y) * \
                     config.dimY * 0.9 + config.dimY * 0.05
-            else:
+            elif (self.addapt_to_dimensions):
                 x = corresponding_position[1] / (self.__max_x) * config.dimX
                 y = corresponding_position[2] / (self.__max_y) * config.dimY
+            else:
+                x = corresponding_position[1]
+                y = corresponding_position[2]
 
         position = Position(x, y)
 

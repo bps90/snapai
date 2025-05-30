@@ -5,6 +5,7 @@ from ...global_vars import Global
 from ...network_simulator import simulation
 from ...configuration.sim_config import config
 from ...tools.position import Position
+import utm
 
 
 class FromTrace2DInMemory(AbcMobilityModel):
@@ -17,6 +18,9 @@ class FromTrace2DInMemory(AbcMobilityModel):
             'is_lat_long', False)
         self.should_padding: bool = config.mobility_model_parameters.get(
             'should_padding', False)
+        self.addapt_to_dimensions: bool = config.mobility_model_parameters.get(
+            'addapt_to_dimensions', False
+        )
         self.__trace_index: int = 0
         self.trace_file: str = config.mobility_model_parameters.get(
             'trace_file')
@@ -44,6 +48,17 @@ class FromTrace2DInMemory(AbcMobilityModel):
             True if the trace should be padded, False otherwise.
         """
         self.should_padding = should_padding
+
+    def set_addapt_to_dimensions(self, addapt_to_dimensions: bool):
+        """
+        Set whether the trace should be addapted to the simulation dimensions.
+
+        Parameters
+        ----------
+        addapt_to_dimensions : bool
+            True if the trace should be addapted to the simulation dimensions, False otherwise.
+        """
+        self.addapt_to_dimensions = addapt_to_dimensions
 
     def load_trace(self, filename: str):
         """
@@ -98,6 +113,10 @@ class FromTrace2DInMemory(AbcMobilityModel):
             raise ValueError(
                 "Trace not loaded. Please load a trace file first.")
 
+        if (self.should_padding and not self.addapt_to_dimensions):
+            raise ValueError(
+                "Should padding must be false if addapt to dimensions is false.")
+
         trace_data = FromTrace2DInMemory.__traces[self.trace_file]
 
         """
@@ -132,20 +151,20 @@ class FromTrace2DInMemory(AbcMobilityModel):
             return node.position.copy()
 
         if self.is_lat_long:
-            lat = corresponding_position[1]
-            long = corresponding_position[2]
+            x, y, _, _ = utm.from_latlon(
+                corresponding_position[1], corresponding_position[2])
 
             if (self.should_padding):
-                x = (lat - trace_data[1]) / \
+                x = (x - trace_data[1]) / \
                     (trace_data[2] - trace_data[1]) * \
                     config.dimX * 0.9 + (config.dimX * 0.05)
-                y = (long - trace_data[3]) / \
+                y = (y - trace_data[3]) / \
                     (trace_data[4] - trace_data[3]) * \
                     config.dimY * 0.9 + (config.dimY * 0.05)
-            else:
-                x = (lat - trace_data[1]) / \
+            elif (self.addapt_to_dimensions):
+                x = (x - trace_data[1]) / \
                     (trace_data[2] - trace_data[1]) * config.dimX
-                y = (long - trace_data[3]) / \
+                y = (y - trace_data[3]) / \
                     (trace_data[4] - trace_data[3]) * config.dimY
 
         else:
@@ -154,11 +173,14 @@ class FromTrace2DInMemory(AbcMobilityModel):
                     (trace_data[2]) * config.dimX * 0.9 + (config.dimX * 0.05)
                 y = corresponding_position[2] / \
                     (trace_data[4]) * config.dimY * 0.9 + (config.dimY * 0.05)
-            else:
+            elif (self.addapt_to_dimensions):
                 x = corresponding_position[1] / \
                     (trace_data[2]) * config.dimX
                 y = corresponding_position[2] / \
                     (trace_data[4]) * config.dimY
+            else:
+                x = corresponding_position[1]
+                y = corresponding_position[2]
 
         position = Position(x, y)
 
