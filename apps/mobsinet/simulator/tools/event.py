@@ -42,3 +42,6 @@ class Event(ABC):
     @abstractmethod
     def handle(self):
         pass
+
+    def __lt__(self, other):
+        return self.time < other.time

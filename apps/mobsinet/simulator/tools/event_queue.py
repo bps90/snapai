@@ -1,14 +1,14 @@
 from .event import Event
+import heapq
 
 
 class EventQueue(list[Event]):
     def append(self, event: Event):
-        super().append(event)
-        super().sort(key=lambda e: e.time)
+        heapq.heappush(self, event)
 
     def remove(self):
         if not self.is_empty():
-            return super().pop(0)
+            return heapq.heappop(self)
 
     def is_empty(self):
         return len(self) == 0
