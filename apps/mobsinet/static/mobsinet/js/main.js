@@ -6,6 +6,8 @@ let node2vecIds = false;
 let nodes = [];
 let links = [];
 let showLogs = true;
+let shouldShowEdges = true;
+let shouldFadeEdges = false;
 let logs = [];
 let highlightedLinks = [];
 let node2vecData = {
@@ -22,12 +24,14 @@ async function renderGraph() {
         y: nodes.map((node) => node.y),
         text: nodes.map((node) => node.id),
         mode: showIds ? "markers+text" : "markers",
-        marker: { size: nodes.map((node) => 5 * node.size), color: nodes.map((node) => node.color), symbol: "circle" },
+        marker: { size: nodes.map((node) => 5 * node.size), color: nodes.map((node) => node.color), line: { color: nodes.map((node) => node.borderColor ?? "black"), width: nodes.map((node) => node.borderWidth ?? 1) }, symbol: "circle" },
         type: "scatter",
         textposition: "top center",
     };
 
     // Obtém os limites do retângulo
+    const minDimX = Number(document.querySelector("#minDimX")?.value) || 0;
+    const minDimY = Number(document.querySelector("#minDimY")?.value) || 0;
     const dimX = Number(document.querySelector("#dimX").value);
     const dimY = Number(document.querySelector("#dimY").value);
 
@@ -35,16 +39,16 @@ async function renderGraph() {
     const boundaryShapes = [
         {
             type: "line",
-            x0: 0,
-            y0: 0,
+            x0: minDimX,
+            y0: minDimY,
             x1: dimX,
-            y1: 0,
+            y1: minDimY,
             line: { color: "black", width: 1 },
         },
         {
             type: "line",
             x0: dimX,
-            y0: 0,
+            y0: minDimY,
             x1: dimX,
             y1: dimY,
             line: { color: "black", width: 1 },
@@ -53,16 +57,16 @@ async function renderGraph() {
             type: "line",
             x0: dimX,
             y0: dimY,
-            x1: 0,
+            x1: minDimX,
             y1: dimY,
             line: { color: "black", width: 1 },
         },
         {
             type: "line",
-            x0: 0,
+            x0: minDimX,
             y0: dimY,
-            x1: 0,
-            y1: 0,
+            x1: minDimX,
+            y1: minDimY,
             line: { color: "black", width: 1 },
         },
     ];
@@ -91,12 +95,12 @@ async function renderGraph() {
             zeroline: false,
         },
         shapes: [
-            ...createEdgeShapes(
+            ...(shouldShowEdges ? createEdgeShapes(
                 nodes,
                 links,
                 numberOfMessagesInThisRound,
                 currentLayout
-            ),
+            ) : []),
             ...boundaryShapes,
         ], // Adiciona bordas e arestas
         showlegend: false,
@@ -154,8 +158,8 @@ function createEdgeShapes(
                 x1: targetNode.x,
                 y1: targetNode.y,
                 line: {
-                    color: highlighted ? "#ff0000" : "#0000003a",
-                    width: highlighted ? 5 : 2,
+                    color: highlighted ? "#ff0000" : link.color ?? ("#000000" + Math.max(255 / (shouldFadeEdges ? links.length * 10 : links.length), shouldFadeEdges ? 1 : 20).toString(16).padStart(2, "0")),
+                    width: highlighted ? 5 : link.width ?? 2,
                 },
             });
 
@@ -312,6 +316,7 @@ function getUpdatedGraph() {
                 let lastts = Date.now();
                 currentRound = data.t;
                 nodes = data.n.map(([id, x, y, z, size, color]) => ({ id, x, y, z, size, color }));
+                // data.n.forEach(([id, x, y, z, size, color]) => nodes.push({ id: id + nodes.length, x, y, z, size, color }));
                 links = data.l.map(([source, target, bidirectional]) => ({
                     source,
                     target,
@@ -337,23 +342,47 @@ function intervalUpdate() {
 }
 
 function showArrows() {
-    arrows = true;
-    getUpdatedGraph();
+    arrows = !arrows;
+    renderGraph();
+    $("#show-arrows-button").text(arrows ? "Hide arrows" : "Show arrows");
 }
 
 function hideArrows() {
     arrows = false;
-    getUpdatedGraph();
+    renderGraph();
 }
 
 function showNodesIds() {
-    showIds = true;
-    getUpdatedGraph();
+    showIds = !showIds;
+    renderGraph();
+    $("#show-nodes-ids-button").text(showIds ? "Hide IDs" : "Show IDs");
 }
 
 function hideNodesIds() {
     showIds = false;
-    getUpdatedGraph();
+    renderGraph();
+}
+
+function hideEdges() {
+    shouldShowEdges = !shouldShowEdges;
+    renderGraph();
+    $("#hide-edges-button").text(shouldShowEdges ? "Hide edges" : "Show edges");
+}
+
+function showEdges() {
+    shouldShowEdges = true;
+    renderGraph();
+}
+
+function fadeEdges() {
+    shouldFadeEdges = !shouldFadeEdges;
+    renderGraph();
+    $("#fade-edges-button").text(shouldFadeEdges ? "Unfade edges" : "Fade edges");
+}
+
+function unfadeEdges() {
+    shouldFadeEdges = false;
+    renderGraph();
 }
 
 function showNode2vecIds() {
@@ -450,9 +479,13 @@ function clearLogs() {
     logs = [];
 }
 
-function initForm() {
-    const project = getSelectedProject();
+function resetView() {
+    currentRound = -1;
+    clearLogs();
+    getUpdatedGraph();
+}
 
+function initForm(project = getSelectedProject()) {
     $.ajax({
         url: "get_config/?project=" + project,
         type: "GET",
@@ -469,18 +502,16 @@ function initForm() {
 
 $(document).ready(onReady);
 
-function initSimulation() {
+function initSimulation(project = getSelectedProject()) {
     $.ajax({
-        url: "init_simulation/?project=" + getSelectedProject(),
+        url: "init_simulation/?project=" + project,
         type: "GET",
         success: function () {
             $("#initialized").show();
             setTimeout(() => {
                 $("#initialized").hide();
             }, 2000);
-            currentRound = -1;
-            clearLogs();
-            getUpdatedGraph();
+            resetView();
         },
         error: function (xhr, status, error) {
             alert("Erro");
@@ -746,3 +777,161 @@ $('#show-logs').change(function () {
     }
 });
 
+function trainLinkPrediction() {
+    $.ajax({
+        url: 'train_link_prediction/',
+        type: 'GET',
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+        },
+    });
+}
+
+function predictLinks() {
+    $.ajax({
+        url: 'predict_links/',
+        type: 'GET',
+        success: function (data) {
+            console.log(data);
+            data.data.forEach(d => {
+                if (!links.find(l => l.source == d[0][0] && l.target == d[0][1] || l.source == d[0][1] && l.target == d[0][0]))
+                    links.push({ source: d[0][0], target: d[0][1], color: '#0000ff6e', width: 2, bidirectional: false });
+            });
+            renderGraph();
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+        },
+    });
+}
+
+function trainNodeClusterization() {
+    const nClusters = $('#kmeans-num-clusters').val();
+
+    $.ajax({
+        url: `train_node_clusterization/?n_clusters=${nClusters}`,
+        type: 'GET',
+        success: function (data) {
+            console.log(data);
+
+            data.clusters.forEach((c, i) => {
+                relativeNode = nodes.find(n => n.id == i + 1);
+                relativeNode.borderWidth = 4;
+                relativeNode.borderColor = parseInt('ffffff', 16) / (data.num_clusters + 1) * (c + 1);
+            });
+            data.clusters.forEach((c, i) => {
+                relativeNode = nodes.find(n => n.id == i + 1);
+                relativeNode.borderWidth = 4;
+                if (c == 0)
+                    relativeNode.borderColor = "#ff4444";
+                else if (c == 1)
+                    relativeNode.borderColor = "#44ff44";
+                else if (c == 2)
+                    relativeNode.borderColor = "#4ff4ff";
+                else if (c == 3)
+                    relativeNode.borderColor = "#ff44ff";
+                else if (c == 4)
+                    relativeNode.borderColor = "#f5f315";
+            });
+
+            renderGraph();
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+        },
+    });
+}
+
+function trainNodeClusterizationDBSCAN() {
+    const eps = $('#eps').val();
+    const minPts = $('#min_samples').val();
+
+    $.ajax({
+        url: `train_node_clusterization_dbscan/?eps=${eps}&minPts=${minPts}`,
+        type: 'GET',
+        success: function (data) {
+            console.log(data);
+
+            data.clusters.forEach((c, i) => {
+                relativeNode = nodes.find(n => n.id == i + 1);
+                relativeNode.borderWidth = 4;
+                relativeNode.borderColor = parseInt('ffffff', 16) / (data.num_clusters + 1) * (c + 1);
+            });
+            data.clusters.forEach((c, i) => {
+                relativeNode = nodes.find(n => n.id == i + 1);
+                relativeNode.borderWidth = 4;
+                if (c == 0)
+                    relativeNode.borderColor = "#ff4444";
+                else if (c == 1)
+                    relativeNode.borderColor = "#44ff44";
+                else if (c == 2)
+                    relativeNode.borderColor = "#4ff4ff";
+                else if (c == 3)
+                    relativeNode.borderColor = "#ff44ff";
+                else if (c == 4)
+                    relativeNode.borderColor = "#f5f315";
+            });
+
+            renderGraph();
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+        },
+    });
+}
+
+function trainNodeClassification() {
+    const epochs = $('#node_classification_epochs').val();
+    const binary = $('#node_classification_binary').prop('checked');
+
+    $.ajax({
+        url: `train_node_classification/?epochs=${epochs}&binary=${binary}`,
+        type: 'GET',
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+        },
+    });
+}
+
+function classificateNodes() {
+    const binary = $('#node_classification_binary').prop('checked');
+
+    $.ajax({
+        url: `classificate_nodes/?binary=${binary}`,
+        type: 'GET',
+        success: function (data) {
+            console.log(data.data);
+            data.data.forEach(({ node, label }) => {
+                relativeNode = nodes.find(n => n.id == node);
+                relativeNode.borderWidth = 4;
+                relativeNode.borderColor = parseInt('ffffff', 16) / 6 * label;
+            });
+
+            renderGraph();
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+        },
+    });
+}
+
+function macro(num) {
+
+    $.ajax({
+        url: 'macros/' + num,
+        type: 'GET',
+        success: function (data) {
+            initForm(data.project);
+            resetView();
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+        },
+    });
+}
