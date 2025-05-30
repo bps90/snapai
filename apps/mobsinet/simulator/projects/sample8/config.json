@@ -19,7 +19,11 @@
             500
         ],
         "rotation_direction": "clockwise",
-        "radius": 400
+        "radius": 400,
+        "trace_file": null,
+        "is_lat_long": true,
+        "should_padding": true,
+        "addapt_to_dimensions": true
     },
     "mobility_model": "no_mobility",
     "mobility_model_parameters": {
@@ -41,7 +45,12 @@
         ],
         "prioritize_speed": false,
         "travel_distance": null,
-        "travel_time": 70
+        "travel_time": 70,
+        "trace_file": null,
+        "waypoint_radius_range": null,
+        "is_lat_long": true,
+        "should_padding": true,
+        "addapt_to_dimensions": true
     },
     "connectivity_model": "udg_connectivity",
     "connectivity_model_parameters": {
@@ -67,5 +76,9 @@
         "type": "random_graph",
         "avg_degree": 4
     },
-    "asynchronous": true
+    "asynchronous": true,
+    "save_trace": true,
+    "minDimX": null,
+    "minDimY": null,
+    "connectivity_enabled": true
 }

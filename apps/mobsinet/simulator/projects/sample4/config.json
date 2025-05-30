@@ -24,7 +24,11 @@
             5000
         ],
         "rotation_direction": "anti-clockwise",
-        "radius": 500
+        "radius": 1000,
+        "trace_file": null,
+        "is_lat_long": true,
+        "should_padding": true,
+        "addapt_to_dimensions": true
     },
     "mobility_model": "random_walk",
     "mobility_model_parameters": {
@@ -38,7 +42,14 @@
         ],
         "prioritize_speed": false,
         "travel_distance": 500,
-        "travel_time": null
+        "travel_time": null,
+        "waiting_time_range": null,
+        "move_time_range": null,
+        "trace_file": null,
+        "waypoint_radius_range": null,
+        "is_lat_long": true,
+        "should_padding": true,
+        "addapt_to_dimensions": true
     },
     "connectivity_model": "qudg_connectivity",
     "connectivity_model_parameters": {
@@ -62,5 +73,11 @@
     "verbose_logging": false,
     "csrfmiddlewaretoken": "nYFp0kAhhRByX7rBZz54RZDJVBbIk5RS5LXSYvGlLIeYWo2JB8s9WFNDUezwtMpB",
     "project": "sample4",
-    "nack_messages_enabled": true
+    "nack_messages_enabled": true,
+    "node_color": null,
+    "minDimX": null,
+    "minDimY": null,
+    "connectivity_enabled": true,
+    "asynchronous": false,
+    "save_trace": true
 }

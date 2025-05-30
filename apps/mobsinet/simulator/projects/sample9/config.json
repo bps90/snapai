@@ -4,43 +4,45 @@
     "simulation_name": "Sample9-Simulation-Mobility-from-a-trace",
     "simulation_rounds": 100,
     "simulation_refresh_rate": 0,
-    "num_nodes": 157,
+    "num_nodes": 10,
     "node_size": 3,
-    "dimX": 1000,
-    "dimY": 1000,
+    "dimX": 470000,
+    "dimY": 6490000,
     "dimZ": 0,
     "network_parameters": {
         "type": "random_graph",
         "avg_degree": 4
     },
-    "node": "inert_node",
-    "distribution_model": "from_trace_2d_in_memory",
+    "node": "sample9:intruder_node",
+    "distribution_model": "circular_dist",
     "distribution_model_parameters": {
         "orientation": "horizontal",
         "line_position": 0,
-        "number_of_nodes": 100,
+        "number_of_nodes": 10,
         "midpoint": [
-            5000,
-            5000
+            432000,
+            6475000
         ],
         "rotation_direction": "anti-clockwise",
-        "radius": 500,
+        "radius": 1000,
         "trace_file": "traces/filtered_anglova.csv",
-        "is_lat_long": true
+        "is_lat_long": true,
+        "should_padding": false,
+        "addapt_to_dimensions": false
     },
-    "mobility_model": "from_trace_2d_in_memory",
+    "mobility_model": "sample9:midpoint_waypoint",
     "mobility_model_parameters": {
         "speed_range": [
-            100,
-            120
+            5,
+            13
         ],
         "direction_range": [
             0,
             6.283185307179586
         ],
         "prioritize_speed": false,
-        "travel_distance": 500,
-        "travel_time": null,
+        "travel_distance": null,
+        "travel_time": 80,
         "trace_file": "traces/filtered_anglova.csv",
         "is_lat_long": true,
         "waiting_time_range": [
@@ -50,9 +52,15 @@
         "move_time_range": [
             1,
             100
-        ]
+        ],
+        "waypoint_radius_range": [
+            0,
+            0.0005
+        ],
+        "should_padding": false,
+        "addapt_to_dimensions": false
     },
-    "connectivity_model": "sample9:s9_connectivity",
+    "connectivity_model": "no_connectivity",
     "connectivity_model_parameters": {
         "max_radius": 5,
         "min_radius": 2,
@@ -72,8 +80,13 @@
     },
     "message_protocol": "TCP",
     "verbose_logging": false,
-    "csrfmiddlewaretoken": "nYFp0kAhhRByX7rBZz54RZDJVBbIk5RS5LXSYvGlLIeYWo2JB8s9WFNDUezwtMpB",
+    "csrfmiddlewaretoken": "LTehGriPpW23UxWQJwBXJcr9y57J6HBsUowtOsAYY5Pra2Vdx0DYTQGaKsdoaoYU",
     "project": "sample9",
     "nack_messages_enabled": false,
-    "node_color": null
+    "node_color": null,
+    "minDimX": 410000,
+    "minDimY": 6430000,
+    "save_trace": true,
+    "asynchronous": false,
+    "connectivity_enabled": true
 }
