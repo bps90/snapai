@@ -3,8 +3,6 @@ from typing import TYPE_CHECKING
 from .global_vars import Global
 import time
 from .network_simulator import simulation
-from .tools.packet_event import PacketEvent
-from .tools.timer_event import TimerEvent
 
 if TYPE_CHECKING:
     from .models.nodes.abc_node import AbcNode
@@ -45,17 +43,17 @@ class AsynchronousThread(Thread):
                 Global.is_running = False
                 break
 
-            if (len(simulation.event_queue) == 0):
+            if (simulation.event_queue.is_empty()):
                 Global.log.info(
                     "Event queue is empty. Handling empty event queue on custom global.")
                 Global.custom_global.handle_empty_event_queue()
 
-            if (len(simulation.event_queue) == 0):
+            if (simulation.event_queue.is_empty()):
                 Global.log.info(
                     'No event to execute! Generate a event manually.')
                 break
 
-            event = simulation.event_queue[0]
+            event = simulation.event_queue.remove()
 
             Global.current_time = event.time
             print('current time:', Global.current_time)
@@ -63,8 +61,6 @@ class AsynchronousThread(Thread):
             event.handle()
             print('event handled')
             print([event.id for event in simulation.event_queue])
-
-            simulation.event_queue.remove()
 
         Global.is_running = False
 
