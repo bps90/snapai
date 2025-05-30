@@ -16,11 +16,19 @@ This is a simulator for network algorithms and protocols in Python. It is a web 
 
 ## Getting Started
 
+> You can see a more detailed tutorial in the [installation.md](installation.md) file.
+> This section will guide you through the steps to set up the simulator on your local machine.
+
 1. Requirements:
 You need to have a modern browser (Chrome, Firefox, Edge, Opera, ...) and python installed on your computer. You can download python from [here](https://www.python.org/downloads/).
 
 2. Install conda
 You can install anaconda or miniconda. We will use miniconda.
+*Maybe you will need to install conda in your PATH variable, you can do it with the following command:*
+```bash
+echo 'export PATH="$HOME/miniconda3/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
 
 3. Create a new environment
 ```bash
