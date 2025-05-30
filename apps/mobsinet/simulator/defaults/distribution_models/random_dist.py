@@ -24,9 +24,9 @@ class RandomDist(AbcDistributionModel):
         Position: The randomly generated position.
         """
 
-        p = Position(x=random.randrange(0, config.dimX),
-                     y=random.randrange(0, config.dimY),
-                     z=random.randrange(0, config.dimZ) if config.dimZ > 0 else 0)
+        p = Position(x=random.random() * config.dimX,
+                     y=random.random() * config.dimY,
+                     z=random.random() * config.dimZ if config.dimZ > 0 else 0)
 
         return p
 
