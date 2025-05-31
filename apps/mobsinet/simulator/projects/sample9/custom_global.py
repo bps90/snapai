@@ -22,7 +22,7 @@ class CustomGlobal(AbcCustomGlobal):
                 distribution_model = FromTrace2DInMemory()
                 distribution_model.set_lat_long(True)
                 distribution_model.load_trace(
-                    'traces/filtered_anglova.csv')
+                    'apps/mobsinet/simulator/projects/sample9/filtered_anglova.csv')
 
                 lines = [line.strip().split(',')
                          for line in information_f.readlines()[1:]]
@@ -43,7 +43,8 @@ class CustomGlobal(AbcCustomGlobal):
                     position = distribution_model.get_position()
                     mobility_model = FromTrace2DInMemoryMobility()
                     mobility_model.set_lat_long(True)
-                    mobility_model.load_trace('traces/filtered_anglova.csv')
+                    mobility_model.load_trace(
+                        'apps/mobsinet/simulator/projects/sample9/filtered_anglova.csv')
                     connectivy_model = ModelsNormalizer.normalize_connectivity_model(
                         config.connectivity_model)
                     reliability_model = ModelsNormalizer.normalize_reliability_model(
