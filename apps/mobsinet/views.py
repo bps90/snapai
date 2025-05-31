@@ -85,6 +85,7 @@ def get_projects_names(request):
 def init_simulation(request):
     project = request.GET.get('project')
 
+    SynchronousThread.tracefile_suffix = ''
     Main.init(project)
 
     return HttpResponse(status=200)
