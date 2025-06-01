@@ -921,10 +921,10 @@ function classificateNodes() {
     });
 }
 
-function macro(num) {
+function networkConfiguration(num) {
 
     $.ajax({
-        url: 'macros/' + num,
+        url: 'network_configuration/' + num,
         type: 'GET',
         success: function (data) {
             initForm(data.project);

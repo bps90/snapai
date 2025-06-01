@@ -569,7 +569,7 @@ def classificate_nodes(request):
     return JsonResponse({"status": "success", "data": result, "info": info})
 
 
-def macro1(request):
+def network_configuration1(request):
     """
     Initialize project sample9
     Add 10 Intruder Nodes with "midpoint_waypoiny" mobility
@@ -583,7 +583,7 @@ def macro1(request):
 
     Main.init(project)
 
-    Static.metrics_model_filtered_path = 'apps/mobsinet/simulator/projects/sample9/MetricsModel-filtered-macro1.csv'
+    Static.metrics_model_filtered_path = 'apps/mobsinet/simulator/projects/sample9/MetricsModel-filtered-nc1.csv'
 
     for node in simulation.nodes():
         connectivity_model = ModelsNormalizer.normalize_connectivity_model(
@@ -633,12 +633,12 @@ def macro1(request):
 
     config = original_config
 
-    SynchronousThread.tracefile_suffix = '-macro1'
+    SynchronousThread.tracefile_suffix = '-nc1'
 
     return JsonResponse({"status": "success", "message": "OK", "project": project})
 
 
-def macro2(request):
+def network_configuration2(request):
     """
     Initialize project sample9
     Add 10 Intruder Nodes with "midpoint_waypoiny" mobility
@@ -653,7 +653,7 @@ def macro2(request):
 
     Main.init(project)
 
-    Static.metrics_model_filtered_path = 'apps/mobsinet/simulator/projects/sample9/MetricsModel-filtered-macro2.csv'
+    Static.metrics_model_filtered_path = 'apps/mobsinet/simulator/projects/sample9/MetricsModel-filtered-nc2.csv'
 
     for node in simulation.nodes():
         connectivity_model = ModelsNormalizer.normalize_connectivity_model(
@@ -744,12 +744,12 @@ def macro2(request):
 
     config = original_config
 
-    SynchronousThread.tracefile_suffix = '-macro2'
+    SynchronousThread.tracefile_suffix = '-nc2'
 
     return JsonResponse({"status": "success", "message": "OK", "project": project})
 
 
-def macro3(request):
+def network_configuration3(request):
     """
     Initialize project sample9
     Add 10 Intruder Nodes with "midpoint_waypoiny" mobility
@@ -764,7 +764,7 @@ def macro3(request):
 
     Main.init(project)
 
-    Static.metrics_model_filtered_path = 'apps/mobsinet/simulator/projects/sample9/MetricsModel-filtered-macro3.csv'
+    Static.metrics_model_filtered_path = 'apps/mobsinet/simulator/projects/sample9/MetricsModel-filtered-nc3.csv'
 
     for node in simulation.nodes():
         connectivity_model = ModelsNormalizer.normalize_connectivity_model(
@@ -896,12 +896,12 @@ def macro3(request):
 
     config = original_config
 
-    SynchronousThread.tracefile_suffix = '-macro3'
+    SynchronousThread.tracefile_suffix = '-nc3'
 
     return JsonResponse({"status": "success", "message": "OK", "project": project})
 
 
-def macro4(request):
+def network_configuration4(request):
     """
     Initialize project sample9
     Add 100 Intruder Nodes with "random_walk" mobility
@@ -915,7 +915,7 @@ def macro4(request):
 
     Main.init(project)
 
-    Static.metrics_model_filtered_path = 'apps/mobsinet/simulator/projects/sample9/MetricsModel-filtered-macro4.csv'
+    Static.metrics_model_filtered_path = 'apps/mobsinet/simulator/projects/sample9/MetricsModel-filtered-nc4.csv'
 
     for node in simulation.nodes():
         connectivity_model = ModelsNormalizer.normalize_connectivity_model(
@@ -967,15 +967,15 @@ def macro4(request):
 
     config.set_connectivity_enabled(True)
 
-    SynchronousThread.tracefile_suffix = '-macro4'
+    SynchronousThread.tracefile_suffix = '-nc4'
 
     return JsonResponse({"status": "success", "message": "OK", "project": project})
 
 
-def macro5(request):
+def network_configuration5(request):
     """
     Initialize project sample9
-    Add 157 Intruder Nodes with "midpoint_waypoiny" mobility
+    Add 150 Intruder Nodes with "midpoint_waypoiny" mobility
     (Every nodes with s9_connectivity)
     """
     project = 'sample9'
@@ -986,14 +986,14 @@ def macro5(request):
 
     Main.init(project)
 
-    Static.metrics_model_filtered_path = 'apps/mobsinet/simulator/projects/sample9/MetricsModel-filtered-macro5.csv'
+    Static.metrics_model_filtered_path = 'apps/mobsinet/simulator/projects/sample9/MetricsModel-filtered-nc5.csv'
 
     for node in simulation.nodes():
         connectivity_model = ModelsNormalizer.normalize_connectivity_model(
             'sample9:s9_connectivity')
         node.set_connectivity_model(connectivity_model)
 
-    num_nodes = 157
+    num_nodes = 150
 
     config.set_node('sample9:intruder_node')
     config.set_distribution_model('circular_dist')
@@ -1038,31 +1038,31 @@ def macro5(request):
 
     config.set_connectivity_enabled(True)
 
-    SynchronousThread.tracefile_suffix = '-macro5'
+    SynchronousThread.tracefile_suffix = '-nc5'
 
     return JsonResponse({"status": "success", "message": "OK", "project": project})
 
 
-def macro6(request):
-    # Implement your macro6 function here
+def network_configuration6(request):
+    # Implement your network configuration 6 function here
     return JsonResponse({"status": "success", "message": "Not Implemented"})
 
 
-def macro7(request):
-    # Implement your macro7 function here
+def network_configuration7(request):
+    # Implement your network configuration 7 function here
     return JsonResponse({"status": "success", "message": "Not Implemented"})
 
 
-def macro8(request):
-    # Implement your macro8 function here
+def network_configuration8(request):
+    # Implement your network configuration 8 function here
     return JsonResponse({"status": "success", "message": "Not Implemented"})
 
 
-def macro9(request):
-    # Implement your macro9 function here
+def network_configuration9(request):
+    # Implement your network configuration 9 function here
     return JsonResponse({"status": "success", "message": "Not Implemented"})
 
 
-def macro10(request):
-    # Implement your macro10 function here
+def network_configuration10(request):
+    # Implement your network configuration 10 function here
     return JsonResponse({"status": "success", "message": "Not Implemented"})
