@@ -1,0 +1,158 @@
+Id,Company,Company type,Platoon,Platoon Type,Vehicle function,Vehicle type,Command
+1,1,Tank,1,Command /Logistics,Company Command,Leopard 2 S,Company Commander
+2,1,Tank,1,Command /Logistics,Deputy Company Command,Leopard 2 S,Deputy Company Commander
+3,1,Tank,1,Command /Logistics,Repair and Recovery,,
+4,1,Tank,1,Command /Logistics,Repair and Recovery,,
+5,1,Tank,1,Command /Logistics,Bridge Layer,,
+6,1,Tank,1,Command /Logistics,Bridge Layer,,
+7,1,Tank,1,Command /Logistics,Mortar Fire Control,Armoured Container System,
+8,1,Tank,1,Command /Logistics,Company Quarter Master,Armoured Container System,
+9,1,Tank,1,Command /Logistics,Logistics,Armoured Container System,
+10,1,Tank,1,Command /Logistics,Logistics,Armoured Container System,
+11,1,Tank,1,Command /Logistics,Logistics,Armoured Container System,
+12,1,Tank,1,Command /Logistics,Logistics,Armoured Container System,
+13,1,Tank,2,Tank,Main Battle Tank,Leopard 2 S,Platoon Leader
+14,1,Tank,2,Tank,Main Battle Tank,Leopard 2 S,Deputy Platoon Leader
+15,1,Tank,2,Tank,Main Battle Tank,Leopard 2 S,
+16,1,Tank,3,Tank,Main Battle Tank,Leopard 2 S,Platoon Leader
+17,1,Tank,3,Tank,Main Battle Tank,Leopard 2 S,Deputy Platoon Leader
+18,1,Tank,3,Tank,Main Battle Tank,Leopard 2 S,
+19,1,Tank,4,Tank,Main Battle Tank,Leopard 2 S,Platoon Leader
+20,1,Tank,4,Tank,Main Battle Tank,Leopard 2 S,Deputy Platoon Leader
+21,1,Tank,4,Tank,Main Battle Tank,Leopard 2 S,
+22,1,Tank,5,Tank,Main Battle Tank,Leopard 2 S,Platoon Leader
+23,1,Tank,5,Tank,Main Battle Tank,Leopard 2 S,Deputy Platoon Leader
+24,1,Tank,5,Tank,Main Battle Tank,Leopard 2 S,
+25,2,Tank,1,Command /Logistics,Company Command,Leopard 2 S,Company Commander
+26,2,Tank,1,Command /Logistics,Deputy Company Command,Leopard 2 S,Deputy Company Commander
+27,2,Tank,1,Command /Logistics,Repair and Recovery,,
+28,2,Tank,1,Command /Logistics,Repair and Recovery,,
+29,2,Tank,1,Command /Logistics,Bridge Layer,,
+30,2,Tank,1,Command /Logistics,Bridge Layer,,
+31,2,Tank,1,Command /Logistics,Mortar Fire Control,Armoured Container System,
+32,2,Tank,1,Command /Logistics,Company Quarter Master,Armoured Container System,
+33,2,Tank,1,Command /Logistics,Logistics,Armoured Container System,
+34,2,Tank,1,Command /Logistics,Logistics,Armoured Container System,
+35,2,Tank,1,Command /Logistics,Logistics,Armoured Container System,
+36,2,Tank,1,Command /Logistics,Logistics,Armoured Container System,
+37,2,Tank,2,Tank,Main Battle Tank,Leopard 2 S,Platoon Leader
+38,2,Tank,2,Tank,Main Battle Tank,Leopard 2 S,Deputy Platoon Leader
+39,2,Tank,2,Tank,Main Battle Tank,Leopard 2 S,
+40,2,Tank,3,Tank,Main Battle Tank,Leopard 2 S,Platoon Leader
+41,2,Tank,3,Tank,Main Battle Tank,Leopard 2 S,Deputy Platoon Leader
+42,2,Tank,3,Tank,Main Battle Tank,Leopard 2 S,
+43,2,Tank,4,Tank,Main Battle Tank,Leopard 2 S,Platoon Leader
+44,2,Tank,4,Tank,Main Battle Tank,Leopard 2 S,Deputy Platoon Leader
+45,2,Tank,4,Tank,Main Battle Tank,Leopard 2 S,
+46,2,Tank,5,Tank,Main Battle Tank,Leopard 2 S,Platoon Leader
+47,2,Tank,5,Tank,Main Battle Tank,Leopard 2 S,Deputy Platoon Leader
+48,2,Tank,5,Tank,Main Battle Tank,Leopard 2 S,
+49,3,Mechanized Infantry,1,Mechanized Infantry,Company Command,CV9040 (Tracked armored),Company Commander
+50,3,Mechanized Infantry,1,Command /Logistics,Deputy Company Command,CV9040 (Tracked armored),Deputy Company Commander
+51,3,Mechanized Infantry,1,Command /Logistics,Repair and Recovery,,
+52,3,Mechanized Infantry,1,Command /Logistics,Repair and Recovery,,
+53,3,Mechanized Infantry,1,Command /Logistics,Bridge Layer,,
+54,3,Mechanized Infantry,1,Command /Logistics,Bridge Layer,,
+55,3,Mechanized Infantry,1,Command /Logistics,Mortar Fire Control,Armoured Container System,
+56,3,Mechanized Infantry,1,Command /Logistics,Company Quarter Master,Armoured Container System,
+57,3,Mechanized Infantry,1,Command /Logistics,Logistics,Armoured Container System,
+58,3,Mechanized Infantry,1,Command /Logistics,Logistics,Armoured Container System,
+59,3,Mechanized Infantry,1,Command /Logistics,Logistics,Armoured Container System,
+60,3,Mechanized Infantry,1,Command /Logistics,Logistics,Armoured Container System,
+61,3,Mechanized Infantry,2,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),Platoon Leader
+62,3,Mechanized Infantry,2,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),Deputy Platoon Leader
+63,3,Mechanized Infantry,2,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),
+64,3,Mechanized Infantry,3,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),Platoon Leader
+65,3,Mechanized Infantry,3,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),Deputy Platoon Leader
+66,3,Mechanized Infantry,3,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),
+67,3,Mechanized Infantry,4,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),Platoon Leader
+68,3,Mechanized Infantry,4,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),Deputy Platoon Leader
+69,3,Mechanized Infantry,4,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),
+70,3,Mechanized Infantry,5,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),Platoon Leader
+71,3,Mechanized Infantry,5,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),Deputy Platoon Leader
+72,3,Mechanized Infantry,5,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),
+73,4,Mechanized Infantry,1,Command /Logistics,Company Command,CV9040 (Tracked armored),Company Commander
+74,4,Mechanized Infantry,1,Command /Logistics,Deputy Company Command,CV9040 (Tracked armored),Deputy Company Commander
+75,4,Mechanized Infantry,1,Command /Logistics,Repair and Recovery,,
+76,4,Mechanized Infantry,1,Command /Logistics,Repair and Recovery,,
+77,4,Mechanized Infantry,1,Command /Logistics,Bridge Layer,,
+78,4,Mechanized Infantry,1,Command /Logistics,Bridge Layer,,
+79,4,Mechanized Infantry,1,Command /Logistics,Mortar Fire Control,Armoured Container System,
+80,4,Mechanized Infantry,1,Command /Logistics,Company Quarter Master,Armoured Container System,
+81,4,Mechanized Infantry,1,Command /Logistics,Logistics,Armoured Container System,
+82,4,Mechanized Infantry,1,Command /Logistics,Logistics,Armoured Container System,
+83,4,Mechanized Infantry,1,Command /Logistics,Logistics,Armoured Container System,
+84,4,Mechanized Infantry,1,Command /Logistics,Logistics,Armoured Container System,
+85,4,Mechanized Infantry,2,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),Platoon Leader
+86,4,Mechanized Infantry,2,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),Deputy Platoon Leader
+87,4,Mechanized Infantry,2,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),
+88,4,Mechanized Infantry,3,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),Platoon Leader
+89,4,Mechanized Infantry,3,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),Deputy Platoon Leader
+90,4,Mechanized Infantry,3,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),
+91,4,Mechanized Infantry,4,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),Platoon Leader
+92,4,Mechanized Infantry,4,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),Deputy Platoon Leader
+93,4,Mechanized Infantry,4,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),
+94,4,Mechanized Infantry,5,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),Platoon Leader
+95,4,Mechanized Infantry,5,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),Deputy Platoon Leader
+96,4,Mechanized Infantry,5,Mechanized Infantry,Iinfantry fighting vehicle,CV9040 (Tracked armored),
+97,5,Staff and Mortar,1,C2,Battallion Command,CV9040 based forward command ,Battalion Commander
+98,5,Staff and Mortar,1,C2,Deputy Battallion Command,CV9040 based forward command ,Deputy Battalion Commander
+99,5,Staff and Mortar,1,C2,Battallion Head Quarter,CV9040 based forward command ,Head Quarter
+100,5,Staff and Mortar,1,C2,Battallion Head Quarter,CV9040 based forward command ,Head Quarter
+101,5,Staff and Mortar,1,C2,Radio gateway ,Mobile 24 meter antenna,
+102,5,Staff and Mortar,1,C2,Radio gateway ,Mobile 24 meter antenna,
+103,5,Staff and Mortar,1,C2,Radio gateway ,Mobile 24 meter antenna,
+104,5,Staff and Mortar,1,C2,UAV Reconnaissance,,
+105,5,Staff and Mortar,1,C2,UAV Reconnaissance,,
+106,5,Staff and Mortar,1,C2,UAV Reconnaissance,,
+107,5,Staff and Mortar,1,C2,UAV Reconnaissance,,
+108,5,Staff and Mortar,2,Air defence,Air Defence,CV9040 based anti-air with radar,Platoon Leader
+109,5,Staff and Mortar,2,Air defence,Air Defence,CV9040 based anti-air with radar,Deputy Platoon Leader
+110,5,Staff and Mortar,2,Air defence,Air Defence,CV9040 based anti-air with radar,
+111,5,Staff and Mortar,3,Mortar,Armoured Mortar,Armoured tracked mortar,Platoon Leader
+112,5,Staff and Mortar,3,Mortar,Mortar Ammunition,,
+113,5,Staff and Mortar,3,Mortar,Armoured Mortar,Armoured tracked mortar,Deputy Platoon Leader
+114,5,Staff and Mortar,3,Mortar,Mortar Ammunition,,
+115,5,Staff and Mortar,3,Mortar,Armoured Mortar,Armoured tracked mortar,
+116,5,Staff and Mortar,3,Mortar,Mortar Ammunition,,
+117,5,Staff and Mortar,3,Mortar,Armoured Mortar,Armoured tracked mortar,
+118,5,Staff and Mortar,3,Mortar,Mortar Ammunition,,
+119,6,Logistics,1,Battalion Logistics,Logistics,,Platoon Leader
+120,6,Logistics,1,Battalion Logistics,Logistics,,Deputy Platoon Leader
+121,6,Logistics,1,Battalion Logistics,Logistics,,
+122,6,Logistics,1,Battalion Logistics,Logistics,,
+123,6,Logistics,1,Battalion Logistics,Logistics,,
+124,6,Logistics,1,Battalion Logistics,Logistics,,
+125,6,Logistics,1,Battalion Logistics,Logistics,,
+126,6,Logistics,1,Battalion Logistics,Logistics,,
+127,6,Logistics,1,Battalion Logistics,Logistics,,
+128,6,Logistics,1,Battalion Logistics,Logistics,,
+129,6,Logistics,2,Battalion Logistics,Logistics,,Platoon Leader
+130,6,Logistics,2,Battalion Logistics,Logistics,,Deputy Platoon Leader
+131,6,Logistics,2,Battalion Logistics,Logistics,,
+132,6,Logistics,2,Battalion Logistics,Logistics,,
+133,6,Logistics,2,Battalion Logistics,Logistics,,
+134,6,Logistics,2,Battalion Logistics,Logistics,,
+135,6,Logistics,2,Battalion Logistics,Logistics,,
+136,6,Logistics,2,Battalion Logistics,Logistics,,
+137,6,Logistics,2,Battalion Logistics,Logistics,,
+138,6,Logistics,2,Battalion Logistics,Logistics,,
+139,6,Logistics,3,Medical,Medical transport,,Platoon Leader
+140,6,Logistics,3,Medical,Medical transport,,Deputy Platoon Leader
+141,6,Logistics,3,Medical,Medical transport,,
+142,6,Logistics,3,Medical,Medical transport,,
+143,6,Logistics,4,Food Service,Food service,,Platoon Leader
+144,6,Logistics,4,Food Service,Food service,,Deputy Platoon Leader
+145,6,Logistics,4,Food Service,Food service,,
+146,6,Logistics,4,Food Service,Food service,,
+147,6,Logistics,4,Food Service,Food service,,
+148,6,Logistics,4,Food Service,Food service,,
+149,6,Logistics,4,Food Service,Food service,,
+150,6,Logistics,4,Food Service,Food service,,
+151,6,Logistics,4,Food Service,Food service,,
+152,6,Logistics,4,Food Service,Food service,,
+153,6,Logistics,4,Food Service,Food service,,
+154,6,Logistics,4,Food Service,Food service,,
+155,6,Logistics,4,Food Service,Food service,,
+156,6,Logistics,4,Food Service,Food service,,
+157,6,Logistics,4,Food Service,Food service,,

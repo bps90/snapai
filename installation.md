@@ -17,20 +17,31 @@ The browser need to have modern JavaScript enabled.
 You can download Python from [here](https://www.python.org/downloads/).
 2. Install Miniconda (or Anaconda)
 You can install Miniconda from [here](https://docs.conda.io/en/latest/miniconda.html).
+*Maybe you will need to install conda in your PATH variable, you can do it with the following command:*
+```bash
+echo 'export PATH="$HOME/miniconda3/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
 3. Install Firefox (or another modern browser)
 You can download Firefox from [here](https://www.mozilla.org/en-US/firefox/new/).
 4. Install git
 You can download git from [here](https://git-scm.com/download).
 5. Clone the repository
+*Maybe you will need to authenticate git with github to clone the repository, follow the instructions in page: [about-authentication-to-github](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-authentication-to-github)*
 ```bash
 $ git clone repository_url_here.git
 ```
-6. Create a new environment
+5. Create a new environment
 ```bash
 $ conda env create -f env.yml
 ```
+6. Activate the environment
 ```bash
 $ conda activate mobenv
+```
+if the command `conda activate mobenv` does not work, you can try the following command:
+```bash
+$ source activate mobenv
 ```
 
 7. Making migrations

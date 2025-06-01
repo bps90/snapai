@@ -128,3 +128,23 @@ dmypy.json
 apps/mobsinet/log/
 
 *.emb
+
+traces/
+
+experiments-results/*.json
+
+testscripts/
+
+# Next.js
+apps/frontend/node_modules
+apps/frontend/.next
+apps/frontend/out
+apps/frontend/.swc
+
+# Arquivos de ambiente do Next.js (se você usar)
+apps/frontend/.env.local
+apps/frontend/.env.development.local
+apps/frontend/.env.test.local
+apps/frontend/.env.production.local
+
+*.ignore.*

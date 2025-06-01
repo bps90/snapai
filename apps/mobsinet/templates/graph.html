@@ -26,6 +26,10 @@
       <div id="runtime_panel">
         <button type="button" onClick="initSimulation()">Initialize</button>
         <span id="initialized" class="confirmation-check">✓</span>
+        <button type="button" onClick="reevaluateConnections()">
+          Reevaluate connections
+        </button>
+        <span id="reevaluated" class="confirmation-check">✓</span>
 
         <label for="simulation_rounds">Rounds</label>
         <input
@@ -69,12 +73,14 @@
 
         <button onClick="runSimulation()">Run</button>
         <button onClick="stopSimulation()">Stop</button>
-        <button onMouseDown="showArrows()" onMouseUp="hideArrows()">
+        <button id="show-arrows-button" onClick="showArrows()">
           Show arrows
         </button>
-        <button onMouseDown="showNodesIds()" onMouseUp="hideNodesIds()">
+        <button id="show-nodes-ids-button" onClick="showNodesIds()">
           Show IDs
         </button>
+        <button id="hide-edges-button" onClick="hideEdges()">Hide Edges</button>
+        <button id="fade-edges-button" onClick="fadeEdges()">Fade Edges</button>
         <div>Time: <span id="time"></span></div>
         <div>
           Messages in this round: <span id="numberOfMessagesInThisRound"></span>
@@ -170,6 +176,160 @@
       </button>
 
       <div id="node2vec-graph"></div>
+    </div>
+    <div>
+      <div>
+        <button type="button" onclick="trainLinkPrediction()">
+          Train link prediction
+        </button>
+        <button type="button" onclick="predictLinks()">Predict Links</button>
+      </div>
+      <div class="grid grid-cols-3">
+        <div>
+          <label for="kmeans-num-clusters">Kmeans number of clusters</label>
+          <input
+            type="number"
+            name="clusters"
+            id="kmeans-num-clusters"
+            placeholder="Kmeans number of clusters"
+            value="2"
+          />
+        </div>
+      </div>
+      <button type="button" onclick="trainNodeClusterization()">
+        Train node clusterization (Kmeans)
+      </button>
+      <div class="grid grid-cols-3">
+        <div>
+          <label for="eps">DBScan eps</label>
+          <input
+            type="number"
+            name="eps"
+            id="eps"
+            placeholder="DBScan eps"
+            value="0.02"
+          />
+        </div>
+        <div>
+          <label for="min_samples">DBScan min_samples</label>
+          <input
+            type="number"
+            name="min_samples"
+            id="min_samples"
+            placeholder="DBScan min_samples"
+            value="5"
+          />
+        </div>
+      </div>
+      <button type="button" onclick="trainNodeClusterizationDBSCAN()">
+        Train node clusterization (DBScan)
+      </button>
+      <div class="grid grid-cols-3">
+        <div>
+          <label for="node_classification_epochs">Training epochs</label>
+          <input
+            type="number"
+            name="node_classification_epochs"
+            id="node_classification_epochs"
+            placeholder="Training epochs"
+            value="1000"
+          />
+        </div>
+        <div style="display: flex; align-items: end; padding: 6px">
+          <input
+            type="checkbox"
+            name="node_classification_binary"
+            id="node_classification_binary"
+            value="true"
+            style="zoom: 2"
+            checked
+          />
+          <label
+            for="node_classification_binary"
+            style="display: inline; margin: 0 0 0 6px"
+            >Classify in binary?</label
+          >
+        </div>
+      </div>
+      <button type="button" onclick="trainNodeClassification()">
+        Train node classification
+      </button>
+      <button type="button" onclick="classificateNodes()">
+        Classificate Nodes
+      </button>
+    </div>
+    <div>
+      <h3>Network Configurations</h3>
+      <button
+        type="button"
+        title="Initialize project sample9. → Put all nodes with s9_connectivity. → Add 10 intruder nodes in circular distribution with midpoint_waypoint mobility model."
+        onclick="networkConfiguration(1)"
+      >
+        NC 1
+      </button>
+      <button
+        type="button"
+        title="Initialize project sample9. → Put all nodes with s9_connectivity. → Add 10 intruder nodes in circular distribution with midpoint_waypoint mobility model. → Add 15 intruder nodes in circular distribution with mid_point_of_others mobility model."
+        onclick="networkConfiguration(2)"
+      >
+        NC 2
+      </button>
+      <button
+        type="button"
+        title="Initialize project sample9. → Put all nodes with s9_connectivity. → Add 10 intruder nodes in circular distribution with midpoint_waypoint mobility model. → Add 15 intruder nodes in circular distribution with mid_point_of_others mobility model. → Add 25 intruder nodes in circular distribution with random_walk mobility model."
+        onclick="networkConfiguration(3)"
+      >
+        NC 3
+      </button>
+      <button
+        type="button"
+        title="Initialize project sample9. → Put all nodes with s9_connectivity. → Add 100 intruder nodes in circular distribution with random_walk mobility model."
+        onclick="networkConfiguration(4)"
+      >
+        NC 4
+      </button>
+      <button
+        type="button"
+        title="Initialize project sample9. → Put all nodes with s9_connectivity. → Add 150 intruder nodes in circular distribution with midpoint_waypoint mobility model."
+        onclick="networkConfiguration(5)"
+      >
+        NC 5
+      </button>
+      <button
+        type="button"
+        title="No description. Add description in graph.html file when you have network configuration implementation."
+        onclick="networkConfiguration(6)"
+      >
+        NC 6
+      </button>
+      <button
+        type="button"
+        title="No description. Add description in graph.html file when you have network configuration implementation."
+        onclick="networkConfiguration(7)"
+      >
+        NC 7
+      </button>
+      <button
+        type="button"
+        title="No description. Add description in graph.html file when you have network configuration implementation."
+        onclick="networkConfiguration(8)"
+      >
+        NC 8
+      </button>
+      <button
+        type="button"
+        title="No description. Add description in graph.html file when you have network configuration implementation."
+        onclick="networkConfiguration(9)"
+      >
+        NC 9
+      </button>
+      <button
+        type="button"
+        title="No description. Add description in graph.html file when you have network configuration implementation."
+        onclick="networkConfiguration(10)"
+      >
+        NC 10
+      </button>
     </div>
   </div>
 </div>

@@ -6,9 +6,11 @@ from .global_vars import Global
 from .models.nodes.abc_node import AbcNode
 from .network_simulator import simulation
 import time
+from .configuration.sim_config import config
 
 
 class SynchronousThread(Thread):
+    tracefile_suffix = ''
 
     def __init__(self, number_of_rounds: int = 0, refresh_rate: float = 0):
         super().__init__()
@@ -68,9 +70,9 @@ class SynchronousThread(Thread):
         # tmove = time.time()
         self.__move_nodes()
         # print('Time to move nodes: ', time.time() - tmove)
-
         # tconn = time.time()
-        self.__update_connections()
+        if (config.connectivity_enabled):
+            self.__update_connections()
         # print('Time to update connections: ', time.time() - tconn)
         # tinterf = time.time()
         simulation.packets_in_the_air.test_interference()
@@ -82,18 +84,37 @@ class SynchronousThread(Thread):
     def __move_nodes(self):
         """(private) Moves the nodes in the network graph."""
 
+        if (config.save_trace and Global.current_time == 1):
+            tracefile = open(
+                f'traces/{config.simulation_name+SynchronousThread.tracefile_suffix}.csv', 'w')
+            tracefile.write('time,x,y,id\n')
+
+            for node in simulation.nodes():
+                tracefile.write(
+                    f'{Global.current_time - 1},{node.position.x},{node.position.y},{node.id}\n')
+
+            tracefile.close()
+
+        tracefile = open(f"traces/{config.simulation_name+SynchronousThread.tracefile_suffix}.csv",
+                         "a") if config.save_trace else None
+
         for node in simulation.nodes():
             node: 'AbcNode'
+
             # move the node
             node.set_position(node.mobility_model.get_next_position(node))
 
-            # TODO: Criar logging para movimentação de nós
+            if tracefile:
+                tracefile.write(str(Global.current_time) + "," + str(node.position.x) + "," + str(
+                    node.position.y) + "," + str(node.id) + "\n")
+
+        if tracefile:
+            tracefile.close()
 
     def __update_connections(self):
         """(private) Updates the connections in the network graph."""
 
         # TODO: Criar logging para conexão
-
         for node in simulation.nodes():
             node: 'AbcNode'
 

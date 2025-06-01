@@ -41,7 +41,10 @@ class PacketsInTheAirBuffer(object):
         try:
             self.active_packets.remove(packet)
         except ValueError:
-            self.passive_packets.remove(packet)
+            try:
+                self.passive_packets.remove(packet)
+            except ValueError:
+                pass
 
     def denyFromEdge(self, origin: 'AbcNode', destination: 'AbcNode'):
         for packet in self.active_packets:
@@ -54,3 +57,14 @@ class PacketsInTheAirBuffer(object):
 
     def size(self):
         return len(self.active_packets)
+
+    def perform_interference_test_before_remove(self):
+        """
+        Em modo assíncrono, este método é chamado antes de um pacote ser removido
+        da lista de pacotes no ar. Se necessário, determina a interferência para
+        todas as mensagens atualmente sendo enviadas.
+        """
+
+        if self.new_added:
+            self.test_interference()
+            self.new_added = False

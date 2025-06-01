@@ -25,3 +25,20 @@ class Color:
         self.r = tuple[0]
         self.g = tuple[1]
         self.b = tuple[2]
+
+    def __eq__(self, value):
+        if isinstance(value, Color):
+            return self.r == value.r and self.g == value.g and self.b == value.b
+        elif isinstance(value, str):
+            return self.get_hex() == value
+        elif isinstance(value, tuple):
+            return self.get_tuple() == value
+        return False
+
+
+# Define color constants after the class definition
+Color.GREEN = Color(0, 255, 0)
+Color.YELLOW = Color(255, 255, 0)
+Color.RED = Color(255, 0, 0)
+Color.BLUE = Color(0, 0, 255)
+Color.PURPLE = Color(128, 0, 128)

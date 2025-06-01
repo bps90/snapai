@@ -1,7 +1,7 @@
 from ...models.nodes.abc_node import AbcNode
 from ...tools.position import Position
 from ...models.abc_mobility_model import AbcMobilityModel
-from random import randint
+from random import random
 from ...configuration.sim_config import config
 
 
@@ -20,9 +20,9 @@ class RandomMob(AbcMobilityModel):
         Position: The randomly generated position.
         """
 
-        xcord = randint(0, config.dimX)
-        ycord = randint(0, config.dimY)
-        zcord = randint(0, config.dimZ)
+        xcord = random() * config.dimX
+        ycord = random() * config.dimY
+        zcord = random() * config.dimZ if config.dimZ > 0 else 0
 
         return Position(xcord, ycord, zcord)
 

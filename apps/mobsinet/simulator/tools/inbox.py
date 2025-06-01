@@ -3,6 +3,7 @@
 from ..models.nodes.packet import Packet
 from typing import Union
 
+
 class Inbox:
     def __init__(self, packets: Union['Packet', list['Packet']] = None):
         """
@@ -11,8 +12,8 @@ class Inbox:
         self.packet_list: list['Packet'] = None
         self.active_packet: 'Packet' = None
         self.single_packet: 'Packet' = None
-        self.reset_for_list(packets) if type(packets) is list else self.reset_for_packet(packets)
-        
+        self.reset_for_list(packets) if type(
+            packets) is list else self.reset_for_packet(packets)
 
     def reset(self):
         """
@@ -80,8 +81,8 @@ class Inbox:
         else:
             raise ValueError("No active packet to get sending time from.")
 
-
     # Internal methods
+
     def reset_for_list(self, packet_list):
         """
         Resets this inbox to contain the given list of packets.
@@ -106,8 +107,6 @@ class Inbox:
         """
         self.active_packet = None
         self.single_packet = None
-        
+
         if self.packet_list:
             self.packet_list.clear()
-        
-        

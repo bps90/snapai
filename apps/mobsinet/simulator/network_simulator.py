@@ -11,12 +11,14 @@ from .models.abc_reliability_model import AbcReliabilityModel
 from .configuration.sim_config import config
 from .global_vars import Global
 from .tools.color import Color
+from .tools.event_queue import EventQueue
 
 from .tools.models_normalizer import ModelsNormalizer
 from typing import Type, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .models.nodes.abc_node import AbcNode
+    from .tools.event import Event
 
 
 class NetworkSimulator(object):
@@ -27,6 +29,7 @@ class NetworkSimulator(object):
         self.packets_in_the_air = PacketsInTheAirBuffer()
         self.arrived_packets: list[Packet] = []
         self.running_thread = None
+        self.event_queue: EventQueue = EventQueue()
 
     def reset(self):
         NetworkSimulator.last_node_id = 0
@@ -194,6 +197,13 @@ class NetworkSimulator(object):
             raise ValueError(
                 f"Node with ID {node_id} already removed or do not exists.")
 
+    def remove_all_nodes(self):
+        """Remove all nodes from the network graph."""
+
+        for n in self.nodes():
+            self.graph.remove_node(n)
+            Global.custom_global.node_removed_event(n)
+
     def add_edge(self, node_from: 'AbcNode', node_to: 'AbcNode'):
         """Add an edge between two nodes in the network graph.
 
@@ -250,12 +260,17 @@ class NetworkSimulator(object):
 
     def run(self, rounds=config.simulation_rounds, refresh_rate: float = config.simulation_refresh_rate):
         from .synchronous_thread import SynchronousThread
+        from .asynchronous_thread import AsynchronousThread
 
         if Global.is_running:
             return
 
-        self.running_thread = SynchronousThread(
-            rounds, refresh_rate)
+        if Global.is_async_mode:
+            self.running_thread = AsynchronousThread(
+                rounds, refresh_rate)
+        else:
+            self.running_thread = SynchronousThread(
+                rounds, refresh_rate)
 
         self.running_thread.start()
 
@@ -271,6 +286,11 @@ class NetworkSimulator(object):
         for node in self.nodes():
             if node.id == node_id:
                 return node
+
+    def remove_all_async_events(self):
+        for event in self.event_queue:
+            event.drop()
+        self.event_queue.clear()
 
 
 simulation = NetworkSimulator()

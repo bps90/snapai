@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 class Global:
     is_running = False
     is_even_round = False
+    is_async_mode = False
     start_time: datetime = None
     start_time_of_round: datetime = None
     log: logging.Logger = None
@@ -31,6 +32,7 @@ class Global:
     def reset():
         Global.is_running = False
         Global.is_even_round = False
+        Global.is_async_mode = False
         Global.start_time = None
         Global.start_time_of_round = None
         Global.log = None

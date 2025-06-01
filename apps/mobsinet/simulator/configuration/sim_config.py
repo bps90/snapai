@@ -16,6 +16,7 @@ class SimulationConfig:
         self.dimX = 100
         self.dimY = 100
         self.dimZ = 100
+        self.save_trace = False
         self.network_parameters = {
             'type': 'random_graph',
             'avg_degree': 4
@@ -29,6 +30,10 @@ class SimulationConfig:
             'midpoint': (self.dimX / 2, self.dimY / 2),
             'rotation_direction': 'anti-clockwise',
             'radius': None,
+            'is_lat_long': False,
+            'trace_file': None,
+            'should_padding': False,
+            'addapt_to_dimensions': False,
         }
         self.mobility_model = 'random_mob'
         self.mobility_model_parameters = {
@@ -39,9 +44,15 @@ class SimulationConfig:
             'move_time_range': [0, 10],
             'prioritize_speed': False,
             'travel_distance': None,
-            'travel_time': self.simulation_rounds * 0.1  # 10% of the simulation time
+            'travel_time': self.simulation_rounds * 0.1,  # 10% of the simulation time
+            'is_lat_long': False,
+            'trace_file': None,
+            'should_padding': False,
+            'addapt_to_dimensions': False,
+            'waypoint_radius_range': [0, 0]
         }
         self.connectivity_model = 'no_connectivity'
+        self.connectivity_enabled = True
         self.connectivity_model_parameters = {
             # 10% da medida da menor dimensão do mapa
             'max_radius': self.dimX * 0.1 if self.dimX < self.dimY else self.dimY * 0.1,
@@ -63,6 +74,7 @@ class SimulationConfig:
         }
         self.message_protocol = 'TCP'
         self.verbose_logging = False
+        self.asynchronous = False
 
         if config_file:
             self.load_from_file(config_file)
@@ -126,6 +138,11 @@ class SimulationConfig:
             'message_protocol', self.message_protocol))
         self.set_verbose_logging(config_data.get(
             'verbose_logging', self.verbose_logging))
+        self.set_asynchronous(config_data.get(
+            'asynchronous', self.asynchronous))
+        self.set_save_trace(config_data.get('save_trace', self.save_trace))
+        self.set_connectivity_enabled(config_data.get(
+            'connectivitiy_enabled', self.connectivity_enabled))
 
     def set_project_dir(self, dirname):
         self.PROJECT_DIR = dirname
@@ -204,6 +221,15 @@ class SimulationConfig:
     def set_verbose_logging(self, verbose):
         self.verbose_logging = verbose
 
+    def set_asynchronous(self, async_mode):
+        self.asynchronous = async_mode
+
+    def set_save_trace(self, save_trace):
+        self.save_trace = save_trace
+
+    def set_connectivity_enabled(self, enabled):
+        self.connectivity_enabled = enabled
+
     def print_config(self):
         print("Simulation Configuration:")
         print(f"Simulation Name: {self.simulation_name}")
@@ -233,6 +259,11 @@ class SimulationConfig:
             f"Interference Model Parameters: {self.interference_model_parameters}")
         print(f"Message Protocol: {self.message_protocol}")
         print(f"Verbose Logging: {self.verbose_logging}")
+        print(f"Asynchronous: {self.asynchronous}")
+        print(f"Node Color: {self.node_color}")
+        print(f"Node Size: {self.node_size}")
+        print(f"Save Trace: {self.save_trace}")
+        print(f"Connectivity Enabled: {self.connectivity_enabled}")
 
 
 config = SimulationConfig()

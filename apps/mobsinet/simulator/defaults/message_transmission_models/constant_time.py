@@ -16,7 +16,7 @@ class ConstantTime(AbcMessageTransmissionModel):
             self,
             packet: Packet,
             origin_node: AbcNode,
-            destination_node: AbcNode) -> int:
+            destination_node: AbcNode) -> float:
         """Determines the time that the packet will take to reach the destination node.
 
         On this model, the time is a constant defined in the configuration or setted directly on the model object.
@@ -32,13 +32,13 @@ class ConstantTime(AbcMessageTransmissionModel):
 
         Returns
         -------
-        int
+        float
             The time that the packet will take to reach the destination node.
         """
 
         return self.time
 
-    def set_time(self, time: int):
+    def set_time(self, time: float):
         """Set the time that the packet will take to reach the destination node.
 
         Parameters
@@ -47,7 +47,7 @@ class ConstantTime(AbcMessageTransmissionModel):
             The time that the packet will take to reach the destination node.
         """
 
-        self.time = time
+        self.time = float
 
 
 model = ConstantTime

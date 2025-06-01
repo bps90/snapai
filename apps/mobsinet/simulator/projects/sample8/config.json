@@ -1,0 +1,84 @@
+{
+    "project": "sample8",
+    "PROJECT_DIR": "apps/mobsinet/simulator/projects/",
+    "simulation_name": "Sample8-Async-Simulation",
+    "num_nodes": 1200,
+    "node_size": 3,
+    "simulation_rounds": 1,
+    "dimX": 2000,
+    "dimY": 2000,
+    "dimZ": 0,
+    "node": "sample8:s8_node",
+    "distribution_model": "random_dist",
+    "distribution_model_parameters": {
+        "orientation": "horizontal",
+        "line_position": 0,
+        "number_of_nodes": 60,
+        "midpoint": [
+            9500,
+            500
+        ],
+        "rotation_direction": "clockwise",
+        "radius": 400,
+        "trace_file": null,
+        "is_lat_long": true,
+        "should_padding": true,
+        "addapt_to_dimensions": true
+    },
+    "mobility_model": "no_mobility",
+    "mobility_model_parameters": {
+        "speed_range": [
+            3,
+            50
+        ],
+        "waiting_time_range": [
+            50,
+            500
+        ],
+        "direction_range": [
+            0,
+            6.283185307179586
+        ],
+        "move_time_range": [
+            1,
+            100
+        ],
+        "prioritize_speed": false,
+        "travel_distance": null,
+        "travel_time": 70,
+        "trace_file": null,
+        "waypoint_radius_range": null,
+        "is_lat_long": true,
+        "should_padding": true,
+        "addapt_to_dimensions": true
+    },
+    "connectivity_model": "udg_connectivity",
+    "connectivity_model_parameters": {
+        "max_radius": 100,
+        "min_radius": 500,
+        "big_radius_probability": 1
+    },
+    "reliability_model": "reliable_delivery",
+    "interference_model": "no_interference",
+    "message_transmission_model": "random_time",
+    "message_transmission_model_parameters": {
+        "constant_transmission_time": 1,
+        "random_transmission_min_time": 1,
+        "random_transmission_max_time": 10
+    },
+    "nack_messages_enabled": true,
+    "interference_model_parameters": {
+        "intensity": null
+    },
+    "node_color": "#ffaa00",
+    "csrfmiddlewaretoken": "nYFp0kAhhRByX7rBZz54RZDJVBbIk5RS5LXSYvGlLIeYWo2JB8s9WFNDUezwtMpB",
+    "network_parameters": {
+        "type": "random_graph",
+        "avg_degree": 4
+    },
+    "asynchronous": true,
+    "save_trace": true,
+    "minDimX": null,
+    "minDimY": null,
+    "connectivity_enabled": true
+}

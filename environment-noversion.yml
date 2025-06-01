@@ -1,35 +1,48 @@
 name: mobenv
 channels:
+  - pyg
+  - pytorch
   - conda-forge
   - defaults
 dependencies:
   - _openmp_mutex
+  - aiohappyeyeballs
+  - aiohttp
+  - aiosignal
   - altgraph
   - asgiref
   - asttokens
+  - attrs
   - backports.zoneinfo
   - blas
   - brotli
   - brotli-bin
+  - brotli-python
   - bzip2
   - ca-certificates
   - cairo
   - certifi
+  - cffi
   - channels
+  - charset-normalizer
   - colorama
   - comm
   - contourpy
+  - cpuonly
   - cpython
   - cycler
   - debugpy
   - decorator
+  - deprecated
   - dill
   - django
+  - django-cors-headers
   - djangorestframework
   - double-conversion
   - exceptiongroup
   - executing
   - expat
+  - filelock
   - font-ttf-dejavu-sans-mono
   - font-ttf-inconsolata
   - font-ttf-source-code-pro
@@ -39,13 +52,19 @@ dependencies:
   - fonts-conda-forge
   - fonttools
   - freetype
+  - frozenlist
+  - fsspec
   - fst-pso
   - future
   - fuzzytm
   - gensim
   - graphite2
+  - h2
   - harfbuzz
+  - hpack
+  - hyperframe
   - icu
+  - idna
   - importlib-metadata
   - importlib-resources
   - importlib_resources
@@ -53,6 +72,7 @@ dependencies:
   - ipykernel
   - ipython
   - jedi
+  - jinja2
   - joblib
   - jupyter_client
   - jupyter_core
@@ -60,6 +80,7 @@ dependencies:
   - krb5
   - lcms2
   - lerc
+  - libabseil
   - libblas
   - libbrotlicommon
   - libbrotlidec
@@ -82,9 +103,13 @@ dependencies:
   - liblapack
   - liblzma
   - libpng
+  - libprotobuf
   - libsodium
   - libsqlite
   - libtiff
+  - libtorch
+  - libuv
+  - libwebp
   - libwebp-base
   - libwinpthread
   - libxcb
@@ -94,6 +119,7 @@ dependencies:
   - llvm-meta
   - llvm-openmp
   - llvmlite
+  - markupsafe
   - matplotlib
   - matplotlib-base
   - matplotlib-inline
@@ -102,6 +128,8 @@ dependencies:
   - mkl-service
   - mkl_fft
   - mkl_random
+  - mpmath
+  - multidict
   - munkres
   - nest-asyncio
   - networkx
@@ -111,6 +139,7 @@ dependencies:
   - numpy-base
   - openjpeg
   - openssl
+  - opentelemetry-api
   - packaging
   - pandas
   - parso
@@ -123,19 +152,25 @@ dependencies:
   - platformdirs
   - plotly
   - prompt-toolkit
+  - propcache
   - psutil
   - pthread-stubs
   - pure_eval
+  - pycparser
   - pyfume
+  - pyg
   - pygments
   - pyinstaller
   - pyinstaller-hooks-contrib
   - pyparsing
   - pyside6
+  - pysocks
   - python
   - python-dateutil
   - python-tzdata
   - python_abi
+  - pytorch
+  - pytorch-mutex
   - pytz
   - pywin32
   - pywin32-ctypes
@@ -143,17 +178,24 @@ dependencies:
   - pyzmq
   - qhull
   - qt6-main
+  - requests
+  - scikit-learn
   - scipy
   - setuptools
   - simpful
   - six
+  - sleef
   - smart_open
   - sqlite
   - sqlparse
   - stack_data
+  - sympy
   - tbb
   - tenacity
+  - threadpoolctl
   - tk
+  - torchaudio
+  - torchvision
   - tornado
   - tqdm
   - traitlets
@@ -161,17 +203,22 @@ dependencies:
   - tzdata
   - ucrt
   - unicodedata2
+  - urllib3
+  - utm
   - vc
   - vc14_runtime
   - vs2015_runtime
   - wcwidth
   - wheel
+  - win_inet_pton
   - wrapt
   - xorg-libxau
   - xorg-libxdmcp
   - xz
   - yaml
+  - yarl
   - zeromq
   - zipp
   - zlib
+  - zstandard
   - zstd

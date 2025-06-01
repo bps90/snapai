@@ -7,7 +7,7 @@ class AbcMessageTransmissionModel(AbcModel):
     def time_to_reach(self,
                       packet: Packet,
                       origin_node: AbcNode,
-                      destination_node: AbcNode) -> int:
+                      destination_node: AbcNode) -> float:
         """Determines the time that the packet will take to reach the destination node.
 
         Parameters
@@ -21,6 +21,6 @@ class AbcMessageTransmissionModel(AbcModel):
 
         Returns
         -------
-        int
+        float
             The time that the packet will take to reach the destination node.
         """
