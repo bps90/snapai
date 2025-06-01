@@ -13,7 +13,7 @@ themselves.
 ```
 - If you haven’t already done the #Getting Started tutorial in the
     README, do so before reproducing the experiment.
-1.Navigate in your terminal to the SNAPPY root folder.
+1.Navigate in your terminal to the SnapAI root folder.
 2.Run the following command to start the simulator:
 $ source activate mobenv
 $ python manage.py runserver
@@ -77,7 +77,7 @@ algorithm in the current scenario.
 
 - If you haven’t already done the #Getting Started tutorial in the
     README, do so before reproducing the experiment.
-1.Navigate in your terminal to the SNAPPY root folder.
+1.Navigate in your terminal to the SnapAI root folder.
 2.Run the following command to start the simulator:
 
 $ source activate mobenv

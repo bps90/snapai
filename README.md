@@ -1,10 +1,10 @@
-# SNAPPY: A Simulator for Network Algorithms and Protocols in Python
+# SnapAI: A Simulator for Network Algorithms and Protocols in Python
 
 This is a simulator for network algorithms and protocols in Python. It is a web application that allows the user to create and run simulations of network algorithms and protocols. The simulator is built using Django and JavaScript. The simulator is designed to be modular, allowing the user to create new models for nodes, mobility, distribution, connectivity, message transmission, reliability, and interference. The simulator also allows the user to create new projects with custom node implementations and models. The simulator includes a graph visualization tool that allows the user to visualize the network topology and the messages transmitted between nodes. The simulator also includes tools for analyzing the network, such as shortest path algorithms and node embedding algorithms.
 
 # Table of Contents
 
-- [SNAPPY: A Simulator for Network Algorithms and Protocols in Python](#snappy-a-simulator-for-network-algorithms-and-protocols-in-python)
+- [SnapAI: A Simulator for Network Algorithms and Protocols in Python](#snapai-a-simulator-for-network-algorithms-and-protocols-in-python)
 - [Table of Contents](#table-of-contents)
   - [Getting Started](#getting-started)
   - [Creating projects](#creating-projects)

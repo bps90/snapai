@@ -12,7 +12,7 @@ para se colorir.
 *Se você ainda não fez o tutorial #Getting Started no README, faça isso
     antes de reproduzir o experimento.
 
-1.Navegue até a pasta raiz do SNAPPY no seu terminal.
+1.Navegue até a pasta raiz do SnapAI no seu terminal.
 2.Execute o seguinte comando para iniciar o simulador:
 ```bash
 $ source activate mobenv
@@ -75,7 +75,7 @@ entre dois nós no cenário. O experimento Node2Vec consiste em executar o
 algoritmo Node2Vec no cenário atual.
 
 - Se você ainda não fez o tutorial #Getting Started no README, faça isso antes de reproduzir o experimento.
-1.Navegue até a pasta raiz do SNAPPY no seu terminal.
+1.Navegue até a pasta raiz do SnapAI no seu terminal.
 2.Execute o seguinte comando para iniciar o simulador:
 ```bash
     $ source activate mobenv
