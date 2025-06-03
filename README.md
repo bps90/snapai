@@ -66,7 +66,6 @@ $ python manage.py runserver
     "num_nodes": 30,
     "node_size": 5,
     "node": "project_name:node_implementation",
-    "PROJECT_DIR": "apps/mobsinet/simulator/projects/",
     "minDimX": 0,
     "minDimY": 0,
     "dimX": 10000,

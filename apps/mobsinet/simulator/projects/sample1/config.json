@@ -1,5 +1,4 @@
 {
-    "PROJECT_DIR": "apps/mobsinet/simulator/projects/",
     "project_name": "sample1",
     "simulation_rounds": 1,
     "simulation_name": "PingPong",

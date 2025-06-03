@@ -76,36 +76,36 @@ class NetworkSimulator(object):
             The distribution model to distribute nodes in the graph.
             If a class, it will be instantiated.
             If a string, it must be exactly the name of the file containing the model,
-            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            without the ".py" extension; it will be imported from PROJECTS_DIR and instantiated.
             If None, the default distribution model will be used.
         node_constructor : Type[AbcNode] | str, optional
             The class of the node to instantiate when nodes are created.
             If a string, it must be exactly the name of the file containing the node implementation,
-            without the ".py" extension; it will be imported from PROJECT_DIR.
+            without the ".py" extension; it will be imported from PROJECTS_DIR.
             If None, the default node will be used.
         mobility_model : Type[AbcMobilityModel] | AbcMobilityModel | str, optional
             The mobility model that will be used by these nodes.
             If a class, it will be instantiated.
             If a string, it must be exactly the name of the file containing the model,
-            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            without the ".py" extension; it will be imported from PROJECTS_DIR and instantiated.
             If None, the default mobility model will be used.
         connectivity_model : Type[AbcConnectivityModel] | AbcConnectivityModel | str, optional
             The connectivity model that will be used by these nodes.
             If a class, it will be instantiated.
             If a string, it must be exactly the name of the file containing the model,
-            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            without the ".py" extension; it will be imported from PROJECTS_DIR and instantiated.
             If None, the default connectivity model will be used.
         interference_model : Type[AbcInterferenceModel] | AbcInterferenceModel | str, optional
             The interference model that will be used by these nodes.
             If a class, it will be instantiated.
             If a string, it must be exactly the name of the file containing the model,
-            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            without the ".py" extension; it will be imported from PROJECTS_DIR and instantiated.
             If None, the default interference model will be used.
         reliability_model : Type[AbcReliabilityModel] | AbcReliabilityModel | str, optional
             The reliability model that will be used by these nodes.
             If a class, it will be instantiated.
             If a string, it must be exactly the name of the file containing the model,
-            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            without the ".py" extension; it will be imported from PROJECTS_DIR and instantiated.
             If None, the default reliability model will be used.
 
         Examples

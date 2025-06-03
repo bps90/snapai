@@ -1,6 +1,5 @@
 {
     "project": "sample8",
-    "PROJECT_DIR": "apps/mobsinet/simulator/projects/",
     "simulation_name": "Sample8-Async-Simulation",
     "num_nodes": 1200,
     "node_size": 3,

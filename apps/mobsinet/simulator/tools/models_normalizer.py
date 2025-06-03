@@ -1,7 +1,7 @@
 import importlib
 
 from typing import Type, TYPE_CHECKING
-from ..configuration.sim_config import config
+from ..configuration.sim_config import config, SimulationConfig
 from abc import ABCMeta
 
 if TYPE_CHECKING:
@@ -12,8 +12,6 @@ if TYPE_CHECKING:
     from ..models.abc_interference_model import AbcInterferenceModel
     from ..models.abc_reliability_model import AbcReliabilityModel
     from ..models.abc_distribution_model import AbcDistributionModel
-
-
 
 
 class ModelsNormalizer:
@@ -27,7 +25,7 @@ class ModelsNormalizer:
             The mobility model to normalize.
             If a class, it will be instantiated.
             If a string, it must be exactly the name of the file containing the model,
-            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            without the ".py" extension; it will be imported from PROJECTS_DIR and instantiated.
             If None, the default mobility model will be returned.
 
         Returns
@@ -42,19 +40,18 @@ class ModelsNormalizer:
         if (type(mobility_model) is str):
             if (mobility_model.__contains__(':')):
                 project_name, mobility_model = mobility_model.split(':')
-                
+
                 mobility_model: Type['AbcMobilityModel'] = importlib.import_module(
-                    config.PROJECT_DIR.replace('/', '.') + project_name + '.mobility_models.' + mobility_model).model
+                    SimulationConfig.PROJECTS_DIR.replace('/', '.') + project_name + '.mobility_models.' + mobility_model).model
             else:
                 mobility_model: Type['AbcMobilityModel'] = importlib.import_module(
                     f'apps.mobsinet.simulator.defaults.mobility_models.{mobility_model}').model
-            
 
         if type(mobility_model) is type or type(mobility_model) is ABCMeta:
             mobility_model: 'AbcMobilityModel' = mobility_model()
 
         return mobility_model
-    
+
     @staticmethod
     def normalize_message_transmission_model(message_transmission_model: Type['AbcMessageTransmissionModel'] | 'AbcMessageTransmissionModel' | str | None) -> 'AbcMessageTransmissionModel':
         """(static) Normalizes the message transmission model.
@@ -65,7 +62,7 @@ class ModelsNormalizer:
             The message transmission model to normalize.
             If a class, it will be instantiated.
             If a string, it must be exactly the name of the file containing the model,
-            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            without the ".py" extension; it will be imported from PROJECTS_DIR and instantiated.
             If None, the default message transmission model will be returned.
 
         Returns
@@ -79,10 +76,11 @@ class ModelsNormalizer:
 
         if (type(message_transmission_model) is str):
             if (message_transmission_model.__contains__(':')):
-                project_name, message_transmission_model = message_transmission_model.split(':')
-                
+                project_name, message_transmission_model = message_transmission_model.split(
+                    ':')
+
                 message_transmission_model: Type['AbcMessageTransmissionModel'] = importlib.import_module(
-                    config.PROJECT_DIR.replace('/', '.') + project_name + '.message_transmission_models.' + message_transmission_model).model
+                    SimulationConfig.PROJECTS_DIR.replace('/', '.') + project_name + '.message_transmission_models.' + message_transmission_model).model
             else:
                 message_transmission_model: Type['AbcMessageTransmissionModel'] = importlib.import_module(
                     f'apps.mobsinet.simulator.defaults.message_transmission_models.{message_transmission_model}').model
@@ -102,7 +100,7 @@ class ModelsNormalizer:
             The connectivity model to normalize.
             If a class, it will be instantiated.
             If a string, it must be exactly the name of the file containing the model,
-            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            without the ".py" extension; it will be imported from PROJECTS_DIR and instantiated.
             If None, the default connectivity model will be returned.
 
         Returns
@@ -116,15 +114,14 @@ class ModelsNormalizer:
 
         if (type(connectivity_model) is str):
             if (connectivity_model.__contains__(':')):
-                project_name, connectivity_model = connectivity_model.split(':')
-                
+                project_name, connectivity_model = connectivity_model.split(
+                    ':')
+
                 connectivity_model: Type['AbcConnectivityModel'] = importlib.import_module(
-                    config.PROJECT_DIR.replace('/', '.') + project_name + '.connectivity_models.' + connectivity_model).model
+                    SimulationConfig.PROJECTS_DIR.replace('/', '.') + project_name + '.connectivity_models.' + connectivity_model).model
             else:
                 connectivity_model: Type['AbcConnectivityModel'] = importlib.import_module(
                     f'apps.mobsinet.simulator.defaults.connectivity_models.{connectivity_model}').model
-            
-            
 
         if type(connectivity_model) is type or type(connectivity_model) is ABCMeta:
             connectivity_model: 'AbcConnectivityModel' = connectivity_model()
@@ -141,7 +138,7 @@ class ModelsNormalizer:
             The interference model to normalize.
             If a class, it will be instantiated.
             If a string, it must be exactly the name of the file containing the model,
-            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            without the ".py" extension; it will be imported from PROJECTS_DIR and instantiated.
             If None, the default interference model will be returned.
 
         Returns
@@ -155,10 +152,11 @@ class ModelsNormalizer:
 
         if (type(interference_model) is str):
             if (interference_model.__contains__(':')):
-                project_name, interference_model = interference_model.split(':')
-                
+                project_name, interference_model = interference_model.split(
+                    ':')
+
                 interference_model: Type['AbcInterferenceModel'] = importlib.import_module(
-                    config.PROJECT_DIR.replace('/', '.') + project_name + '.interference_models.' + interference_model).model
+                    SimulationConfig.PROJECTS_DIR.replace('/', '.') + project_name + '.interference_models.' + interference_model).model
             else:
                 interference_model: Type['AbcInterferenceModel'] = importlib.import_module(
                     f'apps.mobsinet.simulator.defaults.interference_models.{interference_model}').model
@@ -178,7 +176,7 @@ class ModelsNormalizer:
             The reliability model to normalize.
             If a class, it will be instantiated.
             If a string, it must be exactly the name of the file containing the model,
-            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            without the ".py" extension; it will be imported from PROJECTS_DIR and instantiated.
             If None, the default reliability model will be returned.
 
         Returns
@@ -193,13 +191,12 @@ class ModelsNormalizer:
         if (type(reliability_model) is str):
             if (reliability_model.__contains__(':')):
                 project_name, reliability_model = reliability_model.split(':')
-                
+
                 reliability_model: Type['AbcReliabilityModel'] = importlib.import_module(
-                    config.PROJECT_DIR.replace('/', '.') + project_name + '.reliability_models.' + reliability_model).model
+                    SimulationConfig.PROJECTS_DIR.replace('/', '.') + project_name + '.reliability_models.' + reliability_model).model
             else:
                 reliability_model: Type['AbcReliabilityModel'] = importlib.import_module(
                     f'apps.mobsinet.simulator.defaults.reliability_models.{reliability_model}').model
-            
 
         if type(reliability_model) is type or type(reliability_model) is ABCMeta:
             reliability_model: 'AbcReliabilityModel' = reliability_model()
@@ -216,7 +213,7 @@ class ModelsNormalizer:
             The distribution model to normalize.
             If a class, it will be instantiated.
             If a string, it must be exactly the name of the file containing the model,
-            without the ".py" extension; it will be imported from PROJECT_DIR and instantiated.
+            without the ".py" extension; it will be imported from PROJECTS_DIR and instantiated.
             If None, the default distribution model will be returned.
 
         Returns
@@ -230,10 +227,11 @@ class ModelsNormalizer:
 
         if (type(distribution_model) is str):
             if (distribution_model.__contains__(':')):
-                project_name, distribution_model = distribution_model.split(':')
-                
+                project_name, distribution_model = distribution_model.split(
+                    ':')
+
                 distribution_model: Type['AbcDistributionModel'] = importlib.import_module(
-                    config.PROJECT_DIR.replace('/', '.') + project_name + '.distribution_models.' + distribution_model).model
+                    SimulationConfig.PROJECTS_DIR.replace('/', '.') + project_name + '.distribution_models.' + distribution_model).model
             else:
                 distribution_model: Type['AbcDistributionModel'] = importlib.import_module(
                     f'apps.mobsinet.simulator.defaults.distribution_models.{distribution_model}').model
@@ -252,7 +250,7 @@ class ModelsNormalizer:
         node_constructor : Type[AbcNode] | str | None
             The node constructor to normalize.
             If a string, it must be exactly the name of the file containing the node implementation,
-            without the ".py" extension; it will be imported from PROJECT_DIR.
+            without the ".py" extension; it will be imported from PROJECTS_DIR.
             If None, the default node constructor will be returned.
 
         Returns
@@ -267,9 +265,9 @@ class ModelsNormalizer:
         if (type(node_constructor) is str):
             if (node_constructor.__contains__(':')):
                 project_name, node_constructor = node_constructor.split(':')
-                
+
                 node_constructor: Type['AbcNode'] = importlib.import_module(
-                    config.PROJECT_DIR.replace('/', '.') + project_name + '.nodes.' + node_constructor).node
+                    SimulationConfig.PROJECTS_DIR.replace('/', '.') + project_name + '.nodes.' + node_constructor).node
             else:
                 node_constructor: Type['AbcNode'] = importlib.import_module(
                     f'apps.mobsinet.simulator.defaults.nodes.{node_constructor}').node

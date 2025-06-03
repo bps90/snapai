@@ -3,7 +3,7 @@
 from .global_vars import Global
 from .network_simulator import simulation
 from .tools.models_normalizer import ModelsNormalizer
-from .configuration.sim_config import config
+from .configuration.sim_config import config, SimulationConfig
 from importlib import import_module
 import logging
 from time import sleep
@@ -26,7 +26,7 @@ class Main:
             None)  # Default message transmission model
         Event.next_id = 1
         try:
-            Global.custom_global = import_module(config.PROJECT_DIR.replace(
+            Global.custom_global = import_module(SimulationConfig.PROJECTS_DIR.replace(
                 '/', '.') + project_name + '.custom_global').CustomGlobal()
         except Exception as e:
             print('No custom global', e)

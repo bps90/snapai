@@ -13,7 +13,7 @@ from node2vec import Node2Vec
 import numpy as np
 import gensim
 from copy import deepcopy
-from .simulator.configuration.sim_config import config
+from .simulator.configuration.sim_config import config, SimulationConfig
 from .simulator.asynchronous_thread import AsynchronousThread
 from .simulator.gnn.link_prediction_gnn import LinkPredictionGNN
 from .simulator.gnn.node_clusterization_gnn import NodeClusterizationGNN, NodeClusterizationDBSCAN
@@ -303,7 +303,7 @@ def node2vec_algorithm(request):
     model = node2vec.fit(node2vec, window=10, min_count=1, batch_words=4)
 
     model.wv.save_word2vec_format(
-        f'{config.PROJECT_DIR}{Global.project_name}/node2vec-{config.simulation_name}-{dimensions}D.emb')
+        f'{SimulationConfig.PROJECTS_DIR}{Global.project_name}/node2vec-{config.simulation_name}-{dimensions}D.emb')
 
     # Obtém os nós e os vetores
     words = list(model.wv.index_to_key)  # Lista de nós

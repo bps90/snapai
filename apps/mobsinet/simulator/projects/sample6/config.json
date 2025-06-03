@@ -1,7 +1,6 @@
 {
     "csrfmiddlewaretoken": "nYFp0kAhhRByX7rBZz54RZDJVBbIk5RS5LXSYvGlLIeYWo2JB8s9WFNDUezwtMpB",
     "project": "sample6",
-    "PROJECT_DIR": "apps/mobsinet/simulator/projects/",
     "simulation_name": "Sample6-Simulation",
     "num_nodes": 30,
     "node_size": 3,

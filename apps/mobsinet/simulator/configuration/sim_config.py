@@ -3,9 +3,10 @@ from math import pi, sqrt
 
 
 class SimulationConfig:
+    PROJECTS_DIR = "apps/mobsinet/simulator/projects/"
+
     def __init__(self, config_file=None):
         # Default values
-        self.PROJECT_DIR = "apps/mobsinet/simulator/projects/"
         self.simulation_name = "Network Simulation"
         self.simulation_rounds = 1000
         self.simulation_refresh_rate = 1
@@ -92,7 +93,6 @@ class SimulationConfig:
         with open(config_file, 'r') as f:
             config_data = json.load(f)
 
-        self.set_project_dir(config_data.get('PROJECT_DIR', self.PROJECT_DIR))
         self.set_simulation_name(config_data.get(
             'simulation_name', self.simulation_name))
         self.set_simulation_rounds(config_data.get(
@@ -143,9 +143,6 @@ class SimulationConfig:
         self.set_save_trace(config_data.get('save_trace', self.save_trace))
         self.set_connectivity_enabled(config_data.get(
             'connectivitiy_enabled', self.connectivity_enabled))
-
-    def set_project_dir(self, dirname):
-        self.PROJECT_DIR = dirname
 
     def set_simulation_name(self, name):
         self.simulation_name = name
