@@ -3,10 +3,13 @@ from ..nodes.s9_node import S9Node
 
 
 class SameCompanyAndPlatoonConnectivity(AbcConnectivityModel):
-    def __init__(self):
-        super().__init__('SameCompanyAndPlatoonConnectivity')
+    def check_parameters(self, parameters):
+        return True
 
-    def is_connected(self, node_a: 'S9Node', node_b: 'S9Node') -> bool:
+    def set_parameters(self, parameters):
+        pass
+
+    def is_connected(self, node_a, node_b) -> bool:
         """Check if the nodes are connected.
 
         Parameters

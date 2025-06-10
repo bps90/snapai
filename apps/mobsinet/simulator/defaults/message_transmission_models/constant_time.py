@@ -1,16 +1,33 @@
 from ...models.abc_message_transmission_model import AbcMessageTransmissionModel
 from ...models.nodes.abc_node import AbcNode
 from ...models.nodes.packet import Packet
-from ...configuration.sim_config import config
+from typing import TypedDict
+
+
+class ConstantTimeParameters(TypedDict):
+    time: float
 
 
 class ConstantTime(AbcMessageTransmissionModel):
 
-    def __init__(self):
-        super().__init__('ConstantTime')
+    def __init__(self, parameters: ConstantTimeParameters, *args, **kwargs):
+        super().__init__(parameters, *args, **kwargs)
+        self.set_parameters(parameters)
 
-        self.time = config.message_transmission_model_parameters[
-            'constant_transmission_time']
+    def check_parameters(self, parameters):
+        if ('time' not in parameters
+                or (not isinstance(parameters['time'], float) and not isinstance(parameters['time'], int))
+                or parameters['time'] < 0):
+            return False
+
+        return True
+
+    def set_parameters(self, parameters):
+        if not self.check_parameters(parameters):
+            raise ValueError('Invalid parameters.')
+
+        parsed_parameters: ConstantTimeParameters = parameters
+        self.time: float = parsed_parameters['time']
 
     def time_to_reach(
             self,
@@ -47,7 +64,7 @@ class ConstantTime(AbcMessageTransmissionModel):
             The time that the packet will take to reach the destination node.
         """
 
-        self.time = float
+        self.time = time
 
 
 model = ConstantTime

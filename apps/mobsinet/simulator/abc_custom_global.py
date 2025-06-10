@@ -74,7 +74,7 @@ class AbcCustomGlobal(ABC):
             self.global_timers.remove(timer)
             timer.fire()
             Global.round_logs.append(
-                f'Global timer {timer.__class__.__name__} {timer.node.id} fired')
+                f'Global timer {timer.__class__.__name__} fired')
 
     def handle_empty_event_queue(self):
         """

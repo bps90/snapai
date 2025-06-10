@@ -7,16 +7,18 @@ from torch_geometric.utils import negative_sampling
 from sklearn.metrics import roc_auc_score
 from itertools import combinations
 from .gcn_encoder import GCNEncoder
+from typing import Optional
 
 
 class LinkPredictionGNN:
     def __init__(self):
         self.__data: Data = None
-        self.graph: nx.Graph | nx.DiGraph = None
-        self.features: list[tuple[int, list[float]]] = None
-        self.labels: list[tuple[int, int]] = None
-        self.encoder: GCNEncoder = None
+        self.graph: Optional[nx.Graph | nx.DiGraph] = None
+        self.features: Optional[list[tuple[int, list[float]]]] = None
+        self.labels: Optional[list[tuple[int, int]]] = None
+        self.encoder: Optional[GCNEncoder] = None
 
+    @staticmethod
     def get_features_from_file(file_path: str, have_header: bool = True):
         """Get a list of tuples (id, feature vector) from a file with the following format:
         id, feature1, feature2, ..., featureN
@@ -27,6 +29,7 @@ class LinkPredictionGNN:
 
         return lines
 
+    @staticmethod
     def transform_graph_of_objects_to_graph_of_integers(graph: nx.Graph | nx.DiGraph):
         """Transform a graph of objects to a graph of integers"""
         return nx.convert_node_labels_to_integers(graph)
@@ -98,6 +101,9 @@ class LinkPredictionGNN:
                     f'Epoch {epoch}, Loss: {loss.item():.4f}, AUC: {auc:.4f}')
 
     def save(self):
+        if self.encoder is None:
+            raise Exception(
+                'You must train the model before saving it')
         torch.save(self.encoder.state_dict(),
                    'apps/mobsinet/simulator/gnn/pth/link_prediction_gnn.pth')
 
@@ -108,6 +114,9 @@ class LinkPredictionGNN:
         self.encoder.eval()
 
     def predict_missing_edges(self, top_k=10):
+        if self.encoder is None:
+            raise Exception(
+                'You must train the model before making predictions')
         self.encoder.eval()
         with torch.no_grad():
             z = self.encoder(self.__data.x, self.__data.edge_index)
@@ -152,6 +161,9 @@ class LinkPredictionGNN:
         new_data = Data(x=x, edge_index=edge_index)
 
         # Gera embeddings
+        if self.encoder is None:
+            raise Exception(
+                'You must train the model before making predictions')
         self.encoder.eval()
         with torch.no_grad():
             z = self.encoder(new_data.x, new_data.edge_index)

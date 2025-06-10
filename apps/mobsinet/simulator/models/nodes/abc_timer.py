@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from abc import ABC, abstractmethod
 from ...global_vars import Global
 from ...network_simulator import simulation
@@ -11,15 +11,15 @@ if TYPE_CHECKING:
 class AbcTimer(ABC):
 
     def __init__(self):
-        self.node: 'AbcNode'
-        self.fire_time: int
+        self.node: Optional['AbcNode']
+        self.fire_time: float
 
-    def start_global_timer(self, time: int):
+    def start_global_timer(self, time: float):
         """Starts a global timer.
 
         Parameters
         ----------
-        time : int
+        time : float
             The time in unit of time step. Should be greater than 0.
 
         Raises
@@ -41,12 +41,12 @@ class AbcTimer(ABC):
         else:
             Global.custom_global.global_timers.append(self)
 
-    def start_relative(self, time: int, node: 'AbcNode'):
+    def start_relative(self, time: float, node: 'AbcNode'):
         """Starts a relative timer.
 
         Parameters
         ----------
-            time : int
+            time : float
                 The time in unit of time step. Should be greater than 0.
             node : AbcNode
                 The node object.

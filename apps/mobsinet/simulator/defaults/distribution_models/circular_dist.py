@@ -1,23 +1,64 @@
 from math import cos, pi, sin
-from typing import Literal, Tuple
+from typing import Literal, Any, TypedDict, Tuple
 
-from matplotlib import pyplot as plt
-from networkx import Graph, draw, get_node_attributes
 from ...models.abc_distribution_model import AbcDistributionModel
 from ...tools.position import Position
-from ...configuration.sim_config import config
+from ...configuration.sim_config import SimulationConfig
+
+
+class CircularDistParameters(TypedDict):
+    radius: float
+    rotation_direction: Literal['clockwise', 'anti-clockwise']
+    midpoint: list[float]
+    number_of_nodes: int
 
 
 class CircularDist(AbcDistributionModel):
-    def __init__(self) -> None:
-        super().__init__('CircularDist')
+    def __init__(self, parameters: CircularDistParameters, *args, **kwargs):
+        super().__init__(parameters, *args, **kwargs)
 
-        self.radius = config.distribution_model_parameters['radius']
-        self.rotation_direction = config.distribution_model_parameters['rotation_direction']
-        self.midpoint = config.distribution_model_parameters['midpoint']
-        self.number_of_nodes = config.distribution_model_parameters['number_of_nodes']
+        self.set_parameters(parameters)
 
-        self._radians = 0
+        self._radians: float = 0
+
+    def check_parameters(self, parameters):
+        if ('radius' not in parameters or
+            parameters['radius'] is None or
+            parameters['radius'] < 0 or
+                (type(parameters['radius']) != float and type(parameters['radius']) != int)):
+            return False
+
+        if (
+            'rotation_direction' not in parameters or
+            parameters['rotation_direction'] not in [
+                'clockwise', 'anti-clockwise']):
+            return False
+
+        if ('midpoint' not in parameters or
+            not isinstance(parameters['midpoint'], list) or
+            len(parameters['midpoint']) != 2 or
+            (type(parameters['midpoint'][0]) != float and type(parameters['midpoint'][0]) != int) or
+                (type(parameters['midpoint'][1]) != float and type(parameters['midpoint'][1]) != int)):
+            return False
+
+        if ('number_of_nodes' not in parameters or
+            parameters['number_of_nodes'] is None or
+            parameters['number_of_nodes'] < 0 or
+                type(parameters['number_of_nodes']) != int):
+            return False
+
+        return True
+
+    def set_parameters(self, parameters):
+        if not self.check_parameters(parameters):
+            raise ValueError('Invalid parameters.')
+
+        parsed_parameters: CircularDistParameters = parameters
+        self.radius: float = parsed_parameters['radius']
+        self.rotation_direction: Literal['clockwise',
+                                         'anti-clockwise'] = parsed_parameters['rotation_direction']
+        self.midpoint: list[float] = parsed_parameters['midpoint']
+        self.number_of_nodes: int = parsed_parameters['number_of_nodes']
 
     def get_position(self) -> Position:
         """Get the next position for the node in the distribution.
@@ -44,7 +85,7 @@ class CircularDist(AbcDistributionModel):
         if (self.midpoint is None):
             raise ValueError('The midpoint is not set.')
 
-        if (self.midpoint[0] - self.radius < 0 or self.midpoint[0] + self.radius > config.dimX or self.midpoint[1] - self.radius < 0 or self.midpoint[1] + self.radius > config.dimY):
+        if (self.midpoint[0] - self.radius < 0 or self.midpoint[0] + self.radius > SimulationConfig.dim_x or self.midpoint[1] - self.radius < 0 or self.midpoint[1] + self.radius > SimulationConfig.dim_y):
             raise ValueError('The radius is too large for the midpoint.')
 
         new_coordinates = self._get_new_coordinates()
@@ -116,28 +157,5 @@ class CircularDist(AbcDistributionModel):
 
         self.midpoint = midpoint.get_coordinates()
 
+
 model = CircularDist
-
-if __name__ == '__main__':
-    circular_dist = CircularDist()
-
-    circular_dist.set_radius(50)
-    circular_dist.set_number_of_nodes(100)
-    circular_dist.set_rotation_direction('anti-clockwise')
-    circular_dist.set_midpoint(Position(50, 50))
-
-    graph = Graph()
-
-    iteractions = 85
-
-    for i in range(iteractions):
-        position = circular_dist.get_position()
-
-        graph.add_node(i, position=position.get_coordinates()[0:2])
-
-        print(position)
-
-    draw(graph, pos=get_node_attributes(graph, 'position'))
-    plt.axis('equal')
-
-    plt.show()

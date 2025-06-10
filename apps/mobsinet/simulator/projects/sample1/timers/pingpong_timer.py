@@ -12,6 +12,9 @@ class PingPongTimer(AbcTimer):
         self.__msg = msg
 
     def fire(self):
+        if (self.node is None):
+            raise Exception("Node is None")
+
         self.node.broadcast(self.__msg)
 
         if (self.period > 0):

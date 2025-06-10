@@ -3,6 +3,7 @@ from ...network_simulator import simulation
 import random
 from .nodes.s8_node import S8Node
 from ...global_vars import Global
+from typing import cast
 
 
 class CustomGlobal(AbcCustomGlobal):
@@ -19,7 +20,7 @@ class CustomGlobal(AbcCustomGlobal):
             Global.log.info(
                 "Empty event queue already handled. No action taken.")
             return
-        random_node: S8Node = simulation.nodes(
+        random_node = simulation.nodes(
         )[random.randint(0, len(simulation.nodes()) - 1)]
 
         while (isinstance(random_node, S8Node) == False):
@@ -27,8 +28,8 @@ class CustomGlobal(AbcCustomGlobal):
                 0, len(simulation.nodes()) - 1)]
         Global.log.info(
             "Random node: %d is broadcasting a green message", random_node.id)
-        random_node.broadcast_green()
+        cast(S8Node, random_node).broadcast_green()
         self.empty_queue_handled = True
 
     def has_terminated(self) -> bool:
-        return super().has_terminated()
+        return False

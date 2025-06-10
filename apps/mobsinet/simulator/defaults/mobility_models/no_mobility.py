@@ -6,10 +6,7 @@ from ...models.abc_mobility_model import AbcMobilityModel
 class NoMobility(AbcMobilityModel):
     """A mobility model with no mobility."""
 
-    def __init__(self):
-        super().__init__('NoMobility')
-
-    def get_next_position(self, node: AbcNode = None) -> Position:
+    def get_next_position(self, node: AbcNode) -> Position:
         """
         Returns
         -------
@@ -17,6 +14,12 @@ class NoMobility(AbcMobilityModel):
         """
 
         return node.position
+
+    def check_parameters(self, parameters):
+        return True
+
+    def set_parameters(self, parameters):
+        pass
 
 
 model = NoMobility

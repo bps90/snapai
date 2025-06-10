@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Union, Optional, cast
 from abc import ABC, abstractmethod
 from ...tools.inbox_packet_buffer import InboxPacketBuffer
 from .packet import Packet
@@ -7,14 +7,14 @@ from ...tools.packet_type import PacketType
 from ...tools.nack_box import NackBox
 from ...global_vars import Global
 from ...network_simulator import simulation
-from ...tools.models_normalizer import ModelsNormalizer
+from ...tools.models_normalizer import ModelsSearchEngine
 from ...tools.color import Color
-from ...configuration.sim_config import config
+from ...configuration.sim_config import SimulationConfig
 from ...tools.packet_event import PacketEvent
+from ...tools.position import Position
 
 if TYPE_CHECKING:
     from .abc_timer import AbcTimer
-    from ...tools.position import Position
     from ..abc_mobility_model import AbcMobilityModel
     from ..abc_connectivity_model import AbcConnectivityModel
     from ..abc_interference_model import AbcInterferenceModel
@@ -26,17 +26,22 @@ class AbcNode(ABC):
     def __init__(
             self,
             id: int,
-            position: 'Position' = None,
-            mobility_model: 'AbcMobilityModel' = None,
-            connectivity_model: 'AbcConnectivityModel' = None,
-            interference_model: 'AbcInterferenceModel' = None,
-            reliability_model: 'AbcReliabilityModel' = None):
+            mobility_model: 'AbcMobilityModel',
+            connectivity_model: 'AbcConnectivityModel',
+            interference_model: 'AbcInterferenceModel',
+            reliability_model: 'AbcReliabilityModel',
+            color: Color = Color(0, 0, 0),
+            size: int = 1,
+            position: 'Position' = Position()):
         self.id = id
         self.position: Position = position
         self.mobility_model: AbcMobilityModel = mobility_model
         self.connectivity_model: AbcConnectivityModel = connectivity_model
         self.interference_model: AbcInterferenceModel = interference_model
         self.reliability_model: AbcReliabilityModel = reliability_model
+        self.node_color: Color = color
+        self.size = size
+
         self.timers: list[AbcTimer] = []
         self.neighborhood_changed: bool = False
         self.packet_buffer = InboxPacketBuffer()
@@ -45,8 +50,6 @@ class AbcNode(ABC):
         self.nack_box: 'NackBox' | None = None
         self.inbox: 'Inbox' | None = None
         self.intensity: float = 1.0
-        self.node_color: Color = Color(0, 0, 0)
-        self.size = 1
 
     def __str__(self):
         return f'{self.id}'
@@ -97,13 +100,13 @@ class AbcNode(ABC):
     def get_radio_intensity(self):
         return self.intensity
 
-    def send(self, message: 'AbcMessage', destination: 'AbcNode', intensity: float = None):
+    def send(self, message: 'AbcMessage', destination: 'AbcNode', intensity: Optional[float] = None):
         intensity = intensity if intensity != None else self.intensity
 
         has_edge = simulation.has_edge(self, destination)
 
         packet = self.__send_message(
-            message, has_edge, self, destination, intensity)
+            message, has_edge, self, destination, cast(float, intensity))
 
         simulation.packets_in_the_air.add(packet)
 
@@ -114,16 +117,19 @@ class AbcNode(ABC):
             raise Exception("Cloned message is None")
 
         packet = Packet(cloned_message)
+        if (Global.message_transmission_model is None):
+            raise Exception("Message transmission model is None")
+
         transmission_time = Global.message_transmission_model.time_to_reach(
             packet, self, destination)
 
         packet.arriving_time = Global.current_time + transmission_time
-        packet.sendingTime = Global.current_time
+        packet.sending_time = Global.current_time
         packet.origin = self
         packet.destination = destination
         packet.intensity = self.intensity
         packet.positive_delivery = True
-        packet.type = PacketType['UNICAST']
+        packet.type = 'UNICAST'
 
         Global.number_of_messages_in_this_round += 1
 
@@ -138,16 +144,16 @@ class AbcNode(ABC):
 
             destination.packet_buffer.add_packet(packet)
 
-    def broadcast(self, message: 'AbcMessage', intensity: float = None):
+    def broadcast(self, message: 'AbcMessage', intensity: Optional[float] = None):
         intensity = intensity if intensity != None else self.intensity
-        self.__broadcast_message(message, intensity)
+        self.__broadcast_message(message, cast(float, intensity))
 
     def __broadcast_message(self, message: 'AbcMessage', intensity: float):
         if (not Global.is_running and not Global.is_async_mode):
             raise Exception("The node " + str(self.id) +
                             " tried to broadcast a message with simulation not running.")
 
-        longest_packet = None
+        longest_packet: Optional[Packet] = None
 
         neighbors = self.get_neighbors()
 
@@ -161,7 +167,7 @@ class AbcNode(ABC):
             if (longest_packet is None or sent_packet.arriving_time > longest_packet.arriving_time):
                 longest_packet = sent_packet
 
-        if (longest_packet != None):
+        if (isinstance(longest_packet, Packet)):
             simulation.packets_in_the_air.upgrade_to_active(longest_packet)
         else:
             self_sent_packet = self.__send_message(
@@ -186,6 +192,8 @@ class AbcNode(ABC):
             raise Exception("Cloned message is None")
 
         packet = Packet(cloned_message)
+        if (Global.message_transmission_model is None):
+            raise Exception("Message transmission model is None")
         transmission_time = Global.message_transmission_model.time_to_reach(
             packet, sender, destination)
 
@@ -194,7 +202,7 @@ class AbcNode(ABC):
         packet.origin = sender
         packet.destination = destination
         packet.intensity = intensity
-        packet.type = PacketType['UNICAST']
+        packet.type = 'UNICAST'
 
         if (has_edge):
             packet.positive_delivery = self.reliability_model.reaches_destination(
@@ -217,6 +225,8 @@ class AbcNode(ABC):
             raise Exception("Cloned message is None")
 
         packet = Packet(cloned_message)
+        if (Global.message_transmission_model is None):
+            raise Exception("Message transmission model is None")
         transmission_time = Global.message_transmission_model.time_to_reach(
             packet, sender, destination)
 
@@ -225,7 +235,7 @@ class AbcNode(ABC):
         packet.origin = sender
         packet.destination = destination
         packet.intensity = intensity
-        packet.type = PacketType['UNICAST']
+        packet.type = 'UNICAST'
 
         if (has_edge):
             packet.positive_delivery = self.reliability_model.reaches_destination(
@@ -337,7 +347,7 @@ class AbcNode(ABC):
         for timer in timers_to_handle:
             timer.fire()
 
-        if (config.nack_messages_enabled):
+        if (SimulationConfig.nack_messages_enabled):
             if (self.nack_box is None):
                 self.nack_box = NackBox(
                     self.nack_buffer_even if Global.is_even_round else self.nack_buffer_odd)
@@ -374,13 +384,13 @@ class AbcNode(ABC):
 
     def finish_init_with_defaults(self, add_to_simulation: bool = False):
         if (self.connectivity_model is None):
-            self.connectivity_model = ModelsNormalizer.normalize_connectivity_model()
+            self.connectivity_model = ModelsSearchEngine.normalize_connectivity_model()
         if (self.mobility_model is None):
-            self.mobility_model = ModelsNormalizer.normalize_mobility_model()
+            self.mobility_model = ModelsSearchEngine.normalize_mobility_model()
         if (self.interference_model is None):
-            self.interference_model = ModelsNormalizer.normalize_interference_model()
+            self.interference_model = ModelsSearchEngine.normalize_interference_model()
         if (self.reliability_model is None):
-            self.reliability_model = ModelsNormalizer.normalize_reliability_model()
+            self.reliability_model = ModelsSearchEngine.normalize_reliability_model()
         if (self.position is None):
             self.position = Position()
 

@@ -1,8 +1,9 @@
 from threading import Thread
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from .global_vars import Global
 import time
 from .network_simulator import simulation
+from .configuration.sim_config import SimulationConfig
 
 if TYPE_CHECKING:
     from .models.nodes.abc_node import AbcNode
@@ -11,11 +12,11 @@ if TYPE_CHECKING:
 class AsynchronousThread(Thread):
     connectivity_initialized = False
 
-    def __init__(self, number_of_events: int, refresh_rate: int):
+    def __init__(self, number_of_events: int, refresh_rate: float):
         super().__init__()
         self.number_of_events = number_of_events
         self.refresh_rate = refresh_rate
-        self.last_event_node: AbcNode = None
+        self.last_event_node: Optional[AbcNode] = None
         self.__should_stop = False  # Local control to stop the thread
 
     def stop(self):
@@ -28,7 +29,7 @@ class AsynchronousThread(Thread):
 
         Global.is_running = True
         if (AsynchronousThread.connectivity_initialized == False):
-            self.reevaluate_connections()
+            AsynchronousThread.reevaluate_connections()
 
         ts = time.time()
         for _ in range(self.number_of_events):
@@ -64,12 +65,12 @@ class AsynchronousThread(Thread):
 
         Global.is_running = False
 
+    @staticmethod
     def reevaluate_connections():
         """(private) Updates the connections in the network graph."""
-
+        if SimulationConfig.connectivity_enabled == False:
+            return
         for node in simulation.nodes():
-            node: 'AbcNode'
-
             # reset neighboorhood_changed flag
             node.neighborhood_changed = False
             connections = 0
@@ -77,8 +78,6 @@ class AsynchronousThread(Thread):
 
             # update the connections
             for possible_neighbor in simulation.nodes():
-                possible_neighbor: 'AbcNode'
-
                 if possible_neighbor == node:
                     continue
 

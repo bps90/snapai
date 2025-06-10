@@ -8,10 +8,6 @@
     "dimX": 10000,
     "dimY": 10000,
     "dimZ": 0,
-    "network_parameters": {
-        "type": "random_graph",
-        "avg_degree": 2
-    },
     "node": "inert_node",
     "distribution_model": "random_dist",
     "distribution_model_parameters": {

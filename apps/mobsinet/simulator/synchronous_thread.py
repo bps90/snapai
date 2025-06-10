@@ -6,12 +6,11 @@ from .global_vars import Global
 from .models.nodes.abc_node import AbcNode
 from .network_simulator import simulation
 import time
-from .configuration.sim_config import config
+from .configuration.sim_config import SimulationConfig
+from typing import Optional
 
 
 class SynchronousThread(Thread):
-    tracefile_suffix = ''
-
     def __init__(self, number_of_rounds: int = 0, refresh_rate: float = 0):
         super().__init__()
         self.number_of_rounds = number_of_rounds
@@ -71,11 +70,12 @@ class SynchronousThread(Thread):
         self.__move_nodes()
         # print('Time to move nodes: ', time.time() - tmove)
         # tconn = time.time()
-        if (config.connectivity_enabled):
+        if (SimulationConfig.connectivity_enabled):
             self.__update_connections()
         # print('Time to update connections: ', time.time() - tconn)
         # tinterf = time.time()
-        simulation.packets_in_the_air.test_interference()
+        if (SimulationConfig.interference_enabled):
+            simulation.packets_in_the_air.test_interference()
         # print('Time to test interference: ', time.time() - tinterf)
         # tstep = time.time()
         self.__step_nodes()
@@ -84,9 +84,11 @@ class SynchronousThread(Thread):
     def __move_nodes(self):
         """(private) Moves the nodes in the network graph."""
 
-        if (config.save_trace and Global.current_time == 1):
+        tracefile: Optional[object]
+
+        if (SimulationConfig.save_trace and Global.current_time == 1):
             tracefile = open(
-                f'traces/{config.simulation_name+SynchronousThread.tracefile_suffix}.csv', 'w')
+                f'traces/{SimulationConfig.simulation_name+Global.tracefile_suffix}.csv', 'w')
             tracefile.write('time,x,y,id\n')
 
             for node in simulation.nodes():
@@ -95,12 +97,10 @@ class SynchronousThread(Thread):
 
             tracefile.close()
 
-        tracefile = open(f"traces/{config.simulation_name+SynchronousThread.tracefile_suffix}.csv",
-                         "a") if config.save_trace else None
+        tracefile = open(f"traces/{SimulationConfig.simulation_name+Global.tracefile_suffix}.csv",
+                         "a") if SimulationConfig.save_trace else None
 
         for node in simulation.nodes():
-            node: 'AbcNode'
-
             # move the node
             node.set_position(node.mobility_model.get_next_position(node))
 
@@ -113,11 +113,10 @@ class SynchronousThread(Thread):
 
     def __update_connections(self):
         """(private) Updates the connections in the network graph."""
-
+        if SimulationConfig.connectivity_enabled == False:
+            return
         # TODO: Criar logging para conexão
         for node in simulation.nodes():
-            node: 'AbcNode'
-
             # reset neighboorhood_changed flag
             node.neighborhood_changed = False
             connections = 0
@@ -125,8 +124,6 @@ class SynchronousThread(Thread):
 
             # update the connections
             for possible_neighbor in simulation.nodes():
-                possible_neighbor: 'AbcNode'
-
                 if possible_neighbor == node:
                     continue
 
@@ -154,5 +151,4 @@ class SynchronousThread(Thread):
         """(private) Performs a step for each node in the network graph."""
 
         for node in simulation.nodes():
-            node: 'AbcNode'
             node.step()

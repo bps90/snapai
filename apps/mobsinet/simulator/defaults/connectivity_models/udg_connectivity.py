@@ -1,15 +1,32 @@
 from ...models.nodes.abc_node import AbcNode
 from ...models.abc_connectivity_model import AbcConnectivityModel
-from ...configuration.sim_config import config
+from typing import TypedDict
 
-config.connectivity_model_parameters = config.connectivity_model_parameters
+
+class UDGConnectivityParameters(TypedDict):
+    max_radius: int
 
 
 class UDGConnectivity(AbcConnectivityModel):
-    def __init__(self):
-        super().__init__('UDGConnectivity')
+    def __init__(self, parameters: UDGConnectivityParameters, *args, **kwargs):
+        super().__init__(parameters, *args, **kwargs)
+        self.set_parameters(parameters)
 
-        self.max_radius = config.connectivity_model_parameters['max_radius']
+    def check_parameters(self, parameters):
+        if ('max_radius' not in parameters or
+            parameters['max_radius'] is None or
+            parameters['max_radius'] < 0 or
+                (type(parameters['max_radius']) != float and type(parameters['max_radius']) != int)):
+            return False
+
+        return True
+
+    def set_parameters(self, parameters):
+        if not self.check_parameters(parameters):
+            raise ValueError('Invalid parameters.')
+
+        parsed_parameters: UDGConnectivityParameters = parameters
+        self.max_radius: float = parsed_parameters['max_radius']
 
     def is_connected(self, node_a: AbcNode, node_b: AbcNode) -> bool:
         """Check if the nodes are connected.

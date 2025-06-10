@@ -1,7 +1,7 @@
 from math import cos, sin, sqrt, pi
-from typing import Tuple
+from typing import Tuple, TypedDict, Optional
 from networkx import DiGraph, Graph, draw, draw_networkx_edge_labels, draw_networkx_labels, get_edge_attributes, get_node_attributes
-from ...configuration.sim_config import config
+from ...configuration.sim_config import SimulationConfig
 from ..connectivity_models.no_connectivity import NoConnectivity
 from ..interference_models.no_interference import NoInterference
 from ..nodes.inert_node import InertNode
@@ -12,29 +12,82 @@ from ...tools.position import Position
 from random import randint, random
 import matplotlib.pyplot as plt
 
-config.mobility_model_parameters = config.mobility_model_parameters
+
+class RandomWalkParameters(TypedDict):
+    speed_range: list[float]
+    direction_range: list[float]
+    travel_distance: Optional[float]
+    travel_time: Optional[float]
+    prioritize_speed: bool
 
 
 class RandomWalk(AbcMobilityModel):
 
-    def __init__(self):
-        super().__init__('RandomWalk')
+    def __init__(self, parameters: RandomWalkParameters, *args, **kwargs):
+        super().__init__(parameters, *args, **kwargs)
 
-        self.speed_range: list[float |
-                               int] = config.mobility_model_parameters['speed_range']
-        self.direction_range: list[float |
-                                   int] = config.mobility_model_parameters['direction_range']
-        self.travel_distance: float = config.mobility_model_parameters['travel_distance']
-        self.travel_time: float = config.mobility_model_parameters['travel_time']
-        self.prioritize_speed: bool = config.mobility_model_parameters['prioritize_speed']
+        self.set_parameters(parameters)
 
-        self._current_speed = 0  # unit of length per time step
-        self._current_direction = 0  # radians
+        self._current_speed: float = 0  # unit of length per time step
+        self._current_direction: float = 0  # radians
         self._remaining_time = self.travel_time if self.travel_time else float(
             'inf')
         self._remaining_distance = self.travel_distance if self.travel_distance else float(
             'inf')
         self._new_random_attributes()
+
+    def check_parameters(self, parameters):
+        if ('speed_range' not in parameters or
+                    not isinstance(parameters['speed_range'], list) or
+                    len(parameters['speed_range']) != 2 or
+                    (not isinstance(parameters['speed_range'][0], float) and not isinstance(parameters['speed_range'][0], int)) or
+                    (not isinstance(parameters['speed_range'][1], float) and not isinstance(parameters['speed_range'][1], int)) or
+                    parameters['speed_range'][0] < 0 or
+                    parameters['speed_range'][1] < 0 or
+                    parameters['speed_range'][0] > parameters['speed_range'][1]
+                ):
+            return False
+
+        if ('direction_range' not in parameters or
+                    not isinstance(parameters['direction_range'], list) or
+                    len(parameters['direction_range']) != 2 or
+                    (not isinstance(parameters['direction_range'][0], float) and not isinstance(parameters['direction_range'][0], int)) or
+                    (not isinstance(parameters['direction_range'][1], float) and not isinstance(parameters['direction_range'][1], int)) or
+                    parameters['direction_range'][0] < 0 or
+                    parameters['direction_range'][1] < 0 or
+                    parameters['direction_range'][0] > parameters['direction_range'][1]
+                ):
+            return False
+
+        if ('travel_distance' not in parameters and 'travel_time' not in parameters):
+            return False
+
+        if (parameters['travel_distance'] is not None and
+                ((not isinstance(parameters['travel_distance'], float) and not isinstance(parameters['travel_distance'], int)) or
+                 parameters['travel_distance'] < 0)):
+            return False
+
+        if (parameters['travel_time'] is not None and
+                ((not isinstance(parameters['travel_time'], float) and not isinstance(parameters['travel_time'], int)) or
+                 parameters['travel_time'] < 0)):
+            return False
+
+        if ('prioritize_speed' not in parameters or
+                not isinstance(parameters['prioritize_speed'], bool)):
+            return False
+
+        return True
+
+    def set_parameters(self, parameters):
+        if not self.check_parameters(parameters):
+            raise ValueError('Invalid parameters')
+
+        parsed_parameters: RandomWalkParameters = parameters
+        self.speed_range = parsed_parameters['speed_range']
+        self.direction_range = parsed_parameters['direction_range']
+        self.travel_distance = parsed_parameters['travel_distance']
+        self.travel_time = parsed_parameters['travel_time']
+        self.prioritize_speed = parsed_parameters['prioritize_speed']
 
     def get_next_position(self, node: AbcNode) -> Position:
         """Get the next position based on random directions and speeds.
@@ -185,10 +238,10 @@ class RandomWalk(AbcMobilityModel):
 
         traveled_distance_to_left_boundary = (
             - old_coordinates[0] / unit_vector[0]) if unit_vector[0] != 0 else float('inf')
-        traveled_distance_to_right_boundary = ((config.dimX -
+        traveled_distance_to_right_boundary = ((SimulationConfig.dim_x -
                                                old_coordinates[0]) / unit_vector[0]) if unit_vector[0] != 0 else float('inf')
         traveled_distance_to_top_boundary = ((
-            config.dimY - old_coordinates[1]) / unit_vector[1]) if unit_vector[1] != 0 else float('inf')
+            SimulationConfig.dim_y - old_coordinates[1]) / unit_vector[1]) if unit_vector[1] != 0 else float('inf')
         traveled_distance_to_bottom_boundary = (
             - old_coordinates[1] / unit_vector[1]) if unit_vector[1] != 0 else float('inf')
 
@@ -355,7 +408,7 @@ class RandomWalk(AbcMobilityModel):
             The adjusted coordinates.
         """
 
-        if (new_coordinates[0] > config.dimX):
+        if (new_coordinates[0] > SimulationConfig.dim_x):
 
             unit_vector = self._get_unit_vector(self._current_direction)
             current_speed = sqrt(
@@ -366,14 +419,14 @@ class RandomWalk(AbcMobilityModel):
             self._current_direction = -self._current_direction + pi
 
             traveled_distance_to_boundary = ((
-                config.dimX - old_coordinates[0]) / unit_vector[0]) if unit_vector[0] != 0 else float('inf')
+                SimulationConfig.dim_x - old_coordinates[0]) / unit_vector[0]) if unit_vector[0] != 0 else float('inf')
             remaining_distance = (
                 current_speed - traveled_distance_to_boundary)
 
             direction_vector = self._get_direction_vector(
                 remaining_distance, self._current_direction)
 
-            limit_point = (config.dimX,
+            limit_point = (SimulationConfig.dim_x,
                            traveled_distance_to_boundary *
                            unit_vector[1] + old_coordinates[1],
                            0)
@@ -406,7 +459,7 @@ class RandomWalk(AbcMobilityModel):
             The adjusted coordinates.
         """
 
-        if (new_coordinates[1] > config.dimY):
+        if (new_coordinates[1] > SimulationConfig.dim_y):
 
             unit_vector = self._get_unit_vector(self._current_direction)
             current_speed = sqrt(
@@ -417,7 +470,7 @@ class RandomWalk(AbcMobilityModel):
             self._current_direction = -self._current_direction
 
             traveled_distance_to_boundary = ((
-                config.dimY - old_coordinates[1]) / unit_vector[1]) if unit_vector[1] != 0 else float('inf')
+                SimulationConfig.dim_y - old_coordinates[1]) / unit_vector[1]) if unit_vector[1] != 0 else float('inf')
             remaining_distance = current_speed - \
                 traveled_distance_to_boundary
 
@@ -426,7 +479,7 @@ class RandomWalk(AbcMobilityModel):
 
             limit_point = (traveled_distance_to_boundary *
                            unit_vector[0] + old_coordinates[0],
-                           config.dimY,
+                           SimulationConfig.dim_y,
                            0)
 
             coordinates = (

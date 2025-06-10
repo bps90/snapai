@@ -4,8 +4,8 @@ from ..network_simulator import simulation
 from ..models.nodes.packet import Packet
 from .inbox import Inbox
 from ..global_vars import Global
-from typing import TYPE_CHECKING
-from ..configuration.sim_config import config
+from typing import TYPE_CHECKING, Optional
+from ..configuration.sim_config import SimulationConfig
 
 if (TYPE_CHECKING):
     from ..models.nodes.abc_node import AbcNode
@@ -16,7 +16,7 @@ class InboxPacketBuffer:
         # Lista de pacotes que chegam neste round
         self.arriving_packets: list['Packet'] = []
         self.buffer: list['Packet'] = []
-        self.inbox: 'Inbox' = None
+        self.inbox: Optional['Inbox'] = None
 
     def add_packet(self, p: 'Packet'):
         """Adiciona um pacote à lista."""
@@ -52,7 +52,7 @@ class InboxPacketBuffer:
                     )
                 else:
 
-                    if config.nack_messages_enabled:
+                    if SimulationConfig.nack_messages_enabled:
                         # Retorna o pacote ao remetente
                         p.origin.add_nack_packet(p)
                     else:

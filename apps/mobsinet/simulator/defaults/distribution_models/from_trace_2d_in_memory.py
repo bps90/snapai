@@ -1,7 +1,15 @@
 from ...models.abc_distribution_model import AbcDistributionModel
-from ...configuration.sim_config import config
 from ...tools.position import Position
-import utm
+import utm  # type: ignore
+from typing import Any, Optional, cast, TypedDict
+from ...configuration.sim_config import SimulationConfig
+
+
+class FromTrace2DInMemoryParameters(TypedDict):
+    trace_file: str
+    is_lat_long: bool
+    should_padding: bool
+    addapt_to_dimensions: bool
 
 
 class FromTrace2DInMemory(AbcDistributionModel):
@@ -9,31 +17,63 @@ class FromTrace2DInMemory(AbcDistributionModel):
     Class to generate 2D distributions from a trace in memory.
     """
 
-    def __init__(self):
+    def __init__(self, parameters: FromTrace2DInMemoryParameters, *args, **kwargs):
         """
         Initialize the FromTrace2DInMemory class.
 
         Args:
             trace: The trace data to be used for generating the distribution.
         """
-        super().__init__('FromTrace2DInMemory')
-        self.__trace: list[list[float]] = None
-        self.is_lat_long = config.distribution_model_parameters.get(
-            'is_lat_long', False)
-        self.should_padding = config.distribution_model_parameters.get(
-            'should_padding', False
-        )
-        self.addapt_to_dimensions = config.distribution_model_parameters.get(
-            'addapt_to_dimensions', False
-        )
-        self.__min_x = None
-        self.__max_x = None
-        self.__min_y = None
-        self.__max_y = None
+        super().__init__(parameters, *args, **kwargs)
+        self.set_parameters(parameters)
+
+        self.__trace: Optional[list[list[float]]] = None
+        self.__min_x: Optional[float] = None
+        self.__max_x: Optional[float] = None
+        self.__min_y: Optional[float] = None
+        self.__max_y: Optional[float] = None
         self.__trace_index = 0
 
-        self.load_trace(
-            config.distribution_model_parameters.get('trace_file'))
+        self.load_trace(self.trace_file)
+
+    def check_parameters(self, parameters):
+        if (
+            'trace_file' not in parameters or
+            not isinstance(parameters['trace_file'], str) or
+                parameters['trace_file'] == '' or
+                not parameters['trace_file'].endswith('.csv')):
+            return False
+
+        if (
+            'is_lat_long' not in parameters or
+            not isinstance(parameters['is_lat_long'], bool)
+        ):
+            return False
+
+        if (
+            'should_padding' not in parameters or
+            not isinstance(parameters['should_padding'], bool)
+        ):
+            return False
+
+        if (
+            'addapt_to_dimensions' not in parameters or
+            not isinstance(parameters['addapt_to_dimensions'], bool)
+        ):
+            return False
+
+        return True
+
+    def set_parameters(self, parameters):
+        if not self.check_parameters(parameters):
+            raise ValueError('Invalid parameters.')
+
+        parsed_parameters: FromTrace2DInMemoryParameters = parameters
+        self.trace_file: str = parsed_parameters['trace_file']
+        self.is_lat_long: bool = parsed_parameters['is_lat_long']
+        self.should_padding: bool = parsed_parameters['should_padding']
+        self.addapt_to_dimensions: bool = parsed_parameters[
+            'addapt_to_dimensions']
 
     def set_lat_long(self, is_lat_long: bool):
         """
@@ -86,18 +126,18 @@ class FromTrace2DInMemory(AbcDistributionModel):
         with open(filename, 'r') as f:
 
             for line in f.readlines()[1:]:
-                line = list(map(float, line.split(',')))
-                if (line[0] == 0):
-                    self.__trace.append(line)
+                splitted_line = list(map(float, line.split(',')))
+                if (splitted_line[0] == 0):
+                    self.__trace.append(splitted_line)
 
-                if (self.__min_x is None or line[1] < self.__min_x):
-                    self.__min_x = line[1]
-                if (self.__max_x is None or line[1] > self.__max_x):
-                    self.__max_x = line[1]
-                if (self.__min_y is None or line[2] < self.__min_y):
-                    self.__min_y = line[2]
-                if (self.__max_y is None or line[2] > self.__max_y):
-                    self.__max_y = line[2]
+                if (self.__min_x is None or splitted_line[1] < self.__min_x):
+                    self.__min_x = splitted_line[1]
+                if (self.__max_x is None or splitted_line[1] > self.__max_x):
+                    self.__max_x = splitted_line[1]
+                if (self.__min_y is None or splitted_line[2] < self.__min_y):
+                    self.__min_y = splitted_line[2]
+                if (self.__max_y is None or splitted_line[2] > self.__max_y):
+                    self.__max_y = splitted_line[2]
 
         self.__trace.sort(key=lambda x: x[3])
 
@@ -118,6 +158,9 @@ class FromTrace2DInMemory(AbcDistributionModel):
             raise ValueError(
                 "Should padding must be false if addapt to dimensions is false.")
 
+        if self.__min_x is None or self.__max_x is None or self.__min_y is None or self.__max_y is None:
+            raise ValueError("Trace not loaded. Please load a trace first.")
+
         if (self.is_lat_long):
             max_x = self.__max_x - self.__min_x
             max_y = self.__max_y - self.__min_y
@@ -125,7 +168,7 @@ class FromTrace2DInMemory(AbcDistributionModel):
             max_x = self.__max_x
             max_y = self.__max_y
 
-        if max_x > config.dimX or max_y > config.dimY:
+        if max_x > SimulationConfig.dim_x or max_y > SimulationConfig.dim_y:
             raise ValueError("Trace coordinates exceed simulation dimensions.")
 
         corresponding_position: list[float] = self.__trace[self.__trace_index]
@@ -139,26 +182,28 @@ class FromTrace2DInMemory(AbcDistributionModel):
             if (self.should_padding):
                 x = (x - self.__min_x) / \
                     (self.__max_x - self.__min_x) * \
-                    config.dimX * 0.9 + config.dimX * 0.05
+                    SimulationConfig.dim_x * 0.9 + SimulationConfig.dim_x * 0.05
                 y = (y - self.__min_y) / \
                     (self.__max_y - self.__min_y) * \
-                    config.dimY * 0.9 + config.dimY * 0.05
+                    SimulationConfig.dim_y * 0.9 + SimulationConfig.dim_y * 0.05
             elif (self.addapt_to_dimensions):
                 x = (x - self.__min_x) / \
-                    (self.__max_x - self.__min_x) * config.dimX
+                    (self.__max_x - self.__min_x) * SimulationConfig.dim_x
                 y = (y - self.__min_y) / \
-                    (self.__max_y - self.__min_y) * config.dimY
+                    (self.__max_y - self.__min_y) * SimulationConfig.dim_y
 
         else:
             # Use x/y directly
             if (self.should_padding):
                 x = corresponding_position[1] / (self.__max_x) * \
-                    config.dimX * 0.9 + config.dimX * 0.05
+                    SimulationConfig.dim_x * 0.9 + SimulationConfig.dim_x * 0.05
                 y = corresponding_position[2] / (self.__max_y) * \
-                    config.dimY * 0.9 + config.dimY * 0.05
+                    SimulationConfig.dim_y * 0.9 + SimulationConfig.dim_y * 0.05
             elif (self.addapt_to_dimensions):
-                x = corresponding_position[1] / (self.__max_x) * config.dimX
-                y = corresponding_position[2] / (self.__max_y) * config.dimY
+                x = corresponding_position[1] / \
+                    (self.__max_x) * SimulationConfig.dim_x
+                y = corresponding_position[2] / \
+                    (self.__max_y) * SimulationConfig.dim_y
             else:
                 x = corresponding_position[1]
                 y = corresponding_position[2]

@@ -2,16 +2,20 @@ from ...models.nodes.abc_node import AbcNode
 from ...tools.position import Position
 from ...models.abc_mobility_model import AbcMobilityModel
 from random import random
-from ...configuration.sim_config import config
+from ...configuration.sim_config import SimulationConfig
+from typing import Optional
 
 
 class RandomMob(AbcMobilityModel):
     """A random mobility model."""
 
-    def __init__(self):
-        super().__init__('RandomMob')
+    def check_parameters(self, parameters):
+        return True
 
-    def get_next_position(self, node: AbcNode = None) -> Position:
+    def set_parameters(self, parameters):
+        pass
+
+    def get_next_position(self, node: Optional[AbcNode] = None) -> Position:
         """
         Generate a random position within the given dimensions.
 
@@ -20,9 +24,9 @@ class RandomMob(AbcMobilityModel):
         Position: The randomly generated position.
         """
 
-        xcord = random() * config.dimX
-        ycord = random() * config.dimY
-        zcord = random() * config.dimZ if config.dimZ > 0 else 0
+        xcord = random() * SimulationConfig.dim_x
+        ycord = random() * SimulationConfig.dim_y
+        zcord = random() * SimulationConfig.dim_z if SimulationConfig.dim_z > 0 else 0
 
         return Position(xcord, ycord, zcord)
 

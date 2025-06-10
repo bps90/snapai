@@ -2,19 +2,41 @@ import random
 from ...models.abc_message_transmission_model import AbcMessageTransmissionModel
 from ...models.nodes.abc_node import AbcNode
 from ...models.nodes.packet import Packet
-from ...configuration.sim_config import config
+from ...configuration.sim_config import SimulationConfig
+from typing import TypedDict
 
-config.message_transmission_model_parameters = config.message_transmission_model_parameters
+
+class RandomTimeParameters(TypedDict):
+    min_time: float
+    max_time: float
 
 
 class RandomTime(AbcMessageTransmissionModel):
-    def __init__(self):
-        super().__init__('RandomTime')
+    def __init__(self, parameters: RandomTimeParameters, *args, **kwargs):
+        super().__init__(parameters, *args, **kwargs)
+        self.set_parameters(parameters)
 
-        self.min_time = config.message_transmission_model_parameters[
-            'random_transmission_min_time']
-        self.max_time = config.message_transmission_model_parameters[
-            'random_transmission_max_time']
+    def check_parameters(self, parameters):
+        if ('min_time' not in parameters or
+                (not isinstance(parameters['min_time'], float) and not isinstance(parameters['min_time'], int)) or
+                parameters['min_time'] < 0):
+            return False
+
+        if ('max_time' not in parameters or
+                (not isinstance(parameters['max_time'], float) and not isinstance(parameters['max_time'], int)) or
+                parameters['max_time'] < 0 or
+                parameters['max_time'] < parameters['min_time']):
+            return False
+
+        return True
+
+    def set_parameters(self, parameters):
+        if not self.check_parameters(parameters):
+            raise ValueError('Invalid parameters.')
+
+        parsed_parameters: RandomTimeParameters = parameters
+        self.min_time: float = parsed_parameters['min_time']
+        self.max_time: float = parsed_parameters['max_time']
 
     def time_to_reach(self,
                       packet: Packet,
@@ -44,9 +66,8 @@ class RandomTime(AbcMessageTransmissionModel):
         return random.uniform(self.min_time, self.max_time)
 
     def set_interval(self,
-                     min_time: float = config.message_transmission_model_parameters[
-                         'random_transmission_min_time'],
-                     max_time: float = config.message_transmission_model_parameters['random_transmission_max_time']):
+                     min_time: float,
+                     max_time: float):
         """Set the min and max time that the packet will take to reach the destination node.
 
         Parameters

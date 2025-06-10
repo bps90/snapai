@@ -5,7 +5,6 @@ from .abc_model import AbcModel
 
 
 class AbcReliabilityModel(AbcModel):
-
     @abstractmethod
     def reaches_destination(self, packet: Packet) -> bool:
         """Determines if the packet will reach the destination.
@@ -20,4 +19,3 @@ class AbcReliabilityModel(AbcModel):
         bool
             `True` if the packet will reach the destination, `False` otherwise.
         """
-

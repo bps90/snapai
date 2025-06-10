@@ -8,13 +8,15 @@ from .models.abc_mobility_model import AbcMobilityModel
 from .models.abc_connectivity_model import AbcConnectivityModel
 from .models.abc_interference_model import AbcInterferenceModel
 from .models.abc_reliability_model import AbcReliabilityModel
-from .configuration.sim_config import config
+from .models.abc_model import AbcModelParameters
+from .configuration.sim_config import SimulationConfig
 from .global_vars import Global
 from .tools.color import Color
 from .tools.event_queue import EventQueue
+import inspect
 
-from .tools.models_normalizer import ModelsNormalizer
-from typing import Type, TYPE_CHECKING
+from .tools.models_normalizer import ModelsSearchEngine
+from typing import Type, TYPE_CHECKING, Optional, Any
 
 if TYPE_CHECKING:
     from .models.nodes.abc_node import AbcNode
@@ -24,16 +26,19 @@ if TYPE_CHECKING:
 class NetworkSimulator(object):
     last_node_id = 0
 
-    def __init__(self):
+    def _init_instance_variables(self):
         self.graph: nx.DiGraph = nx.DiGraph()
         self.packets_in_the_air = PacketsInTheAirBuffer()
         self.arrived_packets: list[Packet] = []
         self.running_thread = None
         self.event_queue: EventQueue = EventQueue()
 
+    def __init__(self):
+        self._init_instance_variables()
+
     def reset(self):
         NetworkSimulator.last_node_id = 0
-        self.__init__()
+        self._init_instance_variables()
 
     def nodes(self) -> list['AbcNode']:
         return list(self.graph.nodes)
@@ -41,118 +46,137 @@ class NetworkSimulator(object):
     def has_edge(self, node_from: 'AbcNode', node_to: 'AbcNode'):
         return self.graph.has_edge(node_from, node_to)
 
-    def add_project_nodes(self):
-        """Initialize the simulator with the config parameters."""
-
-        self.add_nodes(num_nodes=config.num_nodes,
-                       distribution_model=config.distribution_model,
-                       node_constructor=config.node,
-                       node_color=config.node_color,
-                       node_size=config.node_size,
-                       mobility_model=config.mobility_model,
-                       connectivity_model=config.connectivity_model,
-                       interference_model=config.interference_model,
-                       reliability_model=config.reliability_model)
-
     def add_nodes(
         self,
         num_nodes: int,
-        distribution_model: Type[AbcDistributionModel] | AbcDistributionModel | str = None,
-        node_constructor: Type['AbcNode'] | str = None,
-        node_color: str = None,
-        node_size: int = None,
-        mobility_model: Type[AbcMobilityModel] | AbcMobilityModel | str = None,
-        connectivity_model: Type[AbcConnectivityModel] | AbcConnectivityModel | str = None,
-        interference_model: Type[AbcInterferenceModel] | AbcInterferenceModel | str = None,
-        reliability_model: Type[AbcReliabilityModel] | AbcReliabilityModel | str = None
+        distribution_model_arg: Type[AbcDistributionModel] | AbcDistributionModel | str,
+        node_arg: Type['AbcNode'] | str,
+        node_color: str,
+        node_size: int,
+        mobility_model_arg: Type[AbcMobilityModel] | AbcMobilityModel | str,
+        connectivity_model_arg: Type[AbcConnectivityModel] | AbcConnectivityModel | str,
+        interference_model_arg: Type[AbcInterferenceModel] | AbcInterferenceModel | str,
+        reliability_model_arg: Type[AbcReliabilityModel] | AbcReliabilityModel | str,
+        distribution_model_parameters: AbcModelParameters = {},
+        mobility_model_parameters: AbcModelParameters = {},
+        connectivity_model_parameters: AbcModelParameters = {},
+        interference_model_parameters: AbcModelParameters = {},
+        reliability_model_parameters: AbcModelParameters = {}
     ):
-        """Add a set of nodes to the network graph based on the distribution model.
+        """
+        Adds nodes to the network simulator.
 
         Parameters
         ----------
         num_nodes : int
-            The number of nodes to add
-        distribution_model : Type[AbcDistributionModel] | AbcDistributionModel | str, optional
-            The distribution model to distribute nodes in the graph.
-            If a class, it will be instantiated.
-            If a string, it must be exactly the name of the file containing the model,
-            without the ".py" extension; it will be imported from PROJECTS_DIR and instantiated.
-            If None, the default distribution model will be used.
-        node_constructor : Type[AbcNode] | str, optional
-            The class of the node to instantiate when nodes are created.
-            If a string, it must be exactly the name of the file containing the node implementation,
-            without the ".py" extension; it will be imported from PROJECTS_DIR.
-            If None, the default node will be used.
-        mobility_model : Type[AbcMobilityModel] | AbcMobilityModel | str, optional
-            The mobility model that will be used by these nodes.
-            If a class, it will be instantiated.
-            If a string, it must be exactly the name of the file containing the model,
-            without the ".py" extension; it will be imported from PROJECTS_DIR and instantiated.
-            If None, the default mobility model will be used.
-        connectivity_model : Type[AbcConnectivityModel] | AbcConnectivityModel | str, optional
-            The connectivity model that will be used by these nodes.
-            If a class, it will be instantiated.
-            If a string, it must be exactly the name of the file containing the model,
-            without the ".py" extension; it will be imported from PROJECTS_DIR and instantiated.
-            If None, the default connectivity model will be used.
-        interference_model : Type[AbcInterferenceModel] | AbcInterferenceModel | str, optional
-            The interference model that will be used by these nodes.
-            If a class, it will be instantiated.
-            If a string, it must be exactly the name of the file containing the model,
-            without the ".py" extension; it will be imported from PROJECTS_DIR and instantiated.
-            If None, the default interference model will be used.
-        reliability_model : Type[AbcReliabilityModel] | AbcReliabilityModel | str, optional
-            The reliability model that will be used by these nodes.
-            If a class, it will be instantiated.
-            If a string, it must be exactly the name of the file containing the model,
-            without the ".py" extension; it will be imported from PROJECTS_DIR and instantiated.
-            If None, the default reliability model will be used.
+            The number of nodes to add.
+        distribution_model_arg : Type[AbcDistributionModel] | AbcDistributionModel | str
+            The distribution model to use for each node. It can be either a string
+            with the name of the distribution model class, an instance of the model
+            class, or the class itself.
+        node_arg : Type['AbcNode'] | str
+            The node class to use for each node. It can be either a string
+            with the name of the node class, or the class itself.
+        node_color : str
+            The color of each node as a hexadecimal string.
+        node_size : int
+            The size of each node.
+        mobility_model_arg : Type[AbcMobilityModel] | AbcMobilityModel | str
+            The mobility model to use for each node. It can be either a string
+            with the name of the mobility model class, an instance of the model
+            class, or the class itself.
+        connectivity_model_arg : Type[AbcConnectivityModel] | AbcConnectivityModel | str
+            The connectivity model to use for each node. It can be either a string
+            with the name of the connectivity model class, an instance of the model
+            class, or the class itself.
+        interference_model_arg : Type[AbcInterferenceModel] | AbcInterferenceModel | str
+            The interference model to use for each node. It can be either a string
+            with the name of the interference model class, an instance of the model
+            class, or the class itself.
+        reliability_model_arg : Type[AbcReliabilityModel] | AbcReliabilityModel | str
+            The reliability model to use for each node. It can be either a string
+            with the name of the reliability model class, an instance of the model
+            class, or the class itself.
+        distribution_model_parameters : dict[str, Any]
+            The parameters for the distribution model.
+        mobility_model_parameters : dict[str, Any]
+            The parameters for the mobility model.
+        connectivity_model_parameters : dict[str, Any]
+            The parameters for the connectivity model.
+        interference_model_parameters : dict[str, Any]
+            The parameters for the interference model.
+        reliability_model_parameters : dict[str, Any]
+            The parameters for the reliability model.
 
-        Examples
-        --------
-        ```python
-        # Add 100 nodes with a uniform distribution
-        >>> network_simulator.add_nodes(100, distribution_model="uniform_dist")
-        # Add 5 nodes with a uniform distribution
-        >>> network_simulator.add_nodes([1, 2, 3, 4, 5], distribution_model="random_dist")
-        # Add 1 node with the smartphone node implementation
-        >>> network_simulator.add_nodes(1, node_constructor=SmartphoneNode)
-        # Add 3 nodes with random walk mobility and a random distribution
-        >>> network_simulator.add_nodes([10, 20, 30], mobility_model="random_walk", distribution_model="random_dist")
-        ```
-
-        Notes
-        -----
-        If you want to add a unique node with a defined position, use the `add_node` method.
+        Returns
+        -------
+        None
         """
+        if (isinstance(distribution_model_arg, str)):
+            distribution_model = ModelsSearchEngine.find_distribution_model(
+                distribution_model_arg)(distribution_model_parameters)
+        if (isinstance(node_arg, str)):
+            node_constructor = ModelsSearchEngine.find_node_implementation(
+                node_arg)
+        if (isinstance(mobility_model_arg, str)):
+            mobility_model = ModelsSearchEngine.find_mobility_model(
+                mobility_model_arg)(mobility_model_parameters)
+        if (isinstance(connectivity_model_arg, str)):
+            connectivity_model = ModelsSearchEngine.find_connectivity_model(
+                connectivity_model_arg)(connectivity_model_parameters)
+        if (isinstance(interference_model_arg, str)):
+            interference_model = ModelsSearchEngine.find_interference_model(
+                interference_model_arg)(interference_model_parameters)
+        if (isinstance(reliability_model_arg, str)):
+            reliability_model = ModelsSearchEngine.find_reliability_model(
+                reliability_model_arg)(reliability_model_parameters)
 
-        Global.log.info(f'Adding {num_nodes} nodes with the following configuration:\n    Distribution Model: {distribution_model}\n    Node Constructor: {node_constructor}\n    Mobility Model: {mobility_model}\n    Connectivity Model: {connectivity_model}\n    Interference Model: {interference_model}\n    Reliability Model: {reliability_model}')
+        if (isinstance(distribution_model_arg, AbcDistributionModel)):
+            distribution_model = distribution_model_arg
+        if (isinstance(mobility_model_arg, AbcMobilityModel)):
+            mobility_model = mobility_model_arg
+        if (isinstance(connectivity_model_arg, AbcConnectivityModel)):
+            connectivity_model = connectivity_model_arg
+        if (isinstance(interference_model_arg, AbcInterferenceModel)):
+            interference_model = interference_model_arg
+        if (isinstance(reliability_model_arg, AbcReliabilityModel)):
+            reliability_model = reliability_model_arg
 
-        distribution_model: AbcDistributionModel = ModelsNormalizer.normalize_distribution_model(
-            distribution_model)
-        node_constructor = ModelsNormalizer.normalize_node_constructor(
-            node_constructor)
+        if (inspect.isclass(distribution_model_arg)):
+            distribution_model = distribution_model_arg(
+                distribution_model_parameters)
+        if (inspect.isclass(mobility_model_arg)):
+            mobility_model = mobility_model_arg(
+                mobility_model_parameters)
+        if (inspect.isclass(connectivity_model_arg)):
+            connectivity_model = connectivity_model_arg(
+                connectivity_model_parameters)
+        if (inspect.isclass(interference_model_arg)):
+            interference_model = interference_model_arg(
+                interference_model_parameters)
+        if (inspect.isclass(reliability_model_arg)):
+            reliability_model = reliability_model_arg(
+                reliability_model_parameters)
+
+        Global.log.info(f'''Adding {num_nodes} nodes with the following configuration:
+                        Node Constructor: {node_constructor.__name__}
+                        Distribution Model: {distribution_model.__class__.__name__}
+                        Mobility Model: {mobility_model.__class__.__name__}
+                        Connectivity Model: {connectivity_model.__class__.__name__}
+                        Interference Model: {interference_model.__class__.__name__}
+                        Reliability Model: {reliability_model.__class__.__name__}''')
 
         for _ in range(num_nodes):
-            mobility = ModelsNormalizer.normalize_mobility_model(
-                mobility_model)
-            connectivity = ModelsNormalizer.normalize_connectivity_model(
-                connectivity_model)
-            interference = ModelsNormalizer.normalize_interference_model(
-                interference_model)
-            reliability = ModelsNormalizer.normalize_reliability_model(
-                reliability_model)
 
             node = node_constructor(
                 self._gen_node_id(),
-                mobility_model=mobility,
-                connectivity_model=connectivity,
-                interference_model=interference,
-                reliability_model=reliability
+                mobility_model=mobility_model,
+                connectivity_model=connectivity_model,
+                interference_model=interference_model,
+                reliability_model=reliability_model,
+                color=Color(hex_str=node_color),
+                size=node_size
             )
-            node.set_color(
-                Color(hex_str=node_color if node_color else config.node_color))
-            node.set_size(node_size)
 
             position = distribution_model.get_position()
 
@@ -258,7 +282,7 @@ class NetworkSimulator(object):
 
         Global.custom_global.pre_run()
 
-    def run(self, rounds=config.simulation_rounds, refresh_rate: float = config.simulation_refresh_rate):
+    def run(self, rounds=SimulationConfig.simulation_rounds, refresh_rate: float = SimulationConfig.simulation_refresh_rate):
         from .synchronous_thread import SynchronousThread
         from .asynchronous_thread import AsynchronousThread
 

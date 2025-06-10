@@ -1,18 +1,16 @@
 from ....models.nodes.abc_node import AbcNode
 from ..messages.s8_message import S8Message
 from ....global_vars import Global
-from ....tools.color import Color
+from ....tools.color import Color, GREEN, YELLOW, RED, BLUE
 from ....defaults.nodes.message_timer import MessageTimer
 from random import random
+from typing import Optional
 
 
 class S8Node(AbcNode):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.size = 3
-
-    def check_requirements(self):
-        return super().check_requirements()
 
     def handle_messages(self, inbox):
 
@@ -24,7 +22,7 @@ class S8Node(AbcNode):
             print('No {} recebendo mensagem {} de Nó {}'.format(
                 self.id, msg.color.get_hex(), packet.origin.id))
             # green and yellow messages are forwarded to all neighbors
-            if ((msg.color == Color.GREEN or msg.color == Color.YELLOW) and self.node_color != msg.color):
+            if ((msg.color == GREEN or msg.color == YELLOW) and self.node_color != msg.color):
                 print('{} broadcasting {}'.format(
                     self.id, msg.color.get_hex()))
                 self.broadcast(msg)
@@ -36,11 +34,11 @@ class S8Node(AbcNode):
                 msg = packet.message
 
                 # green and yellow messages are forwarded to all neighbors
-                if ((msg.color == Color.GREEN or msg.color == Color.YELLOW) and self.node_color != msg.color):
+                if ((msg.color == GREEN or msg.color == YELLOW) and self.node_color != msg.color):
                     self.broadcast(msg)
                 self.set_color(msg.color)
 
-    def __send_color_message(self, color: Color, to: AbcNode):
+    def __send_color_message(self, color: Color, to: Optional[AbcNode]):
         msg = S8Message()
         msg.color = color
 
@@ -58,31 +56,34 @@ class S8Node(AbcNode):
             timer.start_relative(random(), self)
 
     def multicast_red(self):
-        self.__send_color_message(Color.RED, None)
+        self.__send_color_message(RED, None)
 
     def multicast_blue(self):
-        self.__send_color_message(Color.BLUE, None)
+        self.__send_color_message(BLUE, None)
 
     def broadcast_green(self):
-        self.__send_color_message(Color.GREEN, None)
+        self.__send_color_message(GREEN, None)
 
     def broadcast_yellow(self):
-        self.__send_color_message(Color.YELLOW, None)
+        self.__send_color_message(YELLOW, None)
 
     def handle_nack_messages(self, nack_box):
         return super().handle_nack_messages(nack_box)
 
+    def check_requirements(self):
+        pass
+
     def init(self):
-        return super().init()
+        pass
 
     def on_neighboorhood_change(self):
-        return super().on_neighboorhood_change()
+        pass
 
     def post_step(self):
-        return super().post_step()
+        pass
 
     def pre_step(self):
-        return super().pre_step()
+        pass
 
 
 node = S8Node

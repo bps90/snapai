@@ -4,7 +4,7 @@ import random
 
 
 class IntruderNode(S9Node):
-    def __init__(self, id, position=None, mobility_model=None, connectivity_model=None, interference_model=None, reliability_model=None, qty_channels=None):
+    def __init__(self, id, position, mobility_model, connectivity_model, interference_model, reliability_model, qty_channels=None):
         super().__init__(id, 0, 0, '', 'intruder', '', '', [],
                          position, mobility_model, connectivity_model, interference_model, reliability_model)
         self.node_color = Color(255, 255, 0)

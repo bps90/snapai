@@ -6,12 +6,15 @@ if TYPE_CHECKING:
 
 
 class NoConnectivity(AbcConnectivityModel):
-    def __init__(self):
-        super().__init__('NoConnectivity')
-
     def is_connected(self, node_a: 'AbcNode', node_b: 'AbcNode') -> bool:
         """Check if the nodes are connected."""
         return False
+
+    def check_parameters(self, parameters):
+        return True
+
+    def set_parameters(self, parameters):
+        pass
 
 
 model = NoConnectivity

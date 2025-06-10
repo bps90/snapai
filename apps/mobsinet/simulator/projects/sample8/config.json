@@ -71,10 +71,6 @@
     },
     "node_color": "#ffaa00",
     "csrfmiddlewaretoken": "nYFp0kAhhRByX7rBZz54RZDJVBbIk5RS5LXSYvGlLIeYWo2JB8s9WFNDUezwtMpB",
-    "network_parameters": {
-        "type": "random_graph",
-        "avg_degree": 4
-    },
     "asynchronous": true,
     "save_trace": true,
     "minDimX": null,

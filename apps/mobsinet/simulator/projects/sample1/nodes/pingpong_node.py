@@ -6,7 +6,6 @@ from ....tools.color import Color
 from random import randint
 from ....global_vars import Global
 from ....network_simulator import simulation
-from ....configuration.sim_config import config
 
 
 class PingPongNode(AbcNode):
@@ -55,19 +54,19 @@ class PingPongNode(AbcNode):
                 received_from.append(packet.origin)
 
     def check_requirements(self):
-        return super().check_requirements()
+        pass
 
     def init(self):
-        return super().init()
+        pass
 
     def on_neighboorhood_change(self):
-        return super().on_neighboorhood_change()
+        pass
 
     def post_step(self):
-        return super().post_step()
+        pass
 
     def pre_step(self):
-        return super().pre_step()
+        pass
 
 
 node = PingPongNode

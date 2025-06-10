@@ -2,13 +2,12 @@
 
 from .inbox import Inbox
 from ..models.nodes.packet import Packet
-from typing import Union
+from typing import Union, Optional
 
 
 class NackBox(Inbox):
-   
 
-    def __init__(self, packets: Union['Packet', list['Packet']] = None):
+    def __init__(self, packets: Union['Packet', list['Packet']]):
         """
         Construtor para criar um NackBox contendo uma lista de pacotes ou um único pacote.
 
@@ -20,7 +19,7 @@ class NackBox(Inbox):
         """
         super().__init__(packets)
 
-    def reset_for_packet(self, packet: 'Packet'):
+    def reset_for_packet(self, packet: Optional['Packet']):
         """
         Método para redefinir o NackBox para conter um único pacote.
 

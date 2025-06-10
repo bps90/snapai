@@ -8,10 +8,6 @@
     "dimX": 10000,
     "dimY": 10000,
     "dimZ": 0,
-    "network_parameters": {
-        "type": "random_graph",
-        "avg_degree": 4
-    },
     "node": "sample5:ping_node",
     "distribution_model": "circular_dist",
     "distribution_model_parameters": {

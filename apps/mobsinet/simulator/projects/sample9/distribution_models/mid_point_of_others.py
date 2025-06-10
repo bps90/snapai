@@ -4,12 +4,15 @@ from ....tools.position import Position
 
 
 class MidPointOfOthers(AbcDistributionModel):
-    def __init__(self):
-        super().__init__('MidPointOfOthers')
+    def check_parameters(self, parameters):
+        return True
+
+    def set_parameters(self, parameters):
+        pass
 
     def get_position(self, node):
 
-        midpoint = [0, 0]
+        midpoint: list[float] = [0, 0]
 
         for n in simulation.nodes():
             if (n.id >= node.id):

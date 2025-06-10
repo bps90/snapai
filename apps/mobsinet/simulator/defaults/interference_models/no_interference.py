@@ -3,8 +3,6 @@ from ...models.abc_interference_model import AbcInterferenceModel
 
 
 class NoInterference(AbcInterferenceModel):
-    def __init__(self):
-        super().__init__('NoInterference')
 
     def is_disturbed(self, packet: Packet) -> bool:
         """Checks if the interference model dirtubed the packet.
@@ -23,6 +21,12 @@ class NoInterference(AbcInterferenceModel):
         """
 
         return False
+
+    def check_parameters(self, parameters):
+        return True
+
+    def set_parameters(self, parameters):
+        pass
 
 
 model = NoInterference

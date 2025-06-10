@@ -3,10 +3,14 @@ from ..nodes.s9_node import S9Node
 
 
 class HierarchyConnectivity(AbcConnectivityModel):
-    def __init__(self):
-        super().__init__('HierarchyConnectivity')
 
-    def is_connected(self, node_a: 'S9Node', node_b: 'S9Node'):
+    def check_parameters(self, parameters):
+        return True
+
+    def set_parameters(self, parameters):
+        pass
+
+    def is_connected(self, node_a, node_b):
         if (not isinstance(node_a, S9Node) or not isinstance(node_b, S9Node)):
             return False
 

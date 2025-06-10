@@ -8,10 +8,6 @@
     "dimX": 1000,
     "dimY": 1000,
     "dimZ": 0,
-    "network_parameters": {
-        "type": "random_graph",
-        "avg_degree": 4
-    },
     "node": "sample1:pingpong_node",
     "distribution_model": "linear_dist",
     "distribution_model_parameters": {

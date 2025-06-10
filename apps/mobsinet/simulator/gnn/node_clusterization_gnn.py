@@ -5,12 +5,13 @@ import torch.nn.functional as F
 import networkx as nx
 from torch_geometric.data import Data
 from .gcn_encoder import GCNEncoder
+from typing import Optional
 
 
 class NodeClusterizationGNN:
     def __init__(self):
         self.encoder = None
-        self.data = None
+        self.data: Optional[Data] = None
         self.embeddings = None
 
     def create_dataset(self, graph: nx.Graph, features: list[tuple[int, list[float]]]):
@@ -26,6 +27,10 @@ class NodeClusterizationGNN:
     def train_encoder(self, in_channels, hidden_channels=32):
         self.encoder = GCNEncoder(in_channels, hidden_channels)
         self.encoder.eval()
+
+        if self.data is None:
+            raise ValueError("Dataset not created. Call create_dataset first.")
+
         with torch.no_grad():
             self.embeddings = self.encoder(self.data.x, self.data.edge_index)
 
@@ -43,7 +48,7 @@ class NodeClusterizationGNN:
 class NodeClusterizationDBSCAN:
     def __init__(self):
         self.encoder = None
-        self.data = None
+        self.data: Optional[Data] = None
         self.embeddings = None
 
     def create_dataset(self, graph: nx.Graph, features: list[tuple[int, list[float]]]):
@@ -59,6 +64,10 @@ class NodeClusterizationDBSCAN:
     def train_encoder(self, in_channels, hidden_channels=32):
         self.encoder = GCNEncoder(in_channels, hidden_channels)
         self.encoder.eval()
+
+        if self.data is None:
+            raise ValueError("Dataset not created. Call create_dataset first.")
+
         with torch.no_grad():
             self.embeddings = self.encoder(self.data.x, self.data.edge_index)
 

@@ -1,5 +1,5 @@
-from django.http import JsonResponse, HttpRequest
-from django.shortcuts import render, HttpResponse
+from django.http import JsonResponse, HttpRequest, HttpResponse
+from django.shortcuts import render
 from .simulator.network_simulator import simulation
 import json
 from networkx.readwrite import json_graph
@@ -9,24 +9,26 @@ from django.views.decorators.csrf import csrf_exempt
 from .simulator.main import Main
 import networkx as nx
 from .simulator.models.nodes.abc_node import AbcNode
-from node2vec import Node2Vec
+from node2vec import Node2Vec  # type: ignore
 import numpy as np
-import gensim
+import gensim  # type: ignore
 from copy import deepcopy
-from .simulator.configuration.sim_config import config, SimulationConfig
+from .simulator.configuration.sim_config import SimulationConfig
 from .simulator.asynchronous_thread import AsynchronousThread
 from .simulator.gnn.link_prediction_gnn import LinkPredictionGNN
 from .simulator.gnn.node_clusterization_gnn import NodeClusterizationGNN, NodeClusterizationDBSCAN
 from .simulator.gnn.node_classification_gnn import NodeClassificationGNN
 from math import pi
-from .simulator.tools.models_normalizer import ModelsNormalizer
+from .simulator.tools.models_normalizer import ModelsSearchEngine
 from .simulator.synchronous_thread import SynchronousThread
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-
-
-# Create your views here.
-# Caminho para a pasta PROJECTS
-PROJECTS_DIR = "apps/mobsinet/simulator/projects/"
+from typing import cast, Any
+from .simulator.projects.sample9.nodes.s9_node import S9Node
+from .simulator.projects.sample9.connectivity_models.s9_connectivity import S9Connectivity
+from .simulator.defaults.distribution_models.circular_dist import CircularDistParameters
+from .simulator.projects.sample9.mobility_models.midpoint_waypoint import MidpointWaypointParameters
+from .simulator.projects.sample9.mobility_models.mid_point_of_others import MidPointOfOthersParameters
+from .simulator.defaults.mobility_models.random_walk import RandomWalkParameters
 
 
 def index(request):
@@ -34,16 +36,17 @@ def index(request):
 
 
 def graph_view(request):
-    return render(request, 'graph.html', {"projects": os.listdir(PROJECTS_DIR)})
+    return render(request, 'graph.html', {"projects": os.listdir(SimulationConfig.PROJECTS_DIR)})
 
 
 def update_graph(request):
     with_logs = request.GET.get('with_logs') == 'true'
-    node_link_data = json_graph.node_link_data(simulation.graph, edges="edges")
+    node_link_data = json_graph.node_link_data(
+        simulation.graph, edges="edges")  # type: ignore
 
     nodes = list(map(lambda node: [node['id'].id, node['id'].position.x,
                                    node['id'].position.y, node['id'].position.z, node['id'].size, node['id'].node_color.get_hex()], node_link_data.get('nodes')))
-    links = []
+    links: list[list[int]] = []
 
     for link in node_link_data.get('edges'):
         # [source, target, bidirectional]
@@ -79,13 +82,13 @@ def convert_keys_to_strings(input_dict):
 
 
 def get_projects_names(request):
-    return JsonResponse(os.listdir(PROJECTS_DIR), safe=False)
+    return JsonResponse(os.listdir(SimulationConfig.PROJECTS_DIR), safe=False)
 
 
 def init_simulation(request):
     project = request.GET.get('project')
 
-    SynchronousThread.tracefile_suffix = ''
+    Global.tracefile_suffix = ''
     Main.init(project)
 
     return HttpResponse(status=200)
@@ -122,14 +125,14 @@ def update_config(request):
             form_data = request.POST.dict()
 
             # Carrega o JSON existente
-            with open(os.path.join(PROJECTS_DIR, form_data['project'], 'config.json'), "r") as json_file:
+            with open(os.path.join(SimulationConfig.PROJECTS_DIR, form_data['project'], 'config.json'), "r") as json_file:
                 existing_data = json.load(json_file)
 
             # Atualiza os dados existentes com os dados do formulário
             updated_data = merge_data(existing_data, form_data)
 
             # Salva o JSON atualizado no arquivo
-            with open(os.path.join(PROJECTS_DIR, form_data['project'], 'config.json'), "w") as json_file:
+            with open(os.path.join(SimulationConfig.PROJECTS_DIR, form_data['project'], 'config.json'), "w") as json_file:
                 json.dump(updated_data, json_file, indent=4)
 
             # Retorna uma resposta de sucesso
@@ -186,7 +189,7 @@ def get_config(request):
 
     try:
         # Lê o arquivo JSON
-        with open(os.path.join(PROJECTS_DIR, request.GET.get('project'), 'config.json'), "r") as json_file:
+        with open(os.path.join(SimulationConfig.PROJECTS_DIR, request.GET.get('project'), 'config.json'), "r") as json_file:
             data = json.load(json_file)
 
         # Retorna os dados em formato JSON
@@ -211,7 +214,7 @@ def calculate_degree(request):
         return JsonResponse({"message": "Não encontrado."}, status=404)
 
     try:
-        degree: int = simulation.graph.degree(node)
+        degree = simulation.graph.degree(node)
 
         return JsonResponse({"degree": degree})
     except Exception as e:
@@ -303,7 +306,7 @@ def node2vec_algorithm(request):
     model = node2vec.fit(node2vec, window=10, min_count=1, batch_words=4)
 
     model.wv.save_word2vec_format(
-        f'{SimulationConfig.PROJECTS_DIR}{Global.project_name}/node2vec-{config.simulation_name}-{dimensions}D.emb')
+        f'{SimulationConfig.PROJECTS_DIR}{Global.project_name}/node2vec-{SimulationConfig.simulation_name}-{dimensions}D.emb')
 
     # Obtém os nós e os vetores
     words = list(model.wv.index_to_key)  # Lista de nós
@@ -317,42 +320,25 @@ def node2vec_algorithm(request):
 def add_nodes(request):
     if request.method == "POST":
 
-        from .simulator.configuration.sim_config import config
         # Carrega os dados enviados no formulário
         form_data = parse_nested_dict(request.POST.dict())
 
-        original_config = deepcopy(config)
-
-        config.set_node(form_data['node'])
-        config.set_distribution_model(form_data['distribution_model'])
-        config.set_mobility_model(form_data['mobility_model'])
-        config.set_connectivity_model(form_data['connectivity_model'])
-        config.set_interference_model(form_data['interference_model'])
-        config.set_reliability_model(form_data['reliability_model'])
-        config.set_distribution_model_parameters(
-            form_data['distribution_model_parameters'] if 'distribution_model_parameters' in form_data else None)
-        config.set_mobility_model_parameters(
-            form_data['mobility_model_parameters'] if 'mobility_model_parameters' in form_data else None)
-        config.set_connectivity_model_parameters(
-            form_data['connectivity_model_parameters'] if 'connectivity_model_parameters' in form_data else None)
-        config.set_interference_model_parameters(
-            form_data['interference_model_parameters'] if 'interference_model_parameters' in form_data else None)
-        config.set_reliability_model_parameters(
-            form_data['reliability_model_parameters'] if 'reliability_model_parameters' in form_data else None)
-
         simulation.add_nodes(
             num_nodes=int(form_data['num_nodes']),
-            distribution_model=config.distribution_model,
-            node_constructor=config.node,
-            mobility_model=config.mobility_model,
-            connectivity_model=config.connectivity_model,
-            interference_model=config.interference_model,
-            reliability_model=config.reliability_model,
+            distribution_model_arg=form_data['distribution_model'],
+            node_arg=form_data['node'],
+            mobility_model_arg=form_data['mobility_model'],
+            connectivity_model_arg=form_data['connectivity_model'],
+            interference_model_arg=form_data['interference_model'],
+            reliability_model_arg=form_data['reliability_model'],
             node_color=form_data['node_color'],
-            node_size=form_data['node_size']
+            node_size=form_data['node_size'],
+            distribution_model_parameters=form_data['distribution_model_parameters'],
+            mobility_model_parameters=form_data['mobility_model_parameters'],
+            connectivity_model_parameters=form_data['connectivity_model_parameters'],
+            interference_model_parameters=form_data['interference_model_parameters'],
+            reliability_model_parameters=form_data['reliability_model_parameters'],
         )
-
-        config = original_config
 
         # Retorna uma resposta de sucesso
         return JsonResponse({"status": "success", "message": "JSON atualizado com sucesso!"})
@@ -362,7 +348,7 @@ def add_nodes(request):
 
 
 def parse_nested_dict(flat_dict):
-    nested_dict = {}
+    nested_dict: dict[str, Any] = {}
 
     for key, value in flat_dict.items():
         # Divide os parâmetros aninhados
@@ -408,7 +394,7 @@ def calculate_distance(request):
 
 
 class Static:
-    metrics_model_filtered_path = 'apps/mobsinet/simulator/projects/sample9/...'
+    metrics_model_filtered_path = f'{SimulationConfig.PROJECTS_DIR}sample9/...'
 
 
 def train_link_prediction(request):
@@ -417,7 +403,7 @@ def train_link_prediction(request):
         simulation.graph)
     features = LinkPredictionGNN.get_features_from_file(
         Static.metrics_model_filtered_path)
-    labels = [(node.id, int(str(node.company_id) + str(node.platoon_id)))
+    labels = [(node.id, int(str(cast('S9Node', node).company_id) + str(cast('S9Node', node).platoon_id)))
               for node in simulation.nodes()]
 
     lpgnn.create_dataset(graph, features, labels)
@@ -519,7 +505,7 @@ def train_node_classification(request):
         simulation.graph)
     features = LinkPredictionGNN.get_features_from_file(
         Static.metrics_model_filtered_path)
-    labels = [(node.id, (1 if node.company_id else 0) if binary else node.company_id)
+    labels = [(node.id, (1 if cast('S9Node', node).company_id else 0) if binary else cast('S9Node', node).company_id)
               for node in simulation.nodes()]
 
     ncgnn.create_dataset(graph, features, labels)
@@ -545,7 +531,7 @@ def classificate_nodes(request):
     predictions = ncgnn.predict_node_labels(graph, LinkPredictionGNN.get_features_from_file(
         Static.metrics_model_filtered_path))
 
-    labels = [(node.id, (1 if node.company_id else 0) if binary else node.company_id)
+    labels = [(node.id, (1 if cast('S9Node', node).company_id else 0) if binary else cast('S9Node', node).company_id)
               for node in simulation.nodes()]
 
     y_true = [label for _, label in labels]
@@ -577,63 +563,45 @@ def network_configuration1(request):
     """
     project = 'sample9'
 
-    from .simulator.configuration.sim_config import config
-
-    original_config = deepcopy(config)
-
     Main.init(project)
 
-    Static.metrics_model_filtered_path = 'apps/mobsinet/simulator/projects/sample9/MetricsModel-filtered-nc1.csv'
+    Static.metrics_model_filtered_path = f'{SimulationConfig.PROJECTS_DIR}{project}/MetricsModel-filtered-nc1.csv'
 
     for node in simulation.nodes():
-        connectivity_model = ModelsNormalizer.normalize_connectivity_model(
-            'sample9:s9_connectivity')
+        connectivity_model = cast(type['S9Connectivity'], ModelsSearchEngine.find_connectivity_model(
+            f'{project}:s9_connectivity'))({})
         node.set_connectivity_model(connectivity_model)
 
     num_nodes = 10
 
-    config.set_node('sample9:intruder_node')
-    config.set_distribution_model('circular_dist')
-    config.set_mobility_model('sample9:midpoint_waypoint')
-    config.set_connectivity_model('sample9:s9_connectivity')
-    config.set_interference_model('no_interference')
-    config.set_reliability_model('reliable_delivery')
-    config.set_distribution_model_parameters({
+    distribution_model_parameters: CircularDistParameters = {
         'number_of_nodes': num_nodes,
-        'midpoint': (432000, 6475000),
+        'midpoint': [432000, 6475000],
         'rotation_direction': 'anti-clockwise',
         'radius': 1000
-    })
-    config.set_mobility_model_parameters(
-        {
-            'speed_range': [5, 13],
-            'direction_range': [0, 2 * pi],
-            'waiting_time_range': [50, 500],
-            'move_time_range': [1, 100],
-            'prioritize_speed': False,
-            'travel_distance': None,
-            'travel_time': 80,
-            'waypoint_radius_range': [50, 500]
-        })
-    config.set_connectivity_model_parameters({})
-    config.set_interference_model_parameters({})
-    config.set_reliability_model_parameters({})
+    }
+
+    mobility_model_parameters: MidpointWaypointParameters = {
+        'speed_range': [5, 13],
+        'waiting_time_range': [50, 500],
+        'waypoint_radius_range': [50, 500]
+    }
 
     simulation.add_nodes(
         num_nodes=num_nodes,
-        distribution_model=config.distribution_model,
-        node_constructor=config.node,
-        mobility_model=config.mobility_model,
-        connectivity_model=config.connectivity_model,
-        interference_model=config.interference_model,
-        reliability_model=config.reliability_model,
+        distribution_model_arg='circular_dist',
+        node_arg=f'{project}:intruder_node',
+        mobility_model_arg=f'{project}:midpoint_waypoint',
+        connectivity_model_arg=f'{project}:s9_connectivity',
+        interference_model_arg='no_interference',
+        reliability_model_arg='reliable_delivery',
         node_color='#000000',
-        node_size=3
+        node_size=3,
+        distribution_model_parameters=distribution_model_parameters,
+        mobility_model_parameters=mobility_model_parameters
     )
 
-    config = original_config
-
-    SynchronousThread.tracefile_suffix = '-nc1'
+    Global.tracefile_suffix = '-nc1'
 
     return JsonResponse({"status": "success", "message": "OK", "project": project})
 
@@ -647,104 +615,72 @@ def network_configuration2(request):
     """
     project = 'sample9'
 
-    from .simulator.configuration.sim_config import config
-
-    original_config = deepcopy(config)
-
     Main.init(project)
 
-    Static.metrics_model_filtered_path = 'apps/mobsinet/simulator/projects/sample9/MetricsModel-filtered-nc2.csv'
+    Static.metrics_model_filtered_path = f'{SimulationConfig.PROJECTS_DIR}{project}/MetricsModel-filtered-nc2.csv'
 
     for node in simulation.nodes():
-        connectivity_model = ModelsNormalizer.normalize_connectivity_model(
-            'sample9:s9_connectivity')
+        connectivity_model = cast(type['S9Connectivity'], ModelsSearchEngine.find_connectivity_model(
+            f'{project}:s9_connectivity'))({})
         node.set_connectivity_model(connectivity_model)
 
     num_nodes = 10
 
-    config.set_node('sample9:intruder_node')
-    config.set_distribution_model('circular_dist')
-    config.set_mobility_model('sample9:midpoint_waypoint')
-    config.set_connectivity_model('sample9:s9_connectivity')
-    config.set_interference_model('no_interference')
-    config.set_reliability_model('reliable_delivery')
-    config.set_distribution_model_parameters({
+    distribution_model_parameters: CircularDistParameters = {
         'number_of_nodes': num_nodes,
-        'midpoint': (432000, 6475000),
+        'midpoint': [432000, 6475000],
         'rotation_direction': 'anti-clockwise',
         'radius': 1000
-    })
-    config.set_mobility_model_parameters(
-        {
-            'speed_range': [5, 13],
-            'direction_range': [0, 2 * pi],
-            'waiting_time_range': [50, 500],
-            'move_time_range': [1, 100],
-            'prioritize_speed': False,
-            'travel_distance': None,
-            'travel_time': 80,
-            'waypoint_radius_range': [0, 200]
-        })
-    config.set_connectivity_model_parameters({})
-    config.set_interference_model_parameters({})
-    config.set_reliability_model_parameters({})
+    }
+
+    mobility_model_parameters_1: MidpointWaypointParameters = {
+        'speed_range': [5, 13],
+        'waiting_time_range': [50, 500],
+        'waypoint_radius_range': [0, 200]
+    }
 
     simulation.add_nodes(
         num_nodes=num_nodes,
-        distribution_model=config.distribution_model,
-        node_constructor=config.node,
-        mobility_model=config.mobility_model,
-        connectivity_model=config.connectivity_model,
-        interference_model=config.interference_model,
-        reliability_model=config.reliability_model,
+        distribution_model_arg='circular_dist',
+        node_arg=f'{project}:intruder_node',
+        mobility_model_arg=f'{project}:midpoint_waypoint',
+        connectivity_model_arg=f'{project}:s9_connectivity',
+        interference_model_arg='no_interference',
+        reliability_model_arg='reliable_delivery',
         node_color='#000000',
-        node_size=3
+        node_size=3,
+        distribution_model_parameters=distribution_model_parameters,
+        mobility_model_parameters=mobility_model_parameters_1
     )
 
     num_nodes = 15
 
-    config.set_node('sample9:intruder_node')
-    config.set_distribution_model('circular_dist')
-    config.set_mobility_model('sample9:mid_point_of_others')
-    config.set_connectivity_model('sample9:s9_connectivity')
-    config.set_interference_model('no_interference')
-    config.set_reliability_model('reliable_delivery')
-    config.set_distribution_model_parameters({
+    distribution_model_parameters = {
         'number_of_nodes': num_nodes,
-        'midpoint': (436000, 6472000),
+        'midpoint': [436000, 6472000],
         'rotation_direction': 'anti-clockwise',
         'radius': 500
-    })
-    config.set_mobility_model_parameters(
-        {
-            'speed_range': [5, 13],
-            'direction_range': [0, 2 * pi],
-            'waiting_time_range': [50, 500],
-            'move_time_range': [1, 100],
-            'prioritize_speed': False,
-            'travel_distance': None,
-            'travel_time': 150,
-            'waypoint_radius_range': [0, 200]
-        })
-    config.set_connectivity_model_parameters({})
-    config.set_interference_model_parameters({})
-    config.set_reliability_model_parameters({})
+    }
+
+    mobility_model_parameters_2: MidPointOfOthersParameters = {
+        'waypoint_radius_range': [0, 200]
+    }
 
     simulation.add_nodes(
         num_nodes=num_nodes,
-        distribution_model=config.distribution_model,
-        node_constructor=config.node,
-        mobility_model=config.mobility_model,
-        connectivity_model=config.connectivity_model,
-        interference_model=config.interference_model,
-        reliability_model=config.reliability_model,
+        distribution_model_arg='circular_dist',
+        node_arg=f'{project}:intruder_node',
+        mobility_model_arg=f'{project}:mid_point_of_others',
+        connectivity_model_arg=f'{project}:s9_connectivity',
+        interference_model_arg='no_interference',
+        reliability_model_arg='reliable_delivery',
         node_color='#000033',
-        node_size=3
+        node_size=3,
+        distribution_model_parameters=distribution_model_parameters,
+        mobility_model_parameters=mobility_model_parameters_2
     )
 
-    config = original_config
-
-    SynchronousThread.tracefile_suffix = '-nc2'
+    Global.tracefile_suffix = '-nc2'
 
     return JsonResponse({"status": "success", "message": "OK", "project": project})
 
@@ -759,144 +695,103 @@ def network_configuration3(request):
     """
     project = 'sample9'
 
-    from .simulator.configuration.sim_config import config
-    original_config = deepcopy(config)
-
     Main.init(project)
 
-    Static.metrics_model_filtered_path = 'apps/mobsinet/simulator/projects/sample9/MetricsModel-filtered-nc3.csv'
+    Static.metrics_model_filtered_path = f'{SimulationConfig.PROJECTS_DIR}{project}/MetricsModel-filtered-nc3.csv'
 
     for node in simulation.nodes():
-        connectivity_model = ModelsNormalizer.normalize_connectivity_model(
-            'sample9:s9_connectivity')
+        connectivity_model = ModelsSearchEngine.find_connectivity_model(
+            f'{project}:s9_connectivity')({})
         node.set_connectivity_model(connectivity_model)
 
     num_nodes = 10
 
-    config.set_node('sample9:intruder_node')
-    config.set_distribution_model('circular_dist')
-    config.set_mobility_model('sample9:midpoint_waypoint')
-    config.set_connectivity_model('sample9:s9_connectivity')
-    config.set_interference_model('no_interference')
-    config.set_reliability_model('reliable_delivery')
-    config.set_distribution_model_parameters({
+    mobility_model_parameters_1: MidpointWaypointParameters = {
+        'speed_range': [5, 13],
+        'waiting_time_range': [50, 500],
+        'waypoint_radius_range': [0, 200]
+    }
+
+    distribution_model_parameters_1: CircularDistParameters = {
         'number_of_nodes': num_nodes,
-        'midpoint': (432000, 6475000),
+        'midpoint': [432000, 6475000],
         'rotation_direction': 'anti-clockwise',
         'radius': 1000
-    })
-    config.set_mobility_model_parameters(
-        {
-            'speed_range': [5, 13],
-            'direction_range': [0, 2 * pi],
-            'waiting_time_range': [50, 500],
-            'move_time_range': [1, 100],
-            'prioritize_speed': False,
-            'travel_distance': None,
-            'travel_time': 80,
-            'waypoint_radius_range': [0, 200]
-        })
-    config.set_connectivity_model_parameters({})
-    config.set_interference_model_parameters({})
-    config.set_reliability_model_parameters({})
+    }
 
     simulation.add_nodes(
         num_nodes=num_nodes,
-        distribution_model=config.distribution_model,
-        node_constructor=config.node,
-        mobility_model=config.mobility_model,
-        connectivity_model=config.connectivity_model,
-        interference_model=config.interference_model,
-        reliability_model=config.reliability_model,
+        distribution_model_arg='circular_dist',
+        node_arg=f'{project}:intruder_node',
+        mobility_model_arg=f'{project}:midpoint_waypoint',
+        connectivity_model_arg=f'{project}:s9_connectivity',
+        interference_model_arg='no_interference',
+        reliability_model_arg='reliable_delivery',
         node_color='#000000',
-        node_size=3
+        node_size=3,
+        mobility_model_parameters=mobility_model_parameters_1,
+        distribution_model_parameters=distribution_model_parameters_1
     )
 
     num_nodes = 15
 
-    config.set_node('sample9:intruder_node')
-    config.set_distribution_model('circular_dist')
-    config.set_mobility_model('sample9:mid_point_of_others')
-    config.set_connectivity_model('sample9:s9_connectivity')
-    config.set_interference_model('no_interference')
-    config.set_reliability_model('reliable_delivery')
-    config.set_distribution_model_parameters({
+    mobility_model_parameters_2: MidPointOfOthersParameters = {
+        'waypoint_radius_range': [0, 200]
+    }
+
+    distribution_model_parameters_2: CircularDistParameters = {
         'number_of_nodes': num_nodes,
-        'midpoint': (436000, 6472000),
+        'midpoint': [436000, 6472000],
         'rotation_direction': 'anti-clockwise',
         'radius': 500
-    })
-    config.set_mobility_model_parameters(
-        {
-            'speed_range': [8, 18],
-            'direction_range': [0, 2 * pi],
-            'waiting_time_range': [50, 500],
-            'move_time_range': [1, 100],
-            'prioritize_speed': False,
-            'travel_distance': None,
-            'travel_time': 150,
-            'waypoint_radius_range': [0, 200]
-        })
-    config.set_connectivity_model_parameters({})
-    config.set_interference_model_parameters({})
-    config.set_reliability_model_parameters({})
+    }
 
     simulation.add_nodes(
         num_nodes=num_nodes,
-        distribution_model=config.distribution_model,
-        node_constructor=config.node,
-        mobility_model=config.mobility_model,
-        connectivity_model=config.connectivity_model,
-        interference_model=config.interference_model,
-        reliability_model=config.reliability_model,
+        distribution_model_arg='circular_dist',
+        node_arg=f'{project}:intruder_node',
+        mobility_model_arg=f'{project}:mid_point_of_others',
+        connectivity_model_arg=f'{project}:s9_connectivity',
+        interference_model_arg='no_interference',
+        reliability_model_arg='reliable_delivery',
         node_color='#000033',
-        node_size=3
+        node_size=3,
+        distribution_model_parameters=distribution_model_parameters_2,
+        mobility_model_parameters=mobility_model_parameters_2
     )
 
     num_nodes = 25
 
-    config.set_node('sample9:intruder_node')
-    config.set_distribution_model('circular_dist')
-    config.set_mobility_model('random_walk')
-    config.set_connectivity_model('sample9:s9_connectivity')
-    config.set_interference_model('no_interference')
-    config.set_reliability_model('reliable_delivery')
-    config.set_distribution_model_parameters({
+    distribution_model_parameters_3: CircularDistParameters = {
         'number_of_nodes': num_nodes,
-        'midpoint': (434000, 6478000),
+        'midpoint': [434000, 6478000],
         'rotation_direction': 'anti-clockwise',
         'radius': 50
-    })
-    config.set_mobility_model_parameters(
-        {
-            'speed_range': [4, 12],
-            'direction_range': [pi, 2 * pi],
-            'waiting_time_range': [50, 500],
-            'move_time_range': [1, 100],
-            'prioritize_speed': False,
-            'travel_distance': None,
-            'travel_time': 50,
-            'waypoint_radius_range': [0, 200]
-        })
-    config.set_connectivity_model_parameters({})
-    config.set_interference_model_parameters({})
-    config.set_reliability_model_parameters({})
+    }
+
+    mobility_model_parameters_3: RandomWalkParameters = {
+        'speed_range': [4, 12],
+        'direction_range': [pi, 2 * pi],
+        'prioritize_speed': False,
+        'travel_distance': None,
+        'travel_time': 50,
+    }
 
     simulation.add_nodes(
         num_nodes=num_nodes,
-        distribution_model=config.distribution_model,
-        node_constructor=config.node,
-        mobility_model=config.mobility_model,
-        connectivity_model=config.connectivity_model,
-        interference_model=config.interference_model,
-        reliability_model=config.reliability_model,
+        distribution_model_arg='circular_dist',
+        node_arg=f'{project}:intruder_node',
+        mobility_model_arg='random_walk',
+        connectivity_model_arg=f'{project}:s9_connectivity',
+        interference_model_arg='no_interference',
+        reliability_model_arg='reliable_delivery',
         node_color='#003300',
-        node_size=3
+        node_size=3,
+        distribution_model_parameters=distribution_model_parameters_3,
+        mobility_model_parameters=mobility_model_parameters_3
     )
 
-    config = original_config
-
-    SynchronousThread.tracefile_suffix = '-nc3'
+    Global.tracefile_suffix = '-nc3'
 
     return JsonResponse({"status": "success", "message": "OK", "project": project})
 
@@ -909,65 +804,49 @@ def network_configuration4(request):
     """
     project = 'sample9'
 
-    from .simulator.configuration.sim_config import config
-
-    original_config = deepcopy(config)
-
     Main.init(project)
 
-    Static.metrics_model_filtered_path = 'apps/mobsinet/simulator/projects/sample9/MetricsModel-filtered-nc4.csv'
+    Static.metrics_model_filtered_path = f'{SimulationConfig.PROJECTS_DIR}{project}/MetricsModel-filtered-nc4.csv'
 
     for node in simulation.nodes():
-        connectivity_model = ModelsNormalizer.normalize_connectivity_model(
-            'sample9:s9_connectivity')
+        connectivity_model = ModelsSearchEngine.find_connectivity_model(
+            f'{project}:s9_connectivity')({})
         node.set_connectivity_model(connectivity_model)
 
     num_nodes = 100
 
-    config.set_node('sample9:intruder_node')
-    config.set_distribution_model('circular_dist')
-    config.set_mobility_model('random_walk')
-    config.set_connectivity_model('sample9:s9_connectivity')
-    config.set_interference_model('no_interference')
-    config.set_reliability_model('reliable_delivery')
-    config.set_distribution_model_parameters({
+    mobility_model_parameters: RandomWalkParameters = {
+        'speed_range': [4, 10],
+        'direction_range': [pi, 2 * pi],
+        'prioritize_speed': False,
+        'travel_distance': None,
+        'travel_time': 50,
+    }
+
+    distribution_model_parameters: CircularDistParameters = {
         'number_of_nodes': num_nodes,
-        'midpoint': (434000, 6478000),
+        'midpoint': [434000, 6478000],
         'rotation_direction': 'anti-clockwise',
         'radius': 0
-    })
-    config.set_mobility_model_parameters(
-        {
-            'speed_range': [4, 10],
-            'direction_range': [pi, 2 * pi],
-            'waiting_time_range': [50, 500],
-            'move_time_range': [1, 100],
-            'prioritize_speed': False,
-            'travel_distance': None,
-            'travel_time': 50,
-            'waypoint_radius_range': [0, 200]
-        })
-    config.set_connectivity_model_parameters({})
-    config.set_interference_model_parameters({})
-    config.set_reliability_model_parameters({})
+    }
 
     simulation.add_nodes(
         num_nodes=num_nodes,
-        distribution_model=config.distribution_model,
-        node_constructor=config.node,
-        mobility_model=config.mobility_model,
-        connectivity_model=config.connectivity_model,
-        interference_model=config.interference_model,
-        reliability_model=config.reliability_model,
+        distribution_model_arg='circular_dist',
+        node_arg=f'{project}:intruder_node',
+        mobility_model_arg='random_walk',
+        connectivity_model_arg=f'{project}:s9_connectivity',
+        interference_model_arg='no_interference',
+        reliability_model_arg='reliable_delivery',
         node_color='#003300',
-        node_size=3
+        node_size=3,
+        distribution_model_parameters=distribution_model_parameters,
+        mobility_model_parameters=mobility_model_parameters
     )
 
-    config = original_config
+    SimulationConfig.set_connectivity_enabled(True)
 
-    config.set_connectivity_enabled(True)
-
-    SynchronousThread.tracefile_suffix = '-nc4'
+    Global.tracefile_suffix = '-nc4'
 
     return JsonResponse({"status": "success", "message": "OK", "project": project})
 
@@ -980,65 +859,45 @@ def network_configuration5(request):
     """
     project = 'sample9'
 
-    from .simulator.configuration.sim_config import config
-
-    original_config = deepcopy(config)
-
     Main.init(project)
 
-    Static.metrics_model_filtered_path = 'apps/mobsinet/simulator/projects/sample9/MetricsModel-filtered-nc5.csv'
+    Static.metrics_model_filtered_path = f'{SimulationConfig.PROJECTS_DIR}{project}/MetricsModel-filtered-nc5.csv'
 
     for node in simulation.nodes():
-        connectivity_model = ModelsNormalizer.normalize_connectivity_model(
-            'sample9:s9_connectivity')
+        connectivity_model = ModelsSearchEngine.find_connectivity_model(
+            f'{project}:s9_connectivity')({})
         node.set_connectivity_model(connectivity_model)
 
     num_nodes = 150
 
-    config.set_node('sample9:intruder_node')
-    config.set_distribution_model('circular_dist')
-    config.set_mobility_model('sample9:midpoint_waypoint')
-    config.set_connectivity_model('sample9:s9_connectivity')
-    config.set_interference_model('no_interference')
-    config.set_reliability_model('reliable_delivery')
-    config.set_distribution_model_parameters({
+    mobility_model_parameters: MidpointWaypointParameters = {
+        'speed_range': [5, 13],
+        'waiting_time_range': [50, 500],
+        'waypoint_radius_range': [50, 500]
+    }
+
+    distribution_model_parameters: CircularDistParameters = {
         'number_of_nodes': num_nodes,
-        'midpoint': (432000, 6475000),
+        'midpoint': [432000, 6475000],
         'rotation_direction': 'anti-clockwise',
         'radius': 1000
-    })
-    config.set_mobility_model_parameters(
-        {
-            'speed_range': [5, 13],
-            'direction_range': [0, 2 * pi],
-            'waiting_time_range': [50, 500],
-            'move_time_range': [1, 100],
-            'prioritize_speed': False,
-            'travel_distance': None,
-            'travel_time': 80,
-            'waypoint_radius_range': [50, 500]
-        })
-    config.set_connectivity_model_parameters({})
-    config.set_interference_model_parameters({})
-    config.set_reliability_model_parameters({})
+    }
 
     simulation.add_nodes(
         num_nodes=num_nodes,
-        distribution_model=config.distribution_model,
-        node_constructor=config.node,
-        mobility_model=config.mobility_model,
-        connectivity_model=config.connectivity_model,
-        interference_model=config.interference_model,
-        reliability_model=config.reliability_model,
+        distribution_model_arg='circular_dist',
+        node_arg=f'{project}:intruder_node',
+        mobility_model_arg=f'{project}:midpoint_waypoint',
+        connectivity_model_arg=f'{project}:s9_connectivity',
+        interference_model_arg='no_interference',
+        reliability_model_arg='reliable_delivery',
         node_color='#000000',
-        node_size=3
+        node_size=3,
+        mobility_model_parameters=mobility_model_parameters,
+        distribution_model_parameters=distribution_model_parameters
     )
 
-    config = original_config
-
-    config.set_connectivity_enabled(True)
-
-    SynchronousThread.tracefile_suffix = '-nc5'
+    Global.tracefile_suffix = '-nc5'
 
     return JsonResponse({"status": "success", "message": "OK", "project": project})
 

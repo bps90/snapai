@@ -1,19 +1,19 @@
 # GENERATED WITH HELP FROM CHATGPT
 
 from ..models.nodes.packet import Packet
-from typing import Union
+from typing import Union, Optional
 
 
 class Inbox:
-    def __init__(self, packets: Union['Packet', list['Packet']] = None):
+    def __init__(self, packets: Union['Packet', list['Packet']]):
         """
         Initializes the inbox with either a list of packets or a single packet.
         """
-        self.packet_list: list['Packet'] = None
-        self.active_packet: 'Packet' = None
-        self.single_packet: 'Packet' = None
-        self.reset_for_list(packets) if type(
-            packets) is list else self.reset_for_packet(packets)
+        self.packet_list: Optional[list['Packet']] = None
+        self.active_packet: Optional['Packet'] = None
+        self.single_packet: Optional['Packet'] = None
+        self.reset_for_packet(packets) if isinstance(
+            packets, Packet) else self.reset_for_list(packets)
 
     def reset(self):
         """
@@ -83,7 +83,7 @@ class Inbox:
 
     # Internal methods
 
-    def reset_for_list(self, packet_list):
+    def reset_for_list(self, packet_list: list['Packet']):
         """
         Resets this inbox to contain the given list of packets.
         """
@@ -92,7 +92,7 @@ class Inbox:
         self.single_packet = None
         return self
 
-    def reset_for_packet(self, packet):
+    def reset_for_packet(self, packet: Optional[Packet]):
         """
         Resets the inbox to contain a single packet.
         """

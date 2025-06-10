@@ -9,9 +9,6 @@ class PingNode(AbcNode):
         super().__init__(*args, **kwargs)
         self.size = 3
 
-    def check_requirements(self):
-        return super().check_requirements()
-
     def handle_messages(self, inbox):
         # Return a pong message
         message = PongMessage()
@@ -25,19 +22,22 @@ class PingNode(AbcNode):
     def handle_nack_messages(self, nack_box):
         return super().handle_nack_messages(nack_box)
 
+    def check_requirements(self):
+        pass
+
     def init(self):
-        return super().init()
+        pass
 
     def on_neighboorhood_change(self):
-        return super().on_neighboorhood_change()
+        pass
+
+    def pre_step(self):
+        pass
 
     def post_step(self):
         if (Global.current_time == 1):
             message = PingMessage()
             self.broadcast(message)
-
-    def pre_step(self):
-        return super().pre_step()
 
 
 node = PingNode

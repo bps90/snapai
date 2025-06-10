@@ -5,7 +5,6 @@ from .abc_model import AbcModel
 
 
 class AbcInterferenceModel(AbcModel):
-
     @abstractmethod
     def is_disturbed(self, packet: Packet) -> bool:
         """Checks if the interference model dirtubed the packet.
@@ -21,4 +20,3 @@ class AbcInterferenceModel(AbcModel):
             True if the interference model dirtubed the packet, False otherwise.
 
         """
-

@@ -19,19 +19,19 @@ class S9Node(AbcNode):
             function: str,
             type: str,
             command: str,
-            comm_channels: list = [],
-            position: 'Position' = None,
-            mobility_model: 'AbcMobilityModel' = None,
-            connectivity_model: 'AbcConnectivityModel' = None,
-            interference_model: 'AbcInterferenceModel' = None,
-            reliability_model: 'AbcReliabilityModel' = None):
+            comm_channels: list,
+            position: 'Position',
+            mobility_model: 'AbcMobilityModel',
+            connectivity_model: 'AbcConnectivityModel',
+            interference_model: 'AbcInterferenceModel',
+            reliability_model: 'AbcReliabilityModel'):
         super().__init__(
             id,
-            position,
             mobility_model,
             connectivity_model,
             interference_model,
-            reliability_model)
+            reliability_model,
+            position=position)
         self.company_id = company_id
         self.platoon_id = platoon_id
         self.platoon_type = platoon_type
@@ -42,22 +42,22 @@ class S9Node(AbcNode):
         self.size = 3
 
     def check_requirements(self):
-        return super().check_requirements()
+        pass
 
     def handle_messages(self, inbox):
-        return super().handle_messages(inbox)
+        pass
 
     def init(self):
-        return super().init()
+        pass
 
     def on_neighboorhood_change(self):
-        return super().on_neighboorhood_change()
+        pass
 
     def post_step(self):
-        return super().post_step()
+        pass
 
     def pre_step(self):
-        return super().pre_step()
+        pass
 
 
 node = S9Node

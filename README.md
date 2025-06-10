@@ -70,10 +70,6 @@ $ python manage.py runserver
     "minDimY": 0,
     "dimX": 10000,
     "dimY": 10000,
-    "network_parameters": {
-        "type": "random_graph",
-        "avg_degree": 2
-    },
     "distribution_model": "random_dist",
     "distribution_model_parameters": {
         "orientation": "horizontal",

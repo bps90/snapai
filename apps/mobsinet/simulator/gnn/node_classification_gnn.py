@@ -3,21 +3,23 @@ import torch.nn.functional as F
 from torch_geometric.data import Data
 import networkx as nx
 import numpy as np
+from sklearn.base import ClassifierMixin
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
-import joblib  # para salvar o classificador
+import joblib  # type: ignore
 from .gcn_encoder import GCNEncoder2
+from typing import Optional
 
 
 class NodeClassificationGNN:
     def __init__(self):
         self.__data: Data = None
-        self.graph: nx.Graph = None
-        self.features: list[tuple[int, list[float]]] = None
-        self.labels: list[tuple[int, int]] = None
-        self.encoder: GCNEncoder2 = None
-        self.classifier = None
+        self.graph: Optional[nx.Graph] = None
+        self.features: Optional[list[tuple[int, list[float]]]] = None
+        self.labels: Optional[list[tuple[int, int]]] = None
+        self.encoder: Optional[GCNEncoder2] = None
+        self.classifier: Optional[ClassifierMixin] = None
 
     def create_dataset(self, graph: nx.Graph, features: list[tuple[int, list[float]]], labels: list[tuple[int, int]]):
         x = torch.stack(
@@ -76,6 +78,9 @@ class NodeClassificationGNN:
         print(classification_report(y_test, y_pred))
 
     def save(self):
+        if self.encoder is None:
+            raise Exception(
+                'You must train the model before saving it')
         torch.save(self.encoder.state_dict(
         ), 'apps/mobsinet/simulator/gnn/pth/node_classification_gnn.pth')
         joblib.dump(self.classifier,
@@ -101,11 +106,15 @@ class NodeClassificationGNN:
 
         data = Data(x=x, edge_index=edge_index)
 
+        if self.encoder is None or self.classifier is None:
+            raise Exception(
+                'You must train the model before making predictions')
         self.encoder.eval()
         with torch.no_grad():
             z = self.encoder(data.x, data.edge_index)
 
         X_new = z.detach().cpu().numpy()
+
         preds = self.classifier.predict(X_new)
 
         return list(zip(graph.nodes(), preds))

@@ -1,9 +1,11 @@
 from .abc_model import AbcModel
 from .nodes.abc_node import AbcNode
 from .nodes.packet import Packet
+from abc import abstractmethod
 
 
 class AbcMessageTransmissionModel(AbcModel):
+    @abstractmethod
     def time_to_reach(self,
                       packet: Packet,
                       origin_node: AbcNode,

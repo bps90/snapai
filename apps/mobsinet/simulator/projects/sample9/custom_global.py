@@ -7,8 +7,13 @@ from .nodes.staff_and_mortar_node import StaffAndMortarNode
 from ...defaults.distribution_models.from_trace_2d_in_memory import FromTrace2DInMemory
 from ...defaults.mobility_models.from_trace_2d_in_memory import FromTrace2DInMemory as FromTrace2DInMemoryMobility
 from ...global_vars import Global
-from ...tools.models_normalizer import ModelsNormalizer
-from ...configuration.sim_config import config
+from ...tools.models_normalizer import ModelsSearchEngine
+from ...configuration.sim_config import SimulationConfig
+from typing import TYPE_CHECKING
+from .project_config import ProjectConfig
+
+if TYPE_CHECKING:
+    from ...models.nodes.abc_node import AbcNode
 
 
 class CustomGlobal(AbcCustomGlobal):
@@ -17,12 +22,10 @@ class CustomGlobal(AbcCustomGlobal):
 
     def pre_run(self):
         simulation.remove_all_nodes()
-        with open('apps/mobsinet/simulator/projects/sample9/vehicle_information.csv', 'r') as information_f:
-            with open('apps/mobsinet/simulator/projects/sample9/comm-channels.csv', 'r') as channels_f:
-                distribution_model = FromTrace2DInMemory()
-                distribution_model.set_lat_long(True)
-                distribution_model.load_trace(
-                    'apps/mobsinet/simulator/projects/sample9/filtered_anglova.csv')
+        with open(f'{SimulationConfig.PROJECTS_DIR}sample9/vehicle_information.csv', 'r') as information_f:
+            with open(f'{SimulationConfig.PROJECTS_DIR}sample9/comm-channels.csv', 'r') as channels_f:
+                distribution_model = FromTrace2DInMemory(
+                    {'is_lat_long': True, 'trace_file': f'{SimulationConfig.PROJECTS_DIR}sample9/filtered_anglova.csv', 'should_padding': False, 'addapt_to_dimensions': False})
 
                 lines = [line.strip().split(',')
                          for line in information_f.readlines()[1:]]
@@ -41,16 +44,17 @@ class CustomGlobal(AbcCustomGlobal):
                     command = line[7]
                     comm_channels = comm_lines[vehicle_id - 1]
                     position = distribution_model.get_position()
-                    mobility_model = FromTrace2DInMemoryMobility()
-                    mobility_model.set_lat_long(True)
-                    mobility_model.load_trace(
-                        'apps/mobsinet/simulator/projects/sample9/filtered_anglova.csv')
-                    connectivy_model = ModelsNormalizer.normalize_connectivity_model(
-                        config.connectivity_model)
-                    reliability_model = ModelsNormalizer.normalize_reliability_model(
-                        config.reliability_model)
-                    interference_model = ModelsNormalizer.normalize_interference_model(
-                        config.interference_model)
+                    mobility_model = FromTrace2DInMemoryMobility(
+                        {'is_lat_long': True, 'trace_file': f'{SimulationConfig.PROJECTS_DIR}sample9/filtered_anglova.csv', 'should_padding': False, 'addapt_to_dimensions': False})
+
+                    connectivy_model = ModelsSearchEngine.find_connectivity_model(
+                        ProjectConfig.connectivity_model)
+                    reliability_model = ModelsSearchEngine.find_reliability_model(
+                        ProjectConfig.reliability_model)
+                    interference_model = ModelsSearchEngine.find_interference_model(
+                        ProjectConfig.interference_model)
+
+                    node: 'AbcNode'
 
                     if (company_type == 'Tank'):
                         node = TankNode(vehicle_id, company_id, platoon_id,

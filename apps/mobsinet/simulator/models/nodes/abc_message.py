@@ -1,9 +1,11 @@
 from abc import ABC
 from copy import deepcopy
+from typing import Optional
+
 
 class AbcMessage(ABC):
     def __init__(self):
-        self.content: str = None
+        self.content: Optional[str] = None
 
     def __str__(self):
         return self.content
@@ -16,5 +18,5 @@ class AbcMessage(ABC):
         AbcMessage
             A copy of the object.
         """
-        
+
         return deepcopy(self)

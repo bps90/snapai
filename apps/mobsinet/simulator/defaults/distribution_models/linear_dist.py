@@ -1,24 +1,50 @@
 from ...models.abc_distribution_model import AbcDistributionModel
 from ...tools.position import Position
-from ...configuration.sim_config import config
+from ...configuration.sim_config import SimulationConfig
+from typing import Literal, TypedDict, cast
 
-config.distribution_model_parameters = config.distribution_model_parameters
+
+class LinearDistParameters(TypedDict):
+    orientation: Literal['horizontal', 'vertical']
+    line_position: float
+    number_of_nodes: int
 
 
 class LinearDist(AbcDistributionModel):
-    def __init__(self):
-        super().__init__('LinearDist')
-        self.orientation = config.distribution_model_parameters['orientation']
-        self.length = config.dimX if self.orientation == 'horizontal' else config.dimY
-        self.line_position = config.distribution_model_parameters['line_position'] if 'line_position' in config.distribution_model_parameters and config.distribution_model_parameters['line_position'] is not None else (
-            config.dimY / 2 if self.orientation == 'horizontal' else config.dimX / 2
-        )
-        self.number_of_nodes: int = 0
-
+    def __init__(self, parameters: LinearDistParameters, *args, **kwargs):
+        super().__init__(parameters, *args, **kwargs)
+        self.set_parameters(parameters)
+        self.length = SimulationConfig.dim_x if self.orientation == 'horizontal' else SimulationConfig.dim_y
         self._last_position: Position | None = None
-        self._separation: float = None
-        
-        self.set_number_of_nodes(config.distribution_model_parameters['number_of_nodes'])
+        self._separation: float = self.length / (self.number_of_nodes - 1)
+
+    def check_parameters(self, parameters):
+        if ('orientation' not in parameters or
+                parameters['orientation'] not in ['horizontal', 'vertical']):
+            return False
+
+        if ('line_position' not in parameters or
+            parameters['line_position'] is None or
+                (type(parameters['line_position']) != float and type(parameters['line_position']) != int)):
+            return False
+
+        if ('number_of_nodes' not in parameters or
+            parameters['number_of_nodes'] is None or
+            parameters['number_of_nodes'] < 0 or
+                type(parameters['number_of_nodes']) != int):
+            return False
+
+        return True
+
+    def set_parameters(self, parameters):
+        if not self.check_parameters(parameters):
+            raise ValueError('Invalid parameters.')
+
+        parsed_parameters: LinearDistParameters = parameters
+        self.orientation: Literal['horizontal',
+                                  'vertical'] = parsed_parameters['orientation']
+        self.line_position: float = parsed_parameters['line_position']
+        self.number_of_nodes: int = parsed_parameters['number_of_nodes']
 
     def get_position(self):
         """Get the next position for the node in the distribution.
@@ -34,9 +60,9 @@ class LinearDist(AbcDistributionModel):
                 'The number of nodes must be set before getting the position. Use the set_number_of_nodes() method.')
 
         if (self.orientation == 'horizontal'):
-            middle = config.dimX / \
+            middle = SimulationConfig.dim_x / \
                 2 if self.number_of_nodes % 2 != 0 else (
-                    config.dimX / 2) - (self._separation / 2)
+                    SimulationConfig.dim_x / 2) - (self._separation / 2)
 
             distance_from_middle = (
                 middle) - (self._last_position.x) if self._last_position is not None else None
@@ -50,8 +76,8 @@ class LinearDist(AbcDistributionModel):
 
             if (x < 0):
                 x = 0
-            if (x > config.dimX):
-                x = config.dimX
+            if (x > SimulationConfig.dim_x):
+                x = SimulationConfig.dim_x
 
             y = self.line_position
             z = 0
@@ -62,9 +88,9 @@ class LinearDist(AbcDistributionModel):
 
             return position
         else:
-            middle = config.dimY / \
+            middle = SimulationConfig.dim_y / \
                 2 if self.number_of_nodes % 2 != 0 else (
-                    config.dimY / 2) - (self._separation / 2)
+                    SimulationConfig.dim_y / 2) - (self._separation / 2)
 
             distance_from_middle = (
                 middle) - (self._last_position.y) if self._last_position is not None else None
@@ -78,8 +104,8 @@ class LinearDist(AbcDistributionModel):
 
             if (y < 0):
                 y = 0
-            if (y > config.dimY):
-                y = config.dimY
+            if (y > SimulationConfig.dim_y):
+                y = SimulationConfig.dim_y
 
             x = self.line_position
             z = 0
@@ -116,7 +142,7 @@ class LinearDist(AbcDistributionModel):
             raise Exception(
                 'The orientation must be either "horizontal" or "vertical"')
 
-        self.orientation = orientation
+        self.orientation = cast(Literal['horizontal', 'vertical'], orientation)
 
     def set_length(self, length: float):
         """Set the length of the distribution. Also calculates the separation between nodes.
@@ -132,20 +158,8 @@ class LinearDist(AbcDistributionModel):
 
         self.length = min(
             length,
-            config.dimX if self.orientation == 'horizontal' else config.dimY)
+            SimulationConfig.dim_x if self.orientation == 'horizontal' else SimulationConfig.dim_y)
         self._separation = self.length / (self.number_of_nodes - 1)
 
 
 model = LinearDist
-
-if __name__ == '__main__':
-    ld = LinearDist()
-
-    ld.set_number_of_nodes(11)
-    ld.set_length(120)
-    ld.set_orientation('vertical')
-
-    for i in range(10):
-        position = ld.get_position()
-
-        print(position)
