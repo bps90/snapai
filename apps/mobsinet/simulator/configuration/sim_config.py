@@ -1,6 +1,5 @@
 from typing import Any
 from .base_config import BaseConfig
-from ..defaults.message_transmission_models.constant_time import ConstantTimeParameters
 
 
 class SimulationConfig(BaseConfig):

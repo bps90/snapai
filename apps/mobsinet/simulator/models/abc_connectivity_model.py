@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 from .abc_model import AbcModel
 
 if (TYPE_CHECKING):

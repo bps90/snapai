@@ -1,5 +1,5 @@
 from math import cos, pi, sin
-from typing import Literal, Any, TypedDict, Tuple
+from typing import Literal, Tuple, TypedDict
 
 from ...models.abc_distribution_model import AbcDistributionModel
 from ...tools.position import Position

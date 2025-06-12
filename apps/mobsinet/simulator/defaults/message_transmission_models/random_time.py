@@ -2,7 +2,6 @@ import random
 from ...models.abc_message_transmission_model import AbcMessageTransmissionModel
 from ...models.nodes.abc_node import AbcNode
 from ...models.nodes.packet import Packet
-from ...configuration.sim_config import SimulationConfig
 from typing import TypedDict
 
 

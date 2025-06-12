@@ -1,7 +1,7 @@
 from ...models.abc_interference_model import AbcInterferenceModel
 from ...models.nodes.packet import Packet
 import random
-from typing import Any, TypedDict
+from typing import TypedDict
 
 
 class ProbabilityInterferenceParameters(TypedDict):

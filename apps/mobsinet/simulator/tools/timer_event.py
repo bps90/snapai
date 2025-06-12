@@ -29,7 +29,6 @@ class TimerEvent(Event):
         """
         Called when this event is removed before being handled. No action required.
         """
-        pass
 
     def __str__(self):
         return "TimerEvent"

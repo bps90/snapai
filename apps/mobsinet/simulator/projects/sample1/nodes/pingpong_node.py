@@ -4,7 +4,6 @@ from ..timers.pingpong_timer import PingPongTimer
 from ..timers.init_pingpong_timer import InitPingPongTimer
 from ....tools.color import Color
 from random import randint
-from ....global_vars import Global
 from ....network_simulator import simulation
 
 

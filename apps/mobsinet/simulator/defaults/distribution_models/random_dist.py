@@ -3,7 +3,6 @@ import random
 from ...tools.position import Position
 from ...models.abc_distribution_model import AbcDistributionModel
 from ...configuration.sim_config import SimulationConfig
-from typing import Any
 
 # SEED such seed could be configured from config file to reproduce simulation.
 # seed_value = 10

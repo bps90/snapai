@@ -1,5 +1,3 @@
-# GENERATED WITH HELP FROM CHATGPT
-
 from ..network_simulator import simulation
 from ..models.nodes.packet import Packet
 from .inbox import Inbox

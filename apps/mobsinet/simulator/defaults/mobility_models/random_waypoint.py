@@ -1,15 +1,8 @@
-from math import cos, sin, sqrt, pi
-from networkx import DiGraph, Graph, draw, draw_networkx_edge_labels, draw_networkx_labels, get_edge_attributes, get_node_attributes
 from ...configuration.sim_config import SimulationConfig
-from ..connectivity_models.no_connectivity import NoConnectivity
-from ..interference_models.no_interference import NoInterference
-from ..nodes.inert_node import InertNode
-from ..reliability_models.no_reliability import NoReliability
 from ...models.abc_mobility_model import AbcMobilityModel
 from ...models.nodes.abc_node import AbcNode
 from ...tools.position import Position
-from random import randint, random
-import matplotlib.pyplot as plt
+from random import random
 import math
 from typing import TypedDict, Tuple, Optional
 

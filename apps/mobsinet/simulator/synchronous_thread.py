@@ -3,7 +3,6 @@
 from datetime import datetime
 from threading import Thread
 from .global_vars import Global
-from .models.nodes.abc_node import AbcNode
 from .network_simulator import simulation
 import time
 from .configuration.sim_config import SimulationConfig

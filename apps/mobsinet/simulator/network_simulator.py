@@ -16,11 +16,10 @@ from .tools.event_queue import EventQueue
 import inspect
 
 from .tools.models_normalizer import ModelsSearchEngine
-from typing import Type, TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Type
 
 if TYPE_CHECKING:
     from .models.nodes.abc_node import AbcNode
-    from .tools.event import Event
 
 
 class NetworkSimulator(object):

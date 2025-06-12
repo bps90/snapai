@@ -2,7 +2,6 @@ import torch
 import torch.nn.functional as F
 from torch_geometric.data import Data
 import networkx as nx
-import numpy as np
 from sklearn.base import ClassifierMixin
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split

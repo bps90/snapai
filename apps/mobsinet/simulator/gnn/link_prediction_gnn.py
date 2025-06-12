@@ -1,6 +1,5 @@
 from torch_geometric.data import Data
 import networkx as nx
-import numpy as np
 import torch
 import torch.nn.functional as F
 from torch_geometric.utils import negative_sampling

@@ -2,7 +2,7 @@ from ....models.abc_mobility_model import AbcMobilityModel
 from ....network_simulator import simulation
 from ....tools.position import Position
 import random
-from math import cos, sin, radians, pi
+from math import cos, pi, sin
 from typing import TypedDict
 
 

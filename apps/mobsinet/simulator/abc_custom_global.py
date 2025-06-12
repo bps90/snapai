@@ -1,5 +1,3 @@
-# GENERATED WITH HELP FROM CHATGPT
-
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
@@ -80,4 +78,3 @@ class AbcCustomGlobal(ABC):
         """
         Called when the event queue is empty.
         """
-        pass

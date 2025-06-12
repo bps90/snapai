@@ -2,7 +2,6 @@ import importlib
 
 from typing import Type, TYPE_CHECKING, Optional
 from ..configuration.sim_config import SimulationConfig
-from abc import ABCMeta
 
 if TYPE_CHECKING:
     from ..models.nodes.abc_node import AbcNode

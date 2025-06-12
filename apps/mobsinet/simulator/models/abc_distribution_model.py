@@ -2,7 +2,6 @@ from abc import abstractmethod
 
 from ..tools.position import Position
 from .abc_model import AbcModel
-from typing import Any
 
 
 class AbcDistributionModel(AbcModel):

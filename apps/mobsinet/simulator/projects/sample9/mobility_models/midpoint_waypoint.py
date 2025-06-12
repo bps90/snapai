@@ -1,7 +1,7 @@
 from ....models.abc_mobility_model import AbcMobilityModel
 from ....models.nodes.abc_node import AbcNode
 from ....tools.position import Position
-from random import randint, random
+from random import random
 import math
 from ....network_simulator import simulation
 from typing import TypedDict, Optional, Tuple

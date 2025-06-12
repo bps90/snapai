@@ -1,4 +1,3 @@
-from typing import List, Optional
 from .event import Event
 from ..models.nodes.packet import Packet
 from .inbox import Inbox

@@ -1,5 +1,5 @@
 from ...models.abc_mobility_model import AbcMobilityModel
-from typing import Literal, TypedDict, Optional, cast
+from typing import Optional, TypedDict, cast
 from ...models.nodes.abc_node import AbcNode
 from ...global_vars import Global
 from ...configuration.sim_config import SimulationConfig

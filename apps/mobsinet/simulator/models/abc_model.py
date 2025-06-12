@@ -38,7 +38,6 @@ class AbcModel(ABC):
             `True` if the parameters are valid, `False` otherwise.
         """
 
-        pass
 
     @abstractmethod
     def set_parameters(self, parameters: AbcModelParameters) -> None:
@@ -55,4 +54,3 @@ class AbcModel(ABC):
             A dictionary containing parameter names and their values.
         """
 
-        pass
