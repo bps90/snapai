@@ -37,10 +37,10 @@ class SimulationConfig(BaseConfig):
         SimulationConfig.nack_messages_enabled = enabled
 
     @staticmethod
-    def set_simulation_dimensions(dimX: float, dimY: float, dimZ: float):
-        SimulationConfig.dim_x = dimX
-        SimulationConfig.dim_y = dimY
-        SimulationConfig.dim_z = dimZ
+    def set_simulation_dimensions(dim_x: float, dim_y: float, dim_z: float):
+        SimulationConfig.dim_x = dim_x
+        SimulationConfig.dim_y = dim_y
+        SimulationConfig.dim_z = dim_z
 
     @staticmethod
     def set_message_transmission_model(model: str):
