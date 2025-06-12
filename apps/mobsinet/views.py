@@ -12,7 +12,6 @@ from .simulator.models.nodes.abc_node import AbcNode
 from node2vec import Node2Vec  # type: ignore
 import numpy as np
 import gensim  # type: ignore
-from copy import deepcopy
 from .simulator.configuration.sim_config import SimulationConfig
 from .simulator.asynchronous_thread import AsynchronousThread
 from .simulator.gnn.link_prediction_gnn import LinkPredictionGNN
@@ -20,7 +19,6 @@ from .simulator.gnn.node_clusterization_gnn import NodeClusterizationGNN, NodeCl
 from .simulator.gnn.node_classification_gnn import NodeClassificationGNN
 from math import pi
 from .simulator.tools.models_normalizer import ModelsSearchEngine
-from .simulator.synchronous_thread import SynchronousThread
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from typing import cast, Any
 from .simulator.projects.sample9.nodes.s9_node import S9Node
