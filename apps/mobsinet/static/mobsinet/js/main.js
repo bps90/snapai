@@ -330,6 +330,11 @@ function getUpdatedGraph() {
                 running = false;
             } else console.warn(running);
         },
+
+        error: function (xhr, status, error) {
+            console.error(error);
+            chamadasHTTP--;
+        }
     });
 }
 
