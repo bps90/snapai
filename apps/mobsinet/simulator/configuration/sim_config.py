@@ -8,9 +8,9 @@ class SimulationConfig(BaseConfig):
     simulation_rounds: float = 1000
     simulation_refresh_rate: float = 1
     nack_messages_enabled: bool = True
-    dim_x: float = 100
-    dim_y: float = 100
-    dim_z: float = 100
+    dim_x: list[float] = [0, 100]
+    dim_y: list[float] = [0, 100]
+    dim_z: list[float] = [0, 0]
     save_trace: bool = False
     asynchronous: bool = False
     connectivity_enabled: bool = True
@@ -37,7 +37,7 @@ class SimulationConfig(BaseConfig):
         SimulationConfig.nack_messages_enabled = enabled
 
     @staticmethod
-    def set_simulation_dimensions(dim_x: float, dim_y: float, dim_z: float):
+    def set_simulation_dimensions(dim_x: list[float], dim_y: list[float], dim_z: list[float]):
         SimulationConfig.dim_x = dim_x
         SimulationConfig.dim_y = dim_y
         SimulationConfig.dim_z = dim_z
