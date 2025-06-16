@@ -32,7 +32,7 @@ class RandomWaypoint(AbcMobilityModel):
                 parameters['speed_range'][0] < 0 or
                 parameters['speed_range'][1] < 0 or
                 parameters['speed_range'][0] > parameters['speed_range'][1]
-            ):
+                ):
             return False
 
         if ('waiting_time_range' not in parameters or
@@ -43,7 +43,7 @@ class RandomWaypoint(AbcMobilityModel):
                 parameters['waiting_time_range'][0] < 0 or
                 parameters['waiting_time_range'][1] < 0 or
                 parameters['waiting_time_range'][0] > parameters['waiting_time_range'][1]
-            ):
+                ):
             return False
 
         return True
@@ -125,9 +125,15 @@ class RandomWaypoint(AbcMobilityModel):
         """
 
         return Position(
-            random() * SimulationConfig.dim_x,
-            random() * SimulationConfig.dim_y,
-            random() * SimulationConfig.dim_z
+            random() *
+            (SimulationConfig.dim_x[1] - SimulationConfig.dim_x[0]
+             ) + SimulationConfig.dim_x[0],
+            random() *
+            (SimulationConfig.dim_y[1] - SimulationConfig.dim_y[0]
+             ) + SimulationConfig.dim_y[0],
+            random() *
+            (SimulationConfig.dim_z[1] - SimulationConfig.dim_z[0]
+             ) + SimulationConfig.dim_z[0]
         )
 
     def set_speed_range(self, min_speed: float | int, max_speed: float | int):

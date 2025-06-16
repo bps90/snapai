@@ -25,7 +25,7 @@ class CustomGlobal(AbcCustomGlobal):
         with open(f'{SimulationConfig.PROJECTS_DIR}sample9/vehicle_information.csv', 'r') as information_f:
             with open(f'{SimulationConfig.PROJECTS_DIR}sample9/comm-channels.csv', 'r') as channels_f:
                 distribution_model = FromTrace2DInMemory(
-                    {'is_lat_long': True, 'trace_file': f'{SimulationConfig.PROJECTS_DIR}sample9/filtered_anglova.csv', 'should_padding': False, 'addapt_to_dimensions': False})
+                    {'is_lat_long': True, 'trace_file': f'{SimulationConfig.PROJECTS_DIR}sample9/filtered_anglova.csv', 'addapt_to_dimensions': False})
 
                 lines = [line.strip().split(',')
                          for line in information_f.readlines()[1:]]
@@ -45,7 +45,7 @@ class CustomGlobal(AbcCustomGlobal):
                     comm_channels = comm_lines[vehicle_id - 1]
                     position = distribution_model.get_position()
                     mobility_model = FromTrace2DInMemoryMobility(
-                        {'is_lat_long': True, 'trace_file': f'{SimulationConfig.PROJECTS_DIR}sample9/filtered_anglova.csv', 'should_padding': False, 'addapt_to_dimensions': False})
+                        {'is_lat_long': True, 'trace_file': f'{SimulationConfig.PROJECTS_DIR}sample9/filtered_anglova.csv', 'addapt_to_dimensions': False})
 
                     connectivy_model = ModelsSearchEngine.find_connectivity_model(
                         ProjectConfig.connectivity_model)

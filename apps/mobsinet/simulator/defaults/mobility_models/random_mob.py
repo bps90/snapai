@@ -24,9 +24,14 @@ class RandomMob(AbcMobilityModel):
         Position: The randomly generated position.
         """
 
-        xcord = random() * SimulationConfig.dim_x
-        ycord = random() * SimulationConfig.dim_y
-        zcord = random() * SimulationConfig.dim_z if SimulationConfig.dim_z > 0 else 0
+        xcord = random() * \
+            (SimulationConfig.dim_x[1] - SimulationConfig.dim_x[0]
+             ) + SimulationConfig.dim_x[0]
+        ycord = random() * \
+            (SimulationConfig.dim_y[1] - SimulationConfig.dim_y[0]
+             ) + SimulationConfig.dim_y[0]
+        zcord = (random() * (SimulationConfig.dim_y[1] - SimulationConfig.dim_y[0]) +
+                 SimulationConfig.dim_y[0]) if (SimulationConfig.dim_z[1] - SimulationConfig.dim_z[0]) > 0 else 0
 
         return Position(xcord, ycord, zcord)
 

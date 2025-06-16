@@ -21,9 +21,11 @@ class RandomDist(AbcDistributionModel):
         Position: The randomly generated position.
         """
 
-        p = Position(x=random.random() * SimulationConfig.dim_x,
-                     y=random.random() * SimulationConfig.dim_y,
-                     z=random.random() * SimulationConfig.dim_z if SimulationConfig.dim_z > 0 else 0)
+        p = Position(x=random.random() * (SimulationConfig.dim_x[1] - SimulationConfig.dim_x[0]) + SimulationConfig.dim_x[0],
+                     y=random.random() *
+                     (SimulationConfig.dim_y[1] - SimulationConfig.dim_y[0]
+                      ) + SimulationConfig.dim_y[0],
+                     z=(random.random() * (SimulationConfig.dim_z[1] - SimulationConfig.dim_z[0]) + SimulationConfig.dim_z[0]) if (SimulationConfig.dim_z[1] - SimulationConfig.dim_z[0]) > 0 else 0)
 
         return p
 
