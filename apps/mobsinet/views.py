@@ -42,8 +42,14 @@ def update_graph(request):
     node_link_data = json_graph.node_link_data(
         simulation.graph, edges="edges")  # type: ignore
 
-    nodes = list(map(lambda node: [node['id'].id, node['id'].position.x,
-                                   node['id'].position.y, node['id'].position.z, node['id'].size, node['id'].node_color.get_hex()], node_link_data.get('nodes')))
+    # [id, x, y, z, size, color]
+    nodes = list(map(lambda node: [node['id'].id,
+                                   node['id'].position.x,
+                                   node['id'].position.y,
+                                   node['id'].position.z,
+                                   node['id'].size,
+                                   node['id'].node_color.get_hex()],
+                     node_link_data.get('nodes')))
     links: list[list[int]] = []
 
     for link in node_link_data.get('edges'):
@@ -63,7 +69,6 @@ def update_graph(request):
         'n': nodes,
         'l': links,
         'logs': Global.round_logs if with_logs else [],
-        # 'algorithms': convert_keys_to_strings(NetworkAlgorithms.round_algorithms())
     }
 
     return JsonResponse(graph_data)
@@ -86,15 +91,13 @@ def get_projects_names(request):
 def init_simulation(request):
     project = request.GET.get('project')
 
-    Global.tracefile_suffix = ''
     Main.init(project)
 
     return HttpResponse(status=200)
 
 
 def reevaluate_connections(request):
-    if (Global.is_async_mode):
-        AsynchronousThread.reevaluate_connections()
+    AsynchronousThread.reevaluate_connections()
 
     return HttpResponse(status=200)
 
@@ -116,7 +119,7 @@ def stop_simulation(request):
 
 
 @csrf_exempt
-def update_config(request):
+def update_config(request: HttpRequest):
     if request.method == "POST":
         try:
             # Carrega os dados enviados no formulário
@@ -330,7 +333,7 @@ def add_nodes(request):
             interference_model_arg=form_data['interference_model'],
             reliability_model_arg=form_data['reliability_model'],
             node_color=form_data['node_color'],
-            node_size=form_data['node_size'],
+            node_size=int(form_data['node_size']),
             distribution_model_parameters=form_data['distribution_model_parameters'],
             mobility_model_parameters=form_data['mobility_model_parameters'],
             connectivity_model_parameters=form_data['connectivity_model_parameters'],

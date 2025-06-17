@@ -96,4 +96,8 @@ class AsynchronousThread(Thread):
                         node, possible_neighbor)
                     node.neighborhood_changed = True
                     disconnections += 1
+
+            if (node.neighborhood_changed):
+                Global.round_logs.append(
+                    f"Node {node.id} has {connections} connections and {disconnections} disconnections")
         AsynchronousThread.connectivity_initialized = True

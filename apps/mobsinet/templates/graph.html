@@ -7,18 +7,14 @@
 <link rel="stylesheet" href="{% static 'mobsinet/css/form-style.css' %}" />
 <link rel="stylesheet" href="{% static 'mobsinet/css/styles.css' %}" />
 
-{% endblock head %} {% block title %} Graph Visualization {% endblock title %}
-{% block header %}
+{% endblock head %} {% block title %} Graph Visualization {% endblock title %} {% block header %}
 <h1 id="page-title">Simulation Visualization</h1>
 {% endblock header %} {% block content %}
 <div class="page-content">
-  <button type="button" onClick="toggleConfigurations()">
-    Show/Hide configurations
-  </button>
+  <button type="button" onClick="toggleConfigurations()">Show/Hide configurations</button>
   {% include "config-form.html" %}
-  <button type="button" onClick="toggleAddNodesForm()">
-    Show/Hide add nodes form
-  </button>
+
+  <button type="button" onClick="toggleAddNodesForm()">Show/Hide add nodes form</button>
   {% include "add-nodes-form.html" %}
 
   <div id="runtime_container">
@@ -26,9 +22,7 @@
       <div id="runtime_panel">
         <button type="button" onClick="initSimulation()">Initialize</button>
         <span id="initialized" class="confirmation-check">✓</span>
-        <button type="button" onClick="reevaluateConnections()">
-          Reevaluate connections
-        </button>
+        <button type="button" onClick="reevaluateConnections()">Reevaluate connections</button>
         <span id="reevaluated" class="confirmation-check">✓</span>
 
         <label for="simulation_rounds">Rounds</label>
@@ -40,9 +34,7 @@
           placeholder="Rounds"
         />
 
-        <label for="simulation_refresh_rate"
-          >Refresh rate (Rounds per second) (0 for no limit)</label
-        >
+        <label for="simulation_refresh_rate">Refresh rate (Rounds per second) (0 for no limit)</label>
         <input
           type="number"
           id="simulation_refresh_rate"
@@ -51,11 +43,7 @@
           placeholder="Refresh rate"
         />
 
-        <select
-          id="GUI_refresh_rate"
-          name="GUI_refresh_rate"
-          onchange="changeGUIRefreshRate()"
-        >
+        <select id="GUI_refresh_rate" name="GUI_refresh_rate" onchange="changeGUIRefreshRate()">
           <option value="1">1 fps</option>
           <option value="2">2 fps</option>
           <option value="5">5 fps</option>
@@ -73,21 +61,13 @@
 
         <button onClick="runSimulation()">Run</button>
         <button onClick="stopSimulation()">Stop</button>
-        <button id="show-arrows-button" onClick="showArrows()">
-          Show arrows
-        </button>
-        <button id="show-nodes-ids-button" onClick="showNodesIds()">
-          Show IDs
-        </button>
+        <button id="show-arrows-button" onClick="showArrows()">Show arrows</button>
+        <button id="show-nodes-ids-button" onClick="showNodesIds()">Show IDs</button>
         <button id="hide-edges-button" onClick="hideEdges()">Hide Edges</button>
         <button id="fade-edges-button" onClick="fadeEdges()">Fade Edges</button>
         <div>Time: <span id="time"></span></div>
-        <div>
-          Messages in this round: <span id="numberOfMessagesInThisRound"></span>
-        </div>
-        <div>
-          Total messages sent: <span id="numberOfMessagesOverAll"></span>
-        </div>
+        <div>Messages in this round: <span id="numberOfMessagesInThisRound"></span></div>
+        <div>Total messages sent: <span id="numberOfMessagesOverAll"></span></div>
         <div class="two-nodes-algorithms">
           <form id="two-nodes-algorithms-form">
             {% csrf_token %}
@@ -118,9 +98,7 @@
                 placeholder="Result"
               />
             </div>
-            <button type="button" onClick="calculateDistanceBetweenTwoNodes()">
-              Distance
-            </button>
+            <button type="button" onClick="calculateDistanceBetweenTwoNodes()">Distance</button>
             <button
               title="The number of edges in the shortest path between two nodes."
               class="white-button"
@@ -128,25 +106,18 @@
               onClick="calculateShortestPathBetweenTwoNodes()"
             >
               Shortest path
-              <img
-                src="{% static 'mobsinet/images/networkx-logo.svg' %}"
-                alt="NetworkX logo"
-              />
+              <img src="{% static 'mobsinet/images/networkx-logo.svg' %}" alt="NetworkX logo" />
             </button>
           </form>
         </div>
         <div class="round_logs">LOGS</div>
-        <button type="button" onClick="clearLogs()" id="clear-logs">
-          Clear logs
-        </button>
+        <button type="button" onClick="clearLogs()" id="clear-logs">Clear logs</button>
         <input type="checkbox" name="show-logs" id="show-logs" checked />
       </div>
 
       <div>
         <div id="graph"></div>
-        <button type="button" onclick="download_graph('graph')">
-          Download graph
-        </button>
+        <button type="button" onclick="download_graph('graph')">Download graph</button>
       </div>
     </div>
     {% include "networkx-algorithms.html" %}
@@ -161,27 +132,15 @@
           value="2"
         />
       </div>
-      <button type="button" onclick="node2vecAlgorithm()">
-        Run Node2Vec algorithm
-      </button>
-      <button type="button" onclick="download_graph('node2vec-graph')">
-        Download chart
-      </button>
-      <button
-        type="button"
-        onMouseDown="showNode2vecIds()"
-        onMouseUp="hideNode2vecIds()"
-      >
-        Show IDs
-      </button>
+      <button type="button" onclick="node2vecAlgorithm()">Run Node2Vec algorithm</button>
+      <button type="button" onclick="download_graph('node2vec-graph')">Download chart</button>
+      <button type="button" onMouseDown="showNode2vecIds()" onMouseUp="hideNode2vecIds()">Show IDs</button>
 
       <div id="node2vec-graph"></div>
     </div>
     <div>
       <div>
-        <button type="button" onclick="trainLinkPrediction()">
-          Train link prediction
-        </button>
+        <button type="button" onclick="trainLinkPrediction()">Train link prediction</button>
         <button type="button" onclick="predictLinks()">Predict Links</button>
       </div>
       <div class="grid grid-cols-3">
@@ -196,19 +155,11 @@
           />
         </div>
       </div>
-      <button type="button" onclick="trainNodeClusterization()">
-        Train node clusterization (Kmeans)
-      </button>
+      <button type="button" onclick="trainNodeClusterization()">Train node clusterization (Kmeans)</button>
       <div class="grid grid-cols-3">
         <div>
           <label for="eps">DBScan eps</label>
-          <input
-            type="number"
-            name="eps"
-            id="eps"
-            placeholder="DBScan eps"
-            value="0.02"
-          />
+          <input type="number" name="eps" id="eps" placeholder="DBScan eps" value="0.02" />
         </div>
         <div>
           <label for="min_samples">DBScan min_samples</label>
@@ -244,19 +195,13 @@
             style="zoom: 2"
             checked
           />
-          <label
-            for="node_classification_binary"
-            style="display: inline; margin: 0 0 0 6px"
+          <label for="node_classification_binary" style="display: inline; margin: 0 0 0 6px"
             >Classify in binary?</label
           >
         </div>
       </div>
-      <button type="button" onclick="trainNodeClassification()">
-        Train node classification
-      </button>
-      <button type="button" onclick="classificateNodes()">
-        Classificate Nodes
-      </button>
+      <button type="button" onclick="trainNodeClassification()">Train node classification</button>
+      <button type="button" onclick="classificateNodes()">Classificate Nodes</button>
     </div>
     <div>
       <h3>Network Configurations</h3>

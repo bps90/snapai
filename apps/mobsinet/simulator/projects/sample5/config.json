@@ -74,5 +74,7 @@
     "save_trace": true,
     "minDimX": null,
     "minDimY": null,
-    "connectivity_enabled": true
+    "connectivity_enabled": true,
+    "dim_x": null,
+    "dim_y": null
 }

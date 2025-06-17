@@ -1,5 +1,8 @@
 from ....models.nodes.abc_timer import AbcTimer
-from ..nodes.pingpong_node import PingPongNode
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..nodes.pingpong_node import PingPongNode
 
 
 class InitPingPongTimer(AbcTimer):

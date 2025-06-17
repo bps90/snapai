@@ -56,7 +56,10 @@
     "message_transmission_model_parameters": {
         "constant_transmission_time": 3,
         "random_transmission_min_time": 2,
-        "random_transmission_max_time": 4
+        "random_transmission_max_time": 4,
+        "time": 3,
+        "min_time": 2,
+        "max_time": 4
     },
     "reliability_model": "reliable_delivery",
     "reliability_model_parameters": {},
@@ -74,5 +77,13 @@
     "node_color": null,
     "minDimX": null,
     "minDimY": null,
-    "connectivity_enabled": true
+    "connectivity_enabled": true,
+    "dim_x": [
+        0,
+        1000
+    ],
+    "dim_y": [
+        0,
+        1000
+    ]
 }

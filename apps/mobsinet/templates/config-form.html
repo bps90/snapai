@@ -9,13 +9,16 @@
   <h2>Project Configuration</h2>
 
   <!-- Dropdown for projects -->
-  <label for="project">Select Project:</label>
-  <select id="project" name="project" onchange="changeProject()">
-    {% for project in projects %}
-    <option value="{{ project }}">{{ project }}</option>
-    {% endfor %}
-  </select>
+  <div>
+    <label for="project">Select Project:</label>
+    <select id="project" name="project" onchange="changeProject()">
+      {% for project in projects %}
+      <option value="{{ project }}">{{ project }}</option>
+      {% endfor %}
+    </select>
+  </div>
 
+  <!-- Project-specific fields -->
   <fieldset>
     <legend>Simulation Parameters:</legend>
 
@@ -32,135 +35,23 @@
       <div>
         <label for="nack_messages_enabled">NACK Messages Enabled?:</label>
         <select name="nack_messages_enabled" id="nack_messages_enabled">
-          <option
-            value="true"
-            {%
-            if
-            project_data.nack_messages_enabled
-            %}selected{%
-            endif
-            %}
-          >
-            Yes
-          </option>
-          <option
-            value="false"
-            {%
-            if
-            not
-            project_data.nack_messages_enabled
-            %}selected{%
-            endif
-            %}
-          >
-            No
-          </option>
+          <option value="true" {% if project_data.nack_messages_enabled %}selected{% endif %}>Yes</option>
+          <option value="false" {% if not project_data.nack_messages_enabled %}selected{% endif %}>No</option>
         </select>
       </div>
       <div>
         <label for="asynchronous">Asynchronous Simulation?:</label>
         <select name="asynchronous" id="asynchronous">
-          <option
-            value="true"
-            {%
-            if
-            project_data.asynchronous
-            %}selected{%
-            endif
-            %}
-          >
-            Yes
-          </option>
-          <option
-            value="false"
-            {%
-            if
-            not
-            project_data.asynchronous
-            %}selected{%
-            endif
-            %}
-          >
-            No
-          </option>
+          <option value="true" {% if project_data.asynchronous %}selected{% endif %}>Yes</option>
+          <option value="false" {% if not project_data.asynchronous %}selected{% endif %}>No</option>
         </select>
       </div>
       <div>
         <label for="save_trace">Save Trace?:</label>
         <select name="save_trace" id="save_trace">
-          <option
-            value="true"
-            {%
-            if
-            project_data.save_trace
-            %}selected{%
-            endif
-            %}
-          >
-            Yes
-          </option>
-          <option
-            value="false"
-            {%
-            if
-            not
-            project_data.save_trace
-            %}selected{%
-            endif
-            %}
-          >
-            No
-          </option>
+          <option value="true" {% if project_data.save_trace %}selected{% endif %}>Yes</option>
+          <option value="false" {% if not project_data.save_trace %}selected{% endif %}>No</option>
         </select>
-      </div>
-    </div>
-  </fieldset>
-
-  <fieldset>
-    <!-- Top-level fields -->
-    <legend>Node configuration:</legend>
-
-    <!-- node -->
-    <div class="grid grid-cols-2 gap-4">
-      <div>
-        <label for="node"
-          >Node (<i>implementation</i> or
-          <i>project_name:node_implementation</i>):</label
-        >
-        <input
-          type="text"
-          id="node"
-          name="node"
-          value="{{ project_data.node }}"
-        />
-      </div>
-      <div>
-        <label for="num_nodes">Number of Nodes:</label>
-        <input
-          type="number"
-          id="num_nodes"
-          name="num_nodes"
-          value="{{ project_data.num_nodes }}"
-        />
-      </div>
-      <div>
-        <label for="node_color">Color of nodes (hex):</label>
-        <input
-          type="text"
-          id="node_color"
-          name="node_color"
-          value="{{ project_data.node_color }}"
-        />
-      </div>
-      <div>
-        <label for="node_size">Size of nodes (int):</label>
-        <input
-          type="number"
-          step="0.000000000001"
-          id="node_size"
-          name="node_size"
-          value="{{ project_data.node_size }}"
-        />
       </div>
     </div>
   </fieldset>
@@ -168,575 +59,23 @@
   <fieldset>
     <div class="grid grid-cols-2 gap-4">
       <div>
-        <label for="minDimX">Minimum Dimension X:</label>
+        <label for="dim_x">Dimension X (min, max):</label>
         <input
-          type="number"
-          id="minDimX"
-          name="minDimX"
+          type="text"
+          id="dim_x"
+          name="dim_x"
           step="0.000000000001"
-          value="{{ project_data.minDimX }}"
+          value="{{ project_data.dim_x|join:',' }}"
         />
       </div>
       <div>
-        <label for="dimX">Dimension X:</label>
+        <label for="dim_y">Dimension Y (min, max):</label>
         <input
-          type="number"
-          id="dimX"
-          name="dimX"
+          type="text"
+          id="dim_y"
+          name="dim_y"
           step="0.000000000001"
-          value="{{ project_data.dimX }}"
-        />
-      </div>
-      <div>
-        <label for="minDimY">Minimum Dimension Y:</label>
-        <input
-          type="number"
-          id="minDimY"
-          name="minDimY"
-          step="0.000000000001"
-          value="{{ project_data.minDimY }}"
-        />
-      </div>
-      <div>
-        <label for="dimY">Dimension Y:</label>
-        <input
-          type="number"
-          id="dimY"
-          name="dimY"
-          step="0.000000000001"
-          value="{{ project_data.dimY }}"
-        />
-      </div>
-    </div>
-  </fieldset>
-
-  <!-- distribution_model -->
-
-  <!-- Nested fields for distribution model parameters -->
-  <fieldset>
-    <legend>Distribution Model Parameters:</legend>
-
-    <div class="grid grid-cols-2">
-      <div>
-        <label for="distribution_model">Distribution Model:</label>
-        <input
-          type="text"
-          id="distribution_model"
-          name="distribution_model"
-          value="{{ project_data.distribution_model }}"
-        />
-      </div>
-      <div>
-        <label for="trace_file_dist">Trace file:</label>
-        <input
-          type="text"
-          id="trace_file_dist"
-          name="distribution_model_parameters[trace_file]"
-          value="{{ project_data.distribution_model_parameters.trace_file }}"
-        />
-      </div>
-    </div>
-    <div class="grid grid-cols-3">
-      <div>
-        <label for="orientation">Orientation:</label>
-        <input
-          type="text"
-          id="orientation"
-          name="distribution_model_parameters[orientation]"
-          value="{{ project_data.distribution_model_parameters.orientation }}"
-        />
-      </div>
-      <div>
-        <label for="line_position">Line Position:</label>
-        <input
-          type="number"
-          step="0.000000000001"
-          id="line_position"
-          name="distribution_model_parameters[line_position]"
-          value="{{ project_data.distribution_model_parameters.line_position }}"
-        />
-      </div>
-      <div>
-        <label
-          title="expected to be equal to the number of nodes in the
-          simulation, but may be different to obtain a semi-circle for
-          example"
-          for="number_of_nodes"
-          >Number of Nodes:</label
-        >
-        <input
-          title="expected to be equal to the number of nodes in the
-          simulation, but may be different to obtain a semi-circle for
-          example"
-          type="number"
-          id="number_of_nodes"
-          name="distribution_model_parameters[number_of_nodes]"
-          value="{{ project_data.distribution_model_parameters.number_of_nodes }}"
-        />
-      </div>
-      <div>
-        <label for="midpoint">Midpoint:</label>
-        <input
-          type="text"
-          id="midpoint"
-          name="distribution_model_parameters[midpoint]"
-          value="{{ project_data.distribution_model_parameters.midpoint|join:',' }}"
-        />
-      </div>
-      <div>
-        <label for="rotation_direction">Rotation Direction:</label>
-        <input
-          type="text"
-          id="rotation_direction"
-          name="distribution_model_parameters[rotation_direction]"
-          value="{{ project_data.distribution_model_parameters.rotation_direction }}"
-        />
-      </div>
-      <div>
-        <label for="radius">Radius:</label>
-        <input
-          type="number"
-          id="radius"
-          step="0.000000000001"
-          name="distribution_model_parameters[radius]"
-          value="{{ project_data.distribution_model_parameters.radius }}"
-        />
-      </div>
-
-      <div>
-        <label for="is_lat_long_dist">Is Latitude and Longitude?:</label>
-        <select
-          name="distribution_model_parameters[is_lat_long]"
-          id="is_lat_long_dist"
-        >
-          <option
-            value="true"
-            {%
-            if
-            project_data.distribution_model_parameters.is_lat_long
-            %}selected{%
-            endif
-            %}
-          >
-            Yes
-          </option>
-          <option
-            value="false"
-            {%
-            if
-            not
-            project_data.distribution_model_parameters.is_lat_long
-            %}selected{%
-            endif
-            %}
-          >
-            No
-          </option>
-        </select>
-      </div>
-      <div>
-        <label for="should_padding_dist">Should padding?:</label>
-        <select
-          name="distribution_model_parameters[should_padding]"
-          id="should_padding_dist"
-        >
-          <option
-            value="true"
-            {%
-            if
-            project_data.distribution_model_parameters.should_padding
-            %}selected{%
-            endif
-            %}
-          >
-            Yes
-          </option>
-          <option
-            value="false"
-            {%
-            if
-            not
-            project_data.distribution_model_parameters.should_padding
-            %}selected{%
-            endif
-            %}
-          >
-            No
-          </option>
-        </select>
-      </div>
-      <div>
-        <label for="addapt_to_dimensions_dist">Addapt to Dimensions?:</label>
-        <select
-          name="distribution_model_parameters[addapt_to_dimensions]"
-          id="addapt_to_dimensions_dist"
-        >
-          <option
-            value="true"
-            {%
-            if
-            project_data.distribution_model_parameters.addapt_to_dimensions
-            %}selected{%
-            endif
-            %}
-          >
-            Yes
-          </option>
-          <option
-            value="false"
-            {%
-            if
-            not
-            project_data.distribution_model_parameters.addapt_to_dimensions
-            %}selected{%
-            endif
-            %}
-          >
-            No
-          </option>
-        </select>
-      </div>
-    </div>
-  </fieldset>
-
-  <!-- mobility_model -->
-
-  <!-- mobility_model_parameters -->
-  <fieldset>
-    <legend>Mobility Model Parameters:</legend>
-
-    <div class="grid grid-cols-2">
-      <div>
-        <label for="mobility_model">Mobility Model:</label>
-        <input
-          type="text"
-          id="mobility_model"
-          name="mobility_model"
-          value="{{ project_data.mobility_model }}"
-        />
-      </div>
-      <div>
-        <label for="trace_file_mobility">Trace file:</label>
-        <input
-          type="text"
-          id="trace_file_mobility"
-          name="mobility_model_parameters[trace_file]"
-          value="{{ project_data.mobility_model_parameters.trace_file }}"
-        />
-      </div>
-    </div>
-    <div class="grid grid-cols-3">
-      <div>
-        <label for="speed_range">Speed Range:</label>
-        <input
-          type="text"
-          id="speed_range"
-          name="mobility_model_parameters[speed_range]"
-          value="{{ project_data.mobility_model_parameters.speed_range|join:',' }}"
-        />
-      </div>
-      <div>
-        <label for="direction_range">Direction Range (radians):</label>
-        <input
-          type="text"
-          id="direction_range"
-          name="mobility_model_parameters[direction_range]"
-          value="{{ project_data.mobility_model_parameters.direction_range|join:',' }}"
-        />
-      </div>
-      <div>
-        <label for="waiting_time_range">Waiting time Range (time steps):</label>
-        <input
-          type="text"
-          id="waiting_time_range"
-          name="mobility_model_parameters[waiting_time_range]"
-          value="{{ project_data.mobility_model_parameters.waiting_time_range|join:',' }}"
-        />
-      </div>
-      <div>
-        <label for="move_time_range">Move Time Range (time steps):</label>
-        <input
-          type="text"
-          id="move_time_range"
-          name="mobility_model_parameters[move_time_range]"
-          value="{{ project_data.mobility_model_parameters.move_time_range|join:',' }}"
-        />
-      </div>
-      <div>
-        <label for="waypoint_radius_range">Waypoint Radius Range:</label>
-        <input
-          type="text"
-          id="waypoint_radius_range"
-          name="mobility_model_parameters[waypoint_radius_range]"
-          value="{{ project_data.mobility_model_parameters.waypoint_radius_range|join:',' }}"
-        />
-      </div>
-      <div>
-        <label for="prioritize_speed">Prioritize Speed:</label>
-        <select
-          id="prioritize_speed"
-          name="mobility_model_parameters[prioritize_speed]"
-        >
-          <option
-            value="true"
-            {%
-            if
-            project_data.mobility_model_parameters.prioritize_speed
-            %}selected{%
-            endif
-            %}
-          >
-            Yes
-          </option>
-          <option
-            value="false"
-            {%
-            if
-            not
-            project_data.mobility_model_parameters.prioritize_speed
-            %}selected{%
-            endif
-            %}
-          >
-            No
-          </option>
-        </select>
-      </div>
-      <div>
-        <label for="travel_distance">Travel Distance:</label>
-        <input
-          type="number"
-          id="travel_distance"
-          step="0.000000000001"
-          name="mobility_model_parameters[travel_distance]"
-          value="{{ project_data.mobility_model_parameters.travel_distance }}"
-        />
-      </div>
-      <div>
-        <label for="travel_time">Travel Time:</label>
-        <input
-          type="number"
-          id="travel_time"
-          step="0.000000000001"
-          name="mobility_model_parameters[travel_time]"
-          value="{{ project_data.mobility_model_parameters.travel_time }}"
-        />
-      </div>
-      <div>
-        <label for="is_lat_long_mobility">Is Latitude and Longitude?:</label>
-        <select
-          name="mobility_model_parameters[is_lat_long]"
-          id="is_lat_long_mobility"
-        >
-          <option
-            value="true"
-            {%
-            if
-            project_data.mobility_model_parameters.is_lat_long
-            %}selected{%
-            endif
-            %}
-          >
-            Yes
-          </option>
-          <option
-            value="false"
-            {%
-            if
-            not
-            project_data.mobility_model_parameters.is_lat_long
-            %}selected{%
-            endif
-            %}
-          >
-            No
-          </option>
-        </select>
-      </div>
-      <div>
-        <label for="should_padding_mobility">Should padding?:</label>
-        <select
-          name="mobility_model_parameters[should_padding]"
-          id="should_padding_mobility"
-        >
-          <option
-            value="true"
-            {%
-            if
-            project_data.mobility_model_parameters.should_padding
-            %}selected{%
-            endif
-            %}
-          >
-            Yes
-          </option>
-          <option
-            value="false"
-            {%
-            if
-            not
-            project_data.mobility_model_parameters.should_padding
-            %}selected{%
-            endif
-            %}
-          >
-            No
-          </option>
-        </select>
-      </div>
-      <div>
-        <label for="addapt_to_dimensions_mobility"
-          >Addapt to Dimensions?:</label
-        >
-        <select
-          name="mobility_model_parameters[addapt_to_dimensions]"
-          id="addapt_to_dimensions_mobility"
-        >
-          <option
-            value="true"
-            {%
-            if
-            project_data.mobility_model_parameters.addapt_to_dimensions
-            %}selected{%
-            endif
-            %}
-          >
-            Yes
-          </option>
-          <option
-            value="false"
-            {%
-            if
-            not
-            project_data.mobility_model_parameters.addapt_to_dimensions
-            %}selected{%
-            endif
-            %}
-          >
-            No
-          </option>
-        </select>
-      </div>
-    </div>
-  </fieldset>
-
-  <!-- Connectivity Model -->
-
-  <fieldset>
-    <legend>Connectivity Model Parameters:</legend>
-
-    <div class="grid grid-cols-2">
-      <div>
-        <label for="connectivity_model">Connectivity Model:</label>
-        <input
-          type="text"
-          id="connectivity_model"
-          name="connectivity_model"
-          value="{{ project_data.connectivity_model }}"
-        />
-      </div>
-      <div>
-        <label for="connectivity_enabled">Connectivity Enabled:</label>
-        <select name="connectivity_enabled" id="connectivity_enabled">
-          <option
-            value="true"
-            {%
-            if
-            project_data.connectivity_enabled
-            %}selected{%
-            endif
-            %}
-          >
-            Yes
-          </option>
-          <option
-            value="false"
-            {%
-            if
-            not
-            project_data.connectivity_enabled
-            %}selected{%
-            endif
-            %}
-          >
-            No
-          </option>
-        </select>
-      </div>
-    </div>
-    <div class="grid grid-cols-3">
-      <div>
-        <label for="max_radius">Max Radius:</label>
-        <input
-          type="number"
-          id="max_radius"
-          step="0.000000000001"
-          name="connectivity_model_parameters[max_radius]"
-          value="{{ project_data.connectivity_model_parameters.max_radius }}"
-        />
-      </div>
-      <div>
-        <label for="min_radius">Min Radius:</label>
-        <input
-          type="number"
-          step="0.000000000001"
-          id="min_radius"
-          name="connectivity_model_parameters[min_radius]"
-          value="{{ project_data.connectivity_model_parameters.min_radius }}"
-        />
-      </div>
-      <div>
-        <label for="big_radius_probability">Big Radius Probability:</label>
-        <input
-          type="number"
-          step="0.000000000001"
-          id="big_radius_probability"
-          name="connectivity_model_parameters[big_radius_probability]"
-          value="{{ project_data.connectivity_model_parameters.big_radius_probability }}"
-        />
-      </div>
-    </div>
-  </fieldset>
-
-  <!-- Reliability Model -->
-
-  <fieldset>
-    <legend>Reliability Model Parameters:</legend>
-    <!-- Nenhum parâmetro fornecido, mas o espaço está reservado -->
-    <div class="grid grid-cols-2">
-      <div>
-        <label for="reliability_model">Reliability Model:</label>
-        <input
-          type="text"
-          id="reliability_model"
-          name="reliability_model"
-          value="{{ project_data.reliability_model }}"
-        />
-      </div>
-    </div>
-  </fieldset>
-
-  <fieldset>
-    <legend>Interference Model Parameters:</legend>
-    <!-- Interference Model -->
-    <div class="grid-grid-cols-2">
-      <div>
-        <label for="interference_model">Interference Model:</label>
-        <input
-          type="text"
-          id="interference_model"
-          name="interference_model"
-          value="{{ project_data.interference_model }}"
-        />
-      </div>
-      <div>
-        <label for="intensity">Intensity (%):</label>
-        <input
-          type="number"
-          id="intensity"
-          step="0.000000000001"
-          name="interference_model_parameters[intensity]"
-          value="{{ project_data.interference_model_parameters.intensity }}"
+          value="{{ project_data.dim_y|join:',' }}"
         />
       </div>
     </div>
@@ -747,9 +86,7 @@
     <!-- Message Transmission Model -->
     <div>
       <div>
-        <label for="message_transmission_model"
-          >Message Transmission Model:</label
-        >
+        <label for="message_transmission_model">Message Transmission Model:</label>
         <input
           type="text"
           id="message_transmission_model"
@@ -760,38 +97,32 @@
     </div>
     <div class="grid grid-cols-3">
       <div>
-        <label for="constant_transmission_time"
-          >Constant Transmission Time:</label
-        >
+        <label for="time">Constant Transmission Time:</label>
         <input
           type="number"
-          id="constant_transmission_time"
-          name="message_transmission_model_parameters[constant_transmission_time]"
-          value="{{ project_data.message_transmission_model_parameters.constant_transmission_time }}"
+          id="time"
+          name="message_transmission_model_parameters[time]"
+          value="{{ project_data.message_transmission_model_parameters.time }}"
         />
       </div>
       <div>
-        <label for="random_transmission_min_time"
-          >Random Transmission Min Time:</label
-        >
+        <label for="min_time">Random Transmission Min Time:</label>
         <input
           type="number"
           step="0.000000000001"
-          id="random_transmission_min_time"
-          name="message_transmission_model_parameters[random_transmission_min_time]"
-          value="{{ project_data.message_transmission_model_parameters.random_transmission_min_time }}"
+          id="min_time"
+          name="message_transmission_model_parameters[min_time]"
+          value="{{ project_data.message_transmission_model_parameters.min_time }}"
         />
       </div>
       <div>
-        <label for="random_transmission_max_time"
-          >Random Transmission Max Time:</label
-        >
+        <label for="max_time">Random Transmission Max Time:</label>
         <input
           type="number"
           step="0.000000000001"
-          id="random_transmission_max_time"
-          name="message_transmission_model_parameters[random_transmission_max_time]"
-          value="{{ project_data.message_transmission_model_parameters.random_transmission_max_time }}"
+          id="max_time"
+          name="message_transmission_model_parameters[max_time]"
+          value="{{ project_data.message_transmission_model_parameters.max_time }}"
         />
       </div>
     </div>

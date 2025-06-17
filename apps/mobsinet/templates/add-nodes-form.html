@@ -19,8 +19,7 @@
         project_name:node_implementation if is a custom
         implementation"
         for="node-add-nodes"
-        >Node (<i>node_implementation</i> or
-        <i>project_name:node_implementation</i>):</label
+        >Node (<i>node_implementation</i> or <i>project_name:node_implementation</i>):</label
       >
       <input
         type="text"
@@ -36,21 +35,11 @@
     <div class="grid grid-cols-3">
       <div>
         <label for="num_nodes-add-nodes">Number of Nodes:</label>
-        <input
-          type="number"
-          id="num_nodes-add-nodes"
-          name="num_nodes"
-          value="{{ project_data.num_nodes }}"
-        />
+        <input type="number" id="num_nodes-add-nodes" name="num_nodes" value="{{ project_data.num_nodes }}" />
       </div>
       <div>
         <label for="node_color">Color of nodes (hex):</label>
-        <input
-          type="text"
-          id="node_color"
-          name="node_color"
-          value="{{ project_data.node_color }}"
-        />
+        <input type="text" id="node_color" name="node_color" value="{{ project_data.node_color }}" />
       </div>
       <div>
         <label for="node_size">Size of nodes (int):</label>
@@ -159,10 +148,7 @@
       </div>
       <div>
         <label for="is_lat_long_dist">Is Latitude and Longitude?:</label>
-        <select
-          name="distribution_model_parameters[is_lat_long]"
-          id="is_lat_long_dist"
-        >
+        <select name="distribution_model_parameters[is_lat_long]" id="is_lat_long_dist">
           <option
             value="true"
             {%
@@ -190,10 +176,7 @@
       </div>
       <div>
         <label for="should_padding_dist">Should padding?:</label>
-        <select
-          name="distribution_model_parameters[should_padding]"
-          id="should_padding_dist"
-        >
+        <select name="distribution_model_parameters[should_padding]" id="should_padding_dist">
           <option
             value="true"
             {%
@@ -221,10 +204,7 @@
       </div>
       <div>
         <label for="addapt_to_dimensions_dist">Addapt to Dimensions?:</label>
-        <select
-          name="distribution_model_parameters[addapt_to_dimensions]"
-          id="addapt_to_dimensions_dist"
-        >
+        <select name="distribution_model_parameters[addapt_to_dimensions]" id="addapt_to_dimensions_dist">
           <option
             value="true"
             {%
@@ -290,9 +270,7 @@
         />
       </div>
       <div>
-        <label for="direction_range-add-nodes"
-          >Direction Range (radians):</label
-        >
+        <label for="direction_range-add-nodes">Direction Range (radians):</label>
         <input
           type="text"
           id="direction_range-add-nodes"
@@ -329,10 +307,7 @@
       </div>
       <div>
         <label for="prioritize_speed-add-nodes">Prioritize Speed:</label>
-        <select
-          id="prioritize_speed-add-nodes"
-          name="mobility_model_parameters[prioritize_speed]"
-        >
+        <select id="prioritize_speed-add-nodes" name="mobility_model_parameters[prioritize_speed]">
           <option
             value="true"
             {%
@@ -380,19 +355,8 @@
       </div>
       <div>
         <label for="is_lat_long_mobility">Is Latitude and Longitude?:</label>
-        <select
-          name="mobility_model_parameters[is_lat_long]"
-          id="is_lat_long_mobility"
-        >
-          <option
-            value="true"
-            {%
-            if
-            project_data.mobility_model_parameters.is_lat_long
-            %}selected{%
-            endif
-            %}
-          >
+        <select name="mobility_model_parameters[is_lat_long]" id="is_lat_long_mobility">
+          <option value="true" {% if project_data.mobility_model_parameters.is_lat_long %}selected{% endif %}>
             Yes
           </option>
           <option
@@ -411,10 +375,7 @@
       </div>
       <div>
         <label for="should_padding_mobility">Should padding?:</label>
-        <select
-          name="mobility_model_parameters[should_padding]"
-          id="should_padding_mobility"
-        >
+        <select name="mobility_model_parameters[should_padding]" id="should_padding_mobility">
           <option
             value="true"
             {%
@@ -441,13 +402,8 @@
         </select>
       </div>
       <div>
-        <label for="addapt_to_dimensions_mobility"
-          >Addapt to Dimensions?:</label
-        >
-        <select
-          name="mobility_model_parameters[addapt_to_dimensions]"
-          id="addapt_to_dimensions_mobility"
-        >
+        <label for="addapt_to_dimensions_mobility">Addapt to Dimensions?:</label>
+        <select name="mobility_model_parameters[addapt_to_dimensions]" id="addapt_to_dimensions_mobility">
           <option
             value="true"
             {%
@@ -516,9 +472,7 @@
       </div>
 
       <div>
-        <label for="big_radius_probability-add-nodes"
-          >Big Radius Probability:</label
-        >
+        <label for="big_radius_probability-add-nodes">Big Radius Probability:</label>
         <input
           type="number"
           step="0.000000000001"
@@ -546,6 +500,14 @@
         />
       </div>
     </div>
+
+    <input
+      hidden
+      type="text"
+      id="reliability_model-add-nodes"
+      name="reliability_model_parameters"
+      value="{{ project_data.reliability_model_parameters }}"
+    />
   </fieldset>
 
   <fieldset>

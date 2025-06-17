@@ -9,6 +9,7 @@ from .asynchronous_thread import AsynchronousThread
 from .tools.event import Event
 from typing import cast
 from .models.abc_model import AbcModelParameters
+from .defaults.default_custom_global import DefaultCustomGlobal
 
 
 class NoCustomGlobalException(Exception):
@@ -70,7 +71,7 @@ class Main:
             Global.custom_global = import_module(SimulationConfig.PROJECTS_DIR.replace(
                 '/', '.') + project_name + '.custom_global').CustomGlobal()
         except Exception as e:
-            raise NoCustomGlobalException(e)
+            Global.custom_global = DefaultCustomGlobal()
 
     @staticmethod
     def __config_logging():
