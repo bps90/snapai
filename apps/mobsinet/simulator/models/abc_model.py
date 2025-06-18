@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import TypedDict
+from ..configuration.layout.form_section import FormSubSection
 
 
 class AbcModelParameters(TypedDict):
@@ -8,6 +9,7 @@ class AbcModelParameters(TypedDict):
 
 
 class AbcModel(ABC):
+    form_subsection_layout: FormSubSection
 
     def __init__(self, parameters: AbcModelParameters):
         self.parameters = parameters
@@ -38,7 +40,6 @@ class AbcModel(ABC):
             `True` if the parameters are valid, `False` otherwise.
         """
 
-
     @abstractmethod
     def set_parameters(self, parameters: AbcModelParameters) -> None:
         """
@@ -53,4 +54,3 @@ class AbcModel(ABC):
         parameters : AbcModelParameters
             A dictionary containing parameter names and their values.
         """
-

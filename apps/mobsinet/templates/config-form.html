@@ -1,22 +1,5 @@
-<form
-  id="options-form"
-  enctype="application/x-www-form-urlencoded"
-  method="post"
-  action="{% url 'update_config' %}"
->
-  {% csrf_token %}
-
+<form id="config-form">
   <h2>Project Configuration</h2>
-
-  <!-- Dropdown for projects -->
-  <div>
-    <label for="project">Select Project:</label>
-    <select id="project" name="project" onchange="changeProject()">
-      {% for project in projects %}
-      <option value="{{ project }}">{{ project }}</option>
-      {% endfor %}
-    </select>
-  </div>
 
   <!-- Project-specific fields -->
   <fieldset>
@@ -60,23 +43,11 @@
     <div class="grid grid-cols-2 gap-4">
       <div>
         <label for="dim_x">Dimension X (min, max):</label>
-        <input
-          type="text"
-          id="dim_x"
-          name="dim_x"
-          step="0.000000000001"
-          value="{{ project_data.dim_x|join:',' }}"
-        />
+        <input type="text" id="dim_x" name="dim_x" value="{{ project_data.dim_x|join:',' }}" />
       </div>
       <div>
         <label for="dim_y">Dimension Y (min, max):</label>
-        <input
-          type="text"
-          id="dim_y"
-          name="dim_y"
-          step="0.000000000001"
-          value="{{ project_data.dim_y|join:',' }}"
-        />
+        <input type="text" id="dim_y" name="dim_y" value="{{ project_data.dim_y|join:',' }}" />
       </div>
     </div>
   </fieldset>

@@ -1,7 +1,8 @@
 from .global_vars import Global
 from .network_simulator import simulation
-from .tools.models_normalizer import ModelsSearchEngine
+from .tools.models_search_engine import ModelsSearchEngine
 from .configuration.sim_config import SimulationConfig
+from .configuration.base_config import BaseConfig
 from importlib import import_module
 import logging
 from time import sleep
@@ -10,11 +11,6 @@ from .tools.event import Event
 from typing import cast
 from .models.abc_model import AbcModelParameters
 from .defaults.default_custom_global import DefaultCustomGlobal
-
-
-class NoCustomGlobalException(Exception):
-    def __init__(self, message):
-        self.message = f'No custom global found: {message}'
 
 
 class Main:
@@ -32,6 +28,14 @@ class Main:
 
         SimulationConfig.load_from_file(
             f'{SimulationConfig.PROJECTS_DIR}{project_name}/config.json')
+
+        try:
+            ProjectConfig: BaseConfig = import_module(SimulationConfig.PROJECTS_DIR.replace(
+                '/', '.') + project_name + '.project_config').ProjectConfig
+            ProjectConfig.load_from_file(
+                f'{SimulationConfig.PROJECTS_DIR}{project_name}/config.json')
+        except Exception as e:
+            pass
 
         Main.__set_global_variables(project_name)
         Main.__config_logging()
@@ -57,9 +61,6 @@ class Main:
 
         Args:
             project_name (str): _description_
-
-        Raises:
-            NoCustomGlobalException: _description_
         """
         Global.project_name = project_name
         Global.is_async_mode = SimulationConfig.asynchronous

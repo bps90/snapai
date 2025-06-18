@@ -1,9 +1,12 @@
 from typing import Any
 from .base_config import BaseConfig
+from .layout.form_layout import FormLayout
+from .layout.form_section import FormSection, FormSubSection, FormSectionLine, FormSectionNumberPairField, FormSectionTextField, FormSectionCheckboxField, FormSectionFieldInformative
 
 
 class SimulationConfig(BaseConfig):
     PROJECTS_DIR = "apps/mobsinet/simulator/projects/"
+
     simulation_name: str = "Network Simulation"
     simulation_rounds: float = 1000
     simulation_refresh_rate: float = 1
@@ -19,6 +22,88 @@ class SimulationConfig(BaseConfig):
     message_transmission_model_parameters: dict[str, Any] = {
         "time": 1
     }
+
+    @classmethod
+    def get_form_layout(cls) -> FormLayout:
+        return FormLayout(SimulationConfig).add_section(
+            FormSection(
+                'simulation_parameters_section',
+                'Simulation Parameters',
+            ).add_subsection(
+                FormSubSection(
+                    'simulation_parameters_subsection'
+                ).add_lines([
+                    FormSectionLine().add_fields([
+                            FormSectionTextField(
+                                id='simulation_name',
+                                label='Simulation Name',
+                                name='simulation_name',
+                                occuped_columns=6,
+                                required=True,
+                                informative=FormSectionFieldInformative(
+                                    title='The name of the simulation. This name can\'t have spaces or special characters.',
+                                )
+                            ),
+                            FormSectionCheckboxField(
+                                id='asynchronous',
+                                label='Asynchronous Simulation',
+                                name='asynchronous',
+                                occuped_columns=6,
+                                required=True,
+                                informative=FormSectionFieldInformative(
+                                    title='If this option is enabled, the simulation will run in asynchronous mode.',
+                                )
+                            )
+                            ]),
+                    FormSectionLine().add_fields([
+                        FormSectionNumberPairField(
+                            id='dim_x',
+                            label='X Dimension',
+                            name='dim_x',
+                            occuped_columns=6,
+                            is_float=True,
+                            required=True,
+                            informative=FormSectionFieldInformative(
+                                title='The X dimension of the simulation. (min, max)',
+                            )
+                        ),
+                        FormSectionNumberPairField(
+                            id='dim_y',
+                            label='Y Dimension',
+                            name='dim_y',
+                            occuped_columns=6,
+                            is_float=True,
+                            required=True,
+                            informative=FormSectionFieldInformative(
+                                title='The Y dimension of the simulation. (min, max)',
+                            )
+                        ),
+                    ]),
+                    FormSectionLine().add_fields([
+                        FormSectionCheckboxField(
+                            id='nack_messages_enabled',
+                            label='NACK Messages Enabled',
+                            name='nack_messages_enabled',
+                            occuped_columns=6,
+                            required=True,
+                            informative=FormSectionFieldInformative(
+                                title='If this option is enabled, the simulation will use NACK messages.',
+                            )
+                        ),
+                        FormSectionCheckboxField(
+                            id='save_trace',
+                            label='Save Trace',
+                            name='save_trace',
+                            occuped_columns=6,
+                            required=True,
+                            informative=FormSectionFieldInformative(
+                                title='If this option is enabled, the simulation will save the trace of all simulation nodes positions. (only in synchronous mode)',
+                            )
+                        ),
+                    ]),
+                ])
+            )
+        ).add_model_section('message_transmission')
 
     @staticmethod
     def set_simulation_name(name: str):

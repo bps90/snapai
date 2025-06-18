@@ -1,87 +1,36 @@
 {
-    "project_name": "sample9",
     "simulation_name": "Sample9-Simulation-Mobility-from-a-trace",
     "simulation_rounds": 100,
     "simulation_refresh_rate": 0,
-    "num_nodes": 10,
-    "node_size": 3,
-    "dimX": 470000,
-    "dimY": 6490000,
-    "dimZ": 0,
-    "node": "sample9:intruder_node",
-    "distribution_model": "circular_dist",
-    "distribution_model_parameters": {
-        "orientation": "horizontal",
-        "line_position": 0,
-        "number_of_nodes": 10,
-        "midpoint": [
-            432000,
-            6475000
-        ],
-        "rotation_direction": "anti-clockwise",
-        "radius": 1000,
-        "trace_file": "%PROJECTS_DIR%sample9/filtered_anglova.csv",
-        "is_lat_long": true,
-        "should_padding": false,
-        "addapt_to_dimensions": false
-    },
-    "mobility_model": "sample9:midpoint_waypoint",
-    "mobility_model_parameters": {
-        "speed_range": [
-            5,
-            13
-        ],
-        "direction_range": [
-            0,
-            6.283185307179586
-        ],
-        "prioritize_speed": false,
-        "travel_distance": null,
-        "travel_time": 80,
-        "trace_file": "%PROJECTS_DIR%sample9/filtered_anglova.csv",
-        "is_lat_long": true,
-        "waiting_time_range": [
-            50,
-            500
-        ],
-        "move_time_range": [
-            1,
-            100
-        ],
-        "waypoint_radius_range": [
-            0,
-            0.0005
-        ],
-        "should_padding": false,
-        "addapt_to_dimensions": false
-    },
-    "connectivity_model": "no_connectivity",
-    "connectivity_model_parameters": {
-        "max_radius": 5,
-        "min_radius": 2,
-        "big_radius_probability": 0.2
-    },
-    "message_transmission_model": "random_time",
-    "message_transmission_model_parameters": {
-        "constant_transmission_time": 1,
-        "random_transmission_min_time": 1,
-        "random_transmission_max_time": 10
-    },
-    "reliability_model": "reliable_delivery",
-    "reliability_model_parameters": {},
-    "interference_model": "no_interference",
-    "interference_model_parameters": {
-        "intensity": null
-    },
-    "message_protocol": "TCP",
-    "verbose_logging": false,
-    "csrfmiddlewaretoken": "LTehGriPpW23UxWQJwBXJcr9y57J6HBsUowtOsAYY5Pra2Vdx0DYTQGaKsdoaoYU",
-    "project": "sample9",
     "nack_messages_enabled": false,
-    "node_color": null,
-    "minDimX": 410000,
-    "minDimY": 6430000,
+    "dim_x": [
+        410000,
+        470000
+    ],
+    "dim_y": [
+        6430000,
+        6490000
+    ],
+    "dim_z": [
+        0,
+        0
+    ],
     "save_trace": true,
     "asynchronous": false,
-    "connectivity_enabled": true
+    "connectivity_enabled": true,
+    "message_transmission_model": "random_time",
+    "message_transmission_model_parameters": {
+        "time_range": [
+            1,
+            10
+        ]
+    },
+    "project_config": {
+        "connectivity_model": "no_connectivity",
+        "connectivity_model_parameters": {},
+        "reliability_model": "reliable_delivery",
+        "reliability_model_parameters": {},
+        "interference_model": "no_interference",
+        "interference_model_parameters": {}
+    }
 }

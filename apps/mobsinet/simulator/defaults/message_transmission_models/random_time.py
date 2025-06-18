@@ -6,8 +6,7 @@ from typing import TypedDict
 
 
 class RandomTimeParameters(TypedDict):
-    min_time: float
-    max_time: float
+    time_range: list[float]
 
 
 class RandomTime(AbcMessageTransmissionModel):
@@ -16,17 +15,14 @@ class RandomTime(AbcMessageTransmissionModel):
         self.set_parameters(parameters)
 
     def check_parameters(self, parameters):
-        if ('min_time' not in parameters or
-                (not isinstance(parameters['min_time'], float) and not isinstance(parameters['min_time'], int)) or
-                parameters['min_time'] < 0):
+        if ('time_range' not in parameters or
+                (not isinstance(parameters['time_range'], list)) or
+                (not isinstance(parameters['time_range'][0], float) and not isinstance(parameters['time_range'][0], int)) or
+                (not isinstance(parameters['time_range'][1], float) and not isinstance(parameters['time_range'][1], int)) or
+                parameters['time_range'][0] < 0 or
+                parameters['time_range'][1] < 0 or
+                parameters['time_range'][0] > parameters['time_range'][1]):
             return False
-
-        if ('max_time' not in parameters or
-                (not isinstance(parameters['max_time'], float) and not isinstance(parameters['max_time'], int)) or
-                parameters['max_time'] < 0 or
-                parameters['max_time'] < parameters['min_time']):
-            return False
-
         return True
 
     def set_parameters(self, parameters):
@@ -34,8 +30,7 @@ class RandomTime(AbcMessageTransmissionModel):
             raise ValueError('Invalid parameters.')
 
         parsed_parameters: RandomTimeParameters = parameters
-        self.min_time: float = parsed_parameters['min_time']
-        self.max_time: float = parsed_parameters['max_time']
+        self.time_range: list[float] = parsed_parameters['time_range']
 
     def time_to_reach(self,
                       packet: Packet,
@@ -62,25 +57,18 @@ class RandomTime(AbcMessageTransmissionModel):
             The time that the packet will take to reach the destination node.
         """
 
-        return random.uniform(self.min_time, self.max_time)
+        return random.uniform(self.time_range[0], self.time_range[1])
 
-    def set_interval(self,
-                     min_time: float,
-                     max_time: float):
-        """Set the min and max time that the packet will take to reach the destination node.
+    def set_interval(self, time_range: list[float]):
+        """Set the time range for the random time model.
 
         Parameters
         ----------
-        min_time : float (optional)
-            The min time that the packet will take to reach the destination node.
-            By default, the min time is defined in the configuration.
-        max_time : float (optional)
-            The max time that the packet will take to reach the destination node.
-            By default, the max time is defined in the configuration.
+        time_range : list[float]
+            The time range in the format [min_time, max_time].
         """
 
-        self.min_time = min_time
-        self.max_time = max_time
+        self.time_range = time_range
 
 
 model = RandomTime

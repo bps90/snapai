@@ -11,6 +11,16 @@
 <h1 id="page-title">Simulation Visualization</h1>
 {% endblock header %} {% block content %}
 <div class="page-content">
+  <!-- Dropdown for projects -->
+  <div>
+    <label for="project">Select Project:</label>
+    <select id="project" name="project" onchange="changeProject()">
+      {% for project in projects %}
+      <option value="{{ project }}">{{ project }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
   <button type="button" onClick="toggleConfigurations()">Show/Hide configurations</button>
   {% include "config-form.html" %}
 
@@ -70,7 +80,6 @@
         <div>Total messages sent: <span id="numberOfMessagesOverAll"></span></div>
         <div class="two-nodes-algorithms">
           <form id="two-nodes-algorithms-form">
-            {% csrf_token %}
             <div class="two-nodes-algorithms-inputs-container">
               <div>
                 <input

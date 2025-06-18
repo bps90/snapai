@@ -10,6 +10,8 @@ urlpatterns = [
     path('graph/stop_simulation/', views.stop_simulation, name='stop_simulation'),
     path('graph/projects_names/', views.get_projects_names, name='projects_names'),
     path('graph/update_config/', views.update_config, name='update_config'),
+    path('graph/get_config_form_layout/',
+         views.get_config_form_layout, name='get_config_form_layout'),
     path('graph/add_nodes/', views.add_nodes, name='add_nodes'),
     path('graph/get_config/', views.get_config, name='get_config'),
     path('graph/calculate_degree/',

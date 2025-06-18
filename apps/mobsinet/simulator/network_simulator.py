@@ -15,7 +15,7 @@ from .tools.color import Color
 from .tools.event_queue import EventQueue
 import inspect
 
-from .tools.models_normalizer import ModelsSearchEngine
+from .tools.models_search_engine import ModelsSearchEngine
 from typing import TYPE_CHECKING, Type
 
 if TYPE_CHECKING:

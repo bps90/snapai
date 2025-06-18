@@ -4,6 +4,7 @@ from typing import Literal, Tuple, TypedDict
 from ...models.abc_distribution_model import AbcDistributionModel
 from ...tools.position import Position
 from ...configuration.sim_config import SimulationConfig
+from ...configuration.layout.form_section import FormSubSection, FormSectionLine, FormSectionNumberField, FormSectionFieldInformative, FormSectionSelectField, FormSectionNumberPairField
 
 
 class CircularDistParameters(TypedDict):
@@ -14,6 +15,58 @@ class CircularDistParameters(TypedDict):
 
 
 class CircularDist(AbcDistributionModel):
+    form_subsection_layout = FormSubSection(id='circular_dist_parameters_subsection').add_lines([
+        FormSectionLine().add_fields([
+            FormSectionNumberField(
+                id="circular_dist_radius",
+                label="Radius",
+                name="radius",
+                occuped_columns=3,
+                is_float=True,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The distance from the midpoint to the edge of the circle.",
+                ),
+            ),
+            FormSectionSelectField(
+                id="circular_dist_rotation_direction",
+                label="Rotation Direction",
+                name="rotation_direction",
+                occuped_columns=3,
+                options=[
+                    {'label': 'Clockwise ↻', 'value': 'clockwise'},
+                    {'label': 'Anti-Clockwise ↺', 'value': 'anti-clockwise'},
+                ],
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The rotation direction that the circle will be generated. (Useful only if the number of nodes for the model is not equal to the number of nodes in the simulation.)",
+                ),
+            ),
+            FormSectionNumberPairField(
+                id="circular_dist_midpoint",
+                label="Midpoint",
+                name="midpoint",
+                occuped_columns=3,
+                is_float=True,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The center of the circle. (X and Y coordinates only.)",
+                ),
+            ),
+            FormSectionNumberField(
+                id="circular_dist_number_of_nodes",
+                label="Number of Nodes",
+                name="number_of_nodes",
+                occuped_columns=3,
+                is_float=False,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The number of nodes for the model.",
+                ),
+            ),
+        ])
+    ])
+
     def __init__(self, parameters: CircularDistParameters, *args, **kwargs):
         super().__init__(parameters, *args, **kwargs)
 

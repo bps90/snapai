@@ -7,7 +7,7 @@ from ...tools.packet_type import PacketType
 from ...tools.nack_box import NackBox
 from ...global_vars import Global
 from ...network_simulator import simulation
-from ...tools.models_normalizer import ModelsSearchEngine
+from ...tools.models_search_engine import ModelsSearchEngine
 from ...tools.color import Color
 from ...configuration.sim_config import SimulationConfig
 from ...tools.packet_event import PacketEvent

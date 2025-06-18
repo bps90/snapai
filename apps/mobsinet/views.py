@@ -18,15 +18,18 @@ from .simulator.gnn.link_prediction_gnn import LinkPredictionGNN
 from .simulator.gnn.node_clusterization_gnn import NodeClusterizationGNN, NodeClusterizationDBSCAN
 from .simulator.gnn.node_classification_gnn import NodeClassificationGNN
 from math import pi
-from .simulator.tools.models_normalizer import ModelsSearchEngine
+from .simulator.tools.models_search_engine import ModelsSearchEngine
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from typing import cast, Any
+from typing import cast, Any, Literal
 from .simulator.projects.sample9.nodes.s9_node import S9Node
 from .simulator.projects.sample9.connectivity_models.s9_connectivity import S9Connectivity
 from .simulator.defaults.distribution_models.circular_dist import CircularDistParameters
 from .simulator.projects.sample9.mobility_models.midpoint_waypoint import MidpointWaypointParameters
 from .simulator.projects.sample9.mobility_models.mid_point_of_others import MidPointOfOthersParameters
 from .simulator.defaults.mobility_models.random_walk import RandomWalkParameters
+import importlib
+from .simulator.configuration.base_project_config import BaseProjectConfig
+from .simulator.models.abc_model import AbcModel
 
 
 def index(request):
@@ -144,6 +147,52 @@ def update_config(request: HttpRequest):
             return HttpResponse(status=500)
     else:
         return HttpResponse("Método não permitido", status=405)
+
+
+def get_config_form_layout(request: HttpRequest):
+    project_name = request.GET.get('project')
+
+    if (project_name is None):
+        return HttpResponse(status=400, content="Project name not provided")
+
+    try:
+        ProjectConfig: BaseProjectConfig = importlib.import_module(
+            SimulationConfig.PROJECTS_DIR.replace('/', '.') + project_name + '.project_config').ProjectConfig
+
+        return JsonResponse({
+            "simulation_config_layout": SimulationConfig.get_form_layout().to_dict(),
+            "project_config_layout": ProjectConfig.get.to_dict()
+        })
+    except ModuleNotFoundError as e:
+        return JsonResponse({
+            "simulation_config_layout": SimulationConfig.get_form_layout().to_dict(),
+            "project_config_layout": None
+        })
+    except Exception as e:
+        print(e)
+        return HttpResponse(status=500, content="See backend console for more details")
+
+
+def get_model_subsection_layout(request: HttpRequest):
+    model_name = request.GET.get('model')
+    model_type = request.GET.get('model_type')
+
+    if (model_name is None):
+        return HttpResponse(status=400, content="Model name not provided")
+
+    if (model_type is None or model_type not in ['connectivity', 'mobility', 'interference', 'reliability', 'distribution', 'message_transmission']):
+        return HttpResponse(status=400, content="Invalid model type")
+
+    try:
+        Model = ModelsSearchEngine.find_model(model_name, cast(Literal['connectivity', 'mobility', 'interference', 'reliability',
+                                                                       'distribution', 'message_transmission'], model_type))
+
+        return JsonResponse({"model_layout": Model.form_subsection_layout.to_dict()})
+    except ModuleNotFoundError as e:
+        return HttpResponse(status=404, content="Model not found")
+    except Exception as e:
+        print(e)
+        return HttpResponse(status=500, content="See backend console for more details")
 
 
 def merge_data(existing_data, form_data):

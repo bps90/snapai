@@ -30,10 +30,10 @@ async function renderGraph() {
     };
 
     // Obtém os limites do retângulo
-    const minDimX = Number(document.querySelector("#minDimX")?.value) || 0;
-    const minDimY = Number(document.querySelector("#minDimY")?.value) || 0;
-    const dimX = Number(document.querySelector("#dimX").value);
-    const dimY = Number(document.querySelector("#dimY").value);
+    const minDimX = Number(document.querySelector("#dim_x").value.split(',')[0]) || 0;
+    const minDimY = Number(document.querySelector("#dim_y").value.split(',')[0]) || 0;
+    const maxDimX = Number(document.querySelector("#dim_x").value.split(',')[1]) || 0;
+    const maxDimY = Number(document.querySelector("#dim_y").value.split(',')[1]) || 0;
 
     // Cria as bordas do retângulo
     const boundaryShapes = [
@@ -41,30 +41,30 @@ async function renderGraph() {
             type: "line",
             x0: minDimX,
             y0: minDimY,
-            x1: dimX,
+            x1: maxDimX,
             y1: minDimY,
             line: { color: "black", width: 1 },
         },
         {
             type: "line",
-            x0: dimX,
+            x0: maxDimX,
             y0: minDimY,
-            x1: dimX,
-            y1: dimY,
+            x1: maxDimX,
+            y1: maxDimY,
             line: { color: "black", width: 1 },
         },
         {
             type: "line",
-            x0: dimX,
-            y0: dimY,
+            x0: maxDimX,
+            y0: maxDimY,
             x1: minDimX,
-            y1: dimY,
+            y1: maxDimY,
             line: { color: "black", width: 1 },
         },
         {
             type: "line",
             x0: minDimX,
-            y0: dimY,
+            y0: maxDimY,
             x1: minDimX,
             y1: minDimY,
             line: { color: "black", width: 1 },
@@ -75,11 +75,11 @@ async function renderGraph() {
     const currentGraph = document.getElementById("graph");
     const currentLayout = currentGraph.layout ?? {
         xaxis: {
-            range: [dimX * -0.1, dimX * 1.1],
+            range: [maxDimX * -0.1, maxDimX * 1.1],
             zeroline: false,
         },
         yaxis: {
-            range: [dimY * -0.1, dimY * 1.1],
+            range: [maxDimY * -0.1, maxDimY * 1.1],
             zeroline: false,
         },
     };
@@ -405,7 +405,7 @@ function hideNode2vecIds() {
 }
 
 function toggleConfigurations() {
-    $("#options-form").toggle();
+    $("#config-form").toggle();
 }
 
 function toggleAddNodesForm() {
@@ -491,18 +491,48 @@ function resetView() {
 }
 
 function initForm(project = getSelectedProject()) {
+    configFormEl = document.querySelector('#config-form');
+    addNodesFormEl = document.querySelector('#add-nodes-form');
+
+    configFormEl.addEventListener('submit', submitConfigForm);
+    addNodesFormEl.addEventListener('submit', submitAddNodesForm);
+
+    $.ajax({
+        url: "get_config_form_layout/?project=" + project,
+        type: "GET",
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (xhr, status, error) {
+            console.error(error);
+        }
+    })
+
     $.ajax({
         url: "get_config/?project=" + project,
         type: "GET",
         success: function (data) {
             console.log(data);
-            populateForm(data, 'options-form');
+            populateForm(data, 'config-form');
             populateForm(data, 'add-nodes-form');
         },
         error: function (xhr, status, error) {
             console.error(error);
         },
     });
+}
+
+function submitConfigForm(e) {
+    e.preventDefault();
+
+    const formEl = document.querySelector('#config-form');
+    const formData = new FormData(formEl);
+
+    console.log(Object.fromEntries(formData.entries()));
+}
+
+function submitAddNodesForm(e) {
+    e.preventDefault();
 }
 
 $(document).ready(onReady);
@@ -616,7 +646,7 @@ function listenForm(formId) {
         });
 }
 
-listenForm("options-form")
+listenForm("config-form")
 listenForm("add-nodes-form")
 
 /**

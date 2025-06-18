@@ -7,7 +7,7 @@ from .nodes.staff_and_mortar_node import StaffAndMortarNode
 from ...defaults.distribution_models.from_trace_2d_in_memory import FromTrace2DInMemory
 from ...defaults.mobility_models.from_trace_2d_in_memory import FromTrace2DInMemory as FromTrace2DInMemoryMobility
 from ...global_vars import Global
-from ...tools.models_normalizer import ModelsSearchEngine
+from ...tools.models_search_engine import ModelsSearchEngine
 from ...configuration.sim_config import SimulationConfig
 from typing import TYPE_CHECKING
 from .project_config import ProjectConfig
