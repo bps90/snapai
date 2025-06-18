@@ -133,6 +133,28 @@ class FormSectionNumberField(FormSectionField):
         }
 
 
+class FormSectionPercentageField(FormSectionNumberField):
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            'type': 'percentage',
+        }
+
+    def init(self, project_config):
+        super().init(project_config)
+
+        value = project_config.to_dict()[self.name]
+
+        if (value is not None and value < 0):
+            raise Exception(f"Field {self.name} is not a positive number")
+
+        if (value is not None and value > 100):
+            raise Exception(f"Field {self.name} is not a percentage")
+
+        self.value = value
+        return self
+
+
 class FormSectionSelectField(FormSectionField):
     def __init__(self,
                  id: str,

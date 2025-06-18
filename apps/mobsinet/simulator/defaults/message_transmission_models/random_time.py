@@ -17,6 +17,7 @@ class RandomTime(AbcMessageTransmissionModel):
     def check_parameters(self, parameters):
         if ('time_range' not in parameters or
                 (not isinstance(parameters['time_range'], list)) or
+                len(parameters['time_range']) != 2 or
                 (not isinstance(parameters['time_range'][0], float) and not isinstance(parameters['time_range'][0], int)) or
                 (not isinstance(parameters['time_range'][1], float) and not isinstance(parameters['time_range'][1], int)) or
                 parameters['time_range'][0] < 0 or
