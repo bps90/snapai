@@ -420,4 +420,5 @@ class FormSection:
         from ...tools.models_search_engine import ModelsSearchEngine
         Model = ModelsSearchEngine.find_model(model, model_type)
 
-        self.add_subsection(Model.form_subsection_layout)
+        self.add_subsection(Model.form_subsection_layout if Model.form_subsection_layout is not None else FormSubSection(
+            id=f"{model.replace(':', '_')}_parameters_subsection"))

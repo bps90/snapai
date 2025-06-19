@@ -4,10 +4,6 @@ from ...tools.position import Position
 from ...models.abc_distribution_model import AbcDistributionModel
 from ...configuration.sim_config import SimulationConfig
 
-# SEED such seed could be configured from config file to reproduce simulation.
-# seed_value = 10
-# random.seed(seed_value)
-
 
 class RandomDist(AbcDistributionModel):
     """A random Distribution Model."""

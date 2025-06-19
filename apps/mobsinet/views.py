@@ -161,7 +161,7 @@ def get_config_form_layout(request: HttpRequest):
 
         return JsonResponse({
             "simulation_config_layout": SimulationConfig.get_form_layout().to_dict(),
-            "project_config_layout": ProjectConfig.get.to_dict()
+            "project_config_layout": ProjectConfig.get_form_layout().to_dict()
         })
     except ModuleNotFoundError as e:
         return JsonResponse({
@@ -187,7 +187,7 @@ def get_model_subsection_layout(request: HttpRequest):
         Model = ModelsSearchEngine.find_model(model_name, cast(Literal['connectivity', 'mobility', 'interference', 'reliability',
                                                                        'distribution', 'message_transmission'], model_type))
 
-        return JsonResponse({"model_layout": Model.form_subsection_layout.to_dict()})
+        return JsonResponse({"model_subsection_layout": Model.form_subsection_layout.to_dict() if Model.form_subsection_layout is not None else None})
     except ModuleNotFoundError as e:
         return HttpResponse(status=404, content="Model not found")
     except Exception as e:

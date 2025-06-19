@@ -3,6 +3,7 @@ from ...tools.position import Position
 import utm  # type: ignore
 from typing import Optional, TypedDict
 from ...configuration.sim_config import SimulationConfig
+from ...configuration.layout.form_section import FormSubSection, FormSectionLine, FormSectionTextField, FormSectionCheckboxField, FormSectionFieldInformative
 
 
 class FromTrace2DInMemoryParameters(TypedDict):
@@ -15,6 +16,43 @@ class FromTrace2DInMemory(AbcDistributionModel):
     """
     Class to generate 2D distributions from a trace in memory.
     """
+
+    form_subsection_layout = FormSubSection('from_trace_2d_in_memory_parameters_subsection').add_line(
+        FormSectionLine().add_fields([
+            FormSectionTextField(
+                id="from_trace_2d_in_memory_trace_file",
+                label="Trace File",
+                name="trace_file",
+                occuped_columns=4,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The trace file to be used for generating the distribution.",
+                    help_text="The trace file to be user for generating the distribution.<br/>The trace file should be a CSV file with the following format: `timestamp, x, y, id` or `timestamp, lat, long, id`.<br/>You can use full path or relative path from the project's root folder.",
+                    as_html=True,
+                ),
+            ),
+            FormSectionCheckboxField(
+                id="from_trace_2d_in_memory_is_lat_long",
+                label="Is Latitude/Longitude",
+                name="is_lat_long",
+                occuped_columns=4,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="Whether the trace file contains latitude and longitude coordinates.",
+                ),
+            ),
+            FormSectionCheckboxField(
+                id="from_trace_2d_in_memory_addapt_to_dimensions",
+                label="Addapt to Simulation Dimensions",
+                name="addapt_to_dimensions",
+                occuped_columns=4,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="Whether to addapt the trace to the simulation dimensions.",
+                ),
+            ),
+        ])
+    )
 
     def __init__(self, parameters: FromTrace2DInMemoryParameters, *args, **kwargs):
         """

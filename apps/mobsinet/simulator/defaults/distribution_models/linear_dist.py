@@ -2,6 +2,7 @@ from ...models.abc_distribution_model import AbcDistributionModel
 from ...tools.position import Position
 from ...configuration.sim_config import SimulationConfig
 from typing import Literal, TypedDict, cast
+from ...configuration.layout.form_section import FormSubSection, FormSectionLine,  FormSectionNumberField, FormSectionFieldInformative, FormSectionSelectField
 
 
 class LinearDistParameters(TypedDict):
@@ -11,6 +12,47 @@ class LinearDistParameters(TypedDict):
 
 
 class LinearDist(AbcDistributionModel):
+    form_subsection_layout = FormSubSection('linear_dist_parameters_subsection').add_line(
+        FormSectionLine().add_fields([
+            FormSectionSelectField(
+                id="linear_dist_orientation",
+                label="Orientation",
+                name="orientation",
+                occuped_columns=4,
+                options=[
+                    {'value': 'horizontal', 'label': 'Horizontal'},
+                    {'value': 'vertical', 'label': 'Vertical'},
+                ],
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The orientation of the line.",
+                ),
+            ),
+            FormSectionNumberField(
+                id="linear_dist_line_position",
+                label="Line Position",
+                name="line_position",
+                occuped_columns=4,
+                is_float=True,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The position of the line. Coordinate X if orientation is vertical, coordinate Y if vertical.",
+                ),
+            ),
+            FormSectionNumberField(
+                id="linear_dist_number_of_nodes",
+                label="Number of Nodes",
+                name="number_of_nodes",
+                occuped_columns=4,
+                is_float=False,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The number of nodes to be placed. The nodes will be placed evenly from the center to the edges of the line.",
+                ),
+            ),
+        ])
+    )
+
     def __init__(self, parameters: LinearDistParameters, *args, **kwargs):
         super().__init__(parameters, *args, **kwargs)
         self.set_parameters(parameters)
