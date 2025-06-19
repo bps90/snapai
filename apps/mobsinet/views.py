@@ -187,7 +187,7 @@ def get_model_subsection_layout(request: HttpRequest):
         Model = ModelsSearchEngine.find_model(model_name, cast(Literal['connectivity', 'mobility', 'interference', 'reliability',
                                                                        'distribution', 'message_transmission'], model_type))
 
-        return JsonResponse({"model_subsection_layout": Model.form_subsection_layout.to_dict() if Model.form_subsection_layout is not None else None})
+        return JsonResponse({"model_subsection_layout": Model.form_subsection_layout.to_dict() if 'form_subsection_layout' in Model.__dict__ else None})
     except ModuleNotFoundError as e:
         return HttpResponse(status=404, content="Model not found")
     except Exception as e:

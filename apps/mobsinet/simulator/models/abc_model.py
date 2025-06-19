@@ -9,7 +9,7 @@ class AbcModelParameters(TypedDict):
 
 
 class AbcModel(ABC):
-    form_subsection_layout: FormSubSection | None
+    form_subsection_layout: FormSubSection
 
     def __init__(self, parameters: AbcModelParameters):
         self.parameters = parameters
