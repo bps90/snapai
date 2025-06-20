@@ -3,23 +3,23 @@ import Link from "next/link"
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-interface IMenuItem {
+type MenuItem = {
     href: string,
     label: string,
     icon: string
 }
 
-const menuItems: IMenuItem[] = [
+const menuItems: MenuItem[] = [
     { href: '/dashboard/configuration', label: 'Configuration', icon: '⚙️' },
     { href: '/dashboard/controls', label: 'Controls', icon: '🎮' },
 ]
 
-interface IMenuItemProps {
-    item: IMenuItem;
+type MenuItemProps = {
+    item: MenuItem;
     currentPathname: string;
 }
 
-function MenuItem({ item, currentPathname }: IMenuItemProps) {
+function MenuItem({ item, currentPathname }: MenuItemProps) {
     const [isActive, setIsActive] = useState(false);
 
     const verifyActive = () => {
@@ -38,9 +38,10 @@ function MenuItem({ item, currentPathname }: IMenuItemProps) {
 export default function SideMenu() {
     const pathname = usePathname();
 
-    return (
-        <aside className="bg-gray-100 col-span-2 py-8">
-            <ul className="flex flex-col gap-2">
+    return (<>
+        <div className="aside-spacer min-w-60"></div>
+        <aside className="bg-gray-100 min-w-60 py-4 fixed h-dvh flex items-center">
+            <ul className="flex flex-col gap-2 w-full">
                 {menuItems.map((item) => (
                     <li key={item.href}>
                         <MenuItem item={item} currentPathname={pathname} />
@@ -48,5 +49,5 @@ export default function SideMenu() {
                 ))}
             </ul>
         </aside>
-    )
+    </>)
 }

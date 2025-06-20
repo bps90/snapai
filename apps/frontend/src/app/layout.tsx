@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,15 +18,16 @@ export const metadata: Metadata = {
   description: "A Simulator for Network Algorithms and Protocols in Python",
 };
 
-interface IRootLayoutProps {
+type RootLayoutProps = {
   readonly children: React.ReactNode;
 }
 
-export default function RootLayout({ children }: IRootLayoutProps) {
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body className={`${geistSans.className} ${geistMono.className} antialiased`}>
         {children}
+        <Toaster richColors position="top-right" visibleToasts={5} />
       </body>
     </html>
   );

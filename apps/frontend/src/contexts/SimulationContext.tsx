@@ -1,18 +1,18 @@
 "use client";
 import React, { createContext, useState, useContext } from 'react';
 
-interface SimulationContextProps {
+type SimulationContextProps = {
     selectedProject: string | null;
     setSelectedProject: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const SimulationContext = createContext<SimulationContextProps | undefined>(undefined);
 
-interface ISimulationProviderProps {
+type SimulationProviderProps = {
     children: React.ReactNode;
 }
 
-export const SimulationProvider = ({ children }: ISimulationProviderProps) => {
+export const SimulationProvider = ({ children }: SimulationProviderProps) => {
     const [selectedProject, setSelectedProject] = useState<string | null>(null);
 
     return (

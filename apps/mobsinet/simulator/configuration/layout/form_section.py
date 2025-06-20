@@ -404,7 +404,7 @@ class FormSection:
         return {
             'id': self.id,
             'title': self.title,
-            'subsections': [(subsection.to_dict() if isinstance(subsection, FormSubSection) else subsection) for subsection in self.subsections]
+            'subsections': [subsection.to_dict() for subsection in self.subsections]
         }
 
     def add_subsection(self, subsection: FormSubSection):

@@ -1,15 +1,15 @@
 import SideMenu from "@/components/SideMenu";
 import { SimulationProvider } from "@/contexts/SimulationContext";
 
-interface IDashBoardLayoutProps {
+type DashBoardLayoutProps = {
     children: React.ReactNode;
 };
 
 export default function DashboardLayout({
     children,
-}: IDashBoardLayoutProps) {
+}: DashBoardLayoutProps) {
     return <SimulationProvider>
-        <div className="grid grid-cols-12 h-lvh">
+        <div className="flex">
             <SideMenu />
             {children}
         </div>
