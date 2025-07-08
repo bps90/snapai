@@ -9,25 +9,27 @@ import NumberPairField, { NumberPairField as NumberPairFieldType } from "./Numbe
 
 export type FormFieldProps = {
     field: Field
-    fieldIndex: number,
-    containerAttr?: HTMLAttributes<HTMLDivElement>,
-    register: UseFormRegister<ConfigFormSchema>,
-    control: Control<ConfigFormSchema>
+    fieldIndex: number;
+    containerAttr?: HTMLAttributes<HTMLDivElement>;
+    register: UseFormRegister<ConfigFormSchema>;
+    control: Control<ConfigFormSchema>;
+    disabled?: boolean;
 }
 
 export default function FormField({
     field,
+    disabled,
     ...fieldAttrs
 }: FormFieldProps) {
     switch (field.type) {
         case 'text':
-            return <TextField field={field as TextFieldType} {...fieldAttrs} />
+            return <TextField field={field as TextFieldType} inputAttr={{ disabled }} {...fieldAttrs} />
         case 'number':
-            return <NumberField field={field as NumberFieldType} {...fieldAttrs} />
+            return <NumberField field={field as NumberFieldType} inputAttr={{ disabled }} {...fieldAttrs} />
         case 'checkbox':
-            return <CheckboxField field={field as CheckboxFieldType} {...fieldAttrs} />
+            return <CheckboxField field={field as CheckboxFieldType} checkboxAttr={{ disabled }} {...fieldAttrs} />
         case 'number_pair':
-            return <NumberPairField field={field as NumberPairFieldType} {...fieldAttrs} />
+            return <NumberPairField field={field as NumberPairFieldType} inputsAttr={{ disabled }} {...fieldAttrs} />
         default:
             return null;
     }

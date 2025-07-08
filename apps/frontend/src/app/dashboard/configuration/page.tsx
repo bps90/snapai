@@ -2,7 +2,7 @@
 import { useSimulationContext } from "@/contexts/SimulationContext";
 import { FormControl, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
-import ConfigForm from "@/components/ConfigForm";
+import ConfigForm from "@/components/form/ConfigForm";
 import { fetchProjectsNames } from "@/lib/fetchers";
 import useSWR from "swr";
 import { useEffect } from "react";

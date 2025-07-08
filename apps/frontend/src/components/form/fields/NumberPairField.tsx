@@ -2,7 +2,7 @@ import { Field } from "@/lib/fetchers";
 import { FormFieldProps } from "./FormField";
 import { Controller, ControllerProps } from "react-hook-form";
 import { ConfigFormSchema } from "../ConfigForm";
-import { Box, Divider, InputLabel, TextField } from "@mui/material";
+import { Box, Divider, InputLabel, TextField, TextFieldProps } from "@mui/material";
 import clsx from "clsx";
 
 export type NumberPairField = Field & {
@@ -14,6 +14,7 @@ export type NumberPairField = Field & {
 export type NumberPairFieldProps = FormFieldProps & {
     field: NumberPairField,
     controllerAttr?: ControllerProps,
+    inputsAttr?: TextFieldProps,
 };
 
 export default function NumberPairField({
@@ -21,6 +22,7 @@ export default function NumberPairField({
     field,
     fieldIndex,
     containerAttr,
+    inputsAttr,
 }: NumberPairFieldProps) {
     return <div
         key={field.id + fieldIndex}
@@ -71,6 +73,7 @@ export default function NumberPairField({
                             }}
                             onChange={(e) => setMin(Number(e.target.value))}
                             error={!!fieldState.error}
+                            {...inputsAttr}
                         />
                         <Divider orientation="vertical" flexItem />
                         <TextField
@@ -83,6 +86,7 @@ export default function NumberPairField({
                             onChange={(e) => setMax(Number(e.target.value))}
                             error={!!fieldState.error}
                             helperText={fieldState.error?.message}
+                            {...inputsAttr}
                         />
                     </Box></>
                 );
