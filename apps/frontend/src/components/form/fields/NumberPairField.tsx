@@ -1,7 +1,6 @@
 import { Field } from "@/lib/fetchers";
 import { FormFieldProps } from "./FormField";
 import { Controller, ControllerProps } from "react-hook-form";
-import { ConfigFormSchema } from "../ConfigForm";
 import { Box, Divider, InputLabel, TextField, TextFieldProps } from "@mui/material";
 import clsx from "clsx";
 
@@ -31,7 +30,7 @@ export default function NumberPairField({
     >
         <Controller
             control={control}
-            name={`${field.nested_paths.join('.')}.${field.name}` as keyof ConfigFormSchema}
+            name={`${field.nested_paths.join('.')}.${field.name}`}
             defaultValue={field.value}
 
             render={({ field: renderField, fieldState }) => {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { toastError } from "@/hooks/toastError";
 import { fetchConfigForm, fetchConfigFormLayout, Layout } from "@/lib/fetchers";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,20 +9,101 @@ import { z } from 'zod'
 import clsx from 'clsx'
 import Section from "./formDivisions/Section";
 
-const configFormSchema = z.object({
-    simulation_name: z.string(),
-    asynchronous: z.boolean(),
-    dim_x: z.array(z.number()),
-    dim_y: z.array(z.number()),
-    nack_messages_enabled: z.boolean(),
-    save_trace: z.boolean(),
-    connectivity_enabled: z.boolean(),
-    interference_enabled: z.boolean(),
-    message_transmission_model: z.string(),
-    message_transmission_model_parameters: z.record(z.string(), z.any()),
-})
 
-export type ConfigFormSchema = z.infer<typeof configFormSchema>
+
+function buildSchema(layouts: Layout[]) {
+    const schema: Record<string, z.ZodType> = {};
+
+    for (const layout of layouts) {
+        for (const section of layout.sections) {
+            for (const subsection of section.subsections) {
+                for (const line of subsection.lines) {
+                    for (const field of line.fields) {
+                        let base: z.ZodType;
+
+                        switch (field.type) {
+                            case 'text':
+                                base = z.string();
+                                break;
+                            case 'number':
+                                base = z.number();
+                                break;
+                            case 'checkbox':
+                                base = z.boolean();
+                                break;
+                            case 'number_pair':
+                                base = z.array(z.number());
+                                break;
+                            case 'select':
+                                base = z.string();
+                                break;
+                            case 'multiselect':
+                                base = z.array(z.string());
+                                break;
+                            case 'percentage':
+                                base = z.number().max(100).min(0);
+                            default:
+                                throw new Error(`Unknown field type: ${field.type}`);
+                        }
+
+
+                        if (field.nested_paths.length) {
+                            const nestedSchema = buildSchema([{
+                                sections: [
+                                    {
+                                        id: '',
+                                        title: '',
+                                        subsections: [
+                                            {
+                                                id: '',
+                                                title: '',
+                                                lines: [
+                                                    {
+                                                        fields: [
+                                                            {
+                                                                ...field,
+                                                                nested_paths: field.nested_paths.slice(1),
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }]);
+
+                            schema[field.nested_paths[0]] = schema[field.nested_paths[0]]
+                                ? (schema[field.nested_paths[0]] as z.ZodObject<any>).merge(nestedSchema)
+                                : nestedSchema;
+                        } else {
+                            schema[field.name] = base;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    console.log(schema);
+
+    return z.object(schema);
+}
+
+export type ConfigFormSchema = {
+    simulation_name: string,
+    asynchronous: boolean,
+    dim_x: number[],
+    dim_y: number[],
+    nack_messages_enabled: boolean,
+    save_trace: boolean,
+    connectivity_enabled: boolean,
+    interference_enabled: boolean,
+    message_transmission_model: string,
+    message_transmission_model_parameters: Record<string, any>,
+    project_config: Record<string, any>,
+    [key: string]: any,
+}
 
 export type SuperSection = {
     id: string,
@@ -46,9 +128,11 @@ export default function ConfigForm({
 }: ConfigFormProps) {
     const [simulationConfigLayout, setSimulationConfigLayout] = useState<Layout>();
     const [projectConfigLayout, setProjectConfigLayout] = useState<Layout | null>();
+    const [configFormSchema, setConfigFormSchema] = useState<z.ZodType<ConfigFormSchema>>();
     const { register, control, handleSubmit, formState: { errors: formErrors } } = useForm<ConfigFormSchema>({
-        resolver: zodResolver(configFormSchema)
+        resolver: configFormSchema ? zodResolver(configFormSchema as unknown as Parameters<typeof zodResolver<ConfigFormSchema, any, ConfigFormSchema>>[0]) : undefined
     });
+
     const { data: configFormLayout, error: configFormLayoutError, isLoading: isLoadingConfigFormLayout } = useSWR(`config_form_layout_${project_name}`, () => fetchConfigFormLayout(project_name));
     const { data: config, error: configError, isLoading: isLoadingConfig } = useSWR(`config_${project_name}`, () => fetchConfigForm(project_name));
 
@@ -76,7 +160,11 @@ export default function ConfigForm({
     useEffect(() => {
         if (configFormLayout) {
             setSimulationConfigLayout(configFormLayout.simulation_config_layout);
-            setProjectConfigLayout(configFormLayout.project_config_layout)
+            setProjectConfigLayout(configFormLayout.project_config_layout);
+            setConfigFormSchema(buildSchema([
+                configFormLayout.simulation_config_layout,
+                ...(configFormLayout.project_config_layout ? [configFormLayout.project_config_layout] : [])
+            ]) as unknown as z.ZodType<ConfigFormSchema>);
         }
     }, [configFormLayout])
 

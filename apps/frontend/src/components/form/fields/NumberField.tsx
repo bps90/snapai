@@ -1,7 +1,6 @@
 import { FormControl, FormControlProps, TextField, TextFieldProps } from "@mui/material";
 import { FormFieldProps } from "./FormField";
 import { Field } from '@/lib/fetchers';
-import { ConfigFormSchema } from "../ConfigForm";
 
 
 export type NumberField = Field & {
@@ -38,7 +37,7 @@ export default function NumberField({
                 id={field.id}
                 required={field.required}
                 defaultValue={field.value}
-                {...register(`${field.nested_paths.join('.')}.${field.name}` as keyof ConfigFormSchema)}
+                {...register(`${field.nested_paths.join('.')}.${field.name}`, { valueAsNumber: true })}
                 {...inputAttr}
             />
         </FormControl>

@@ -1,5 +1,4 @@
 import { Field } from '@/lib/fetchers';
-import { ConfigFormSchema } from '../ConfigForm';
 import { FormControl, FormControlProps, TextField as MaterialTextField, TextFieldProps as MaterialTextFieldProps, TextField } from '@mui/material';
 import { FormFieldProps } from './FormField';
 
@@ -34,7 +33,7 @@ function TextField({
                 id={field.id}
                 required={field.required}
                 defaultValue={field.value}
-                {...register(`${field.nested_paths.join('.')}.${field.name}` as keyof ConfigFormSchema)}
+                {...register(`${field.nested_paths.join('.')}.${field.name}`)}
                 {...inputAttr}
             />
         </FormControl>

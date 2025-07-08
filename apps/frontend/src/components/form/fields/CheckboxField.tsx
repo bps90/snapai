@@ -1,7 +1,6 @@
 import { Field } from "@/lib/fetchers";
 import { FormFieldProps } from "./FormField";
 import { Checkbox, CheckboxProps, FormControl, FormControlLabel, FormControlLabelProps, FormControlProps } from "@mui/material";
-import { ConfigFormSchema } from "../ConfigForm";
 import clsx from "clsx";
 
 export type CheckboxField = Field & {
@@ -51,7 +50,7 @@ export default function CheckboxField({
                     control={
                         <Checkbox
                             id={field.id}
-                            {...register(`${field.nested_paths.join('.')}.${field.name}` as keyof ConfigFormSchema)}
+                            {...register(`${field.nested_paths.join('.')}.${field.name}`)}
                             {...checkboxAttr}
                         />
                     }
