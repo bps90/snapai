@@ -13,6 +13,7 @@ export type LineProps = {
     register: UseFormRegister<ConfigFormSchema>;
     control: Control<ConfigFormSchema>;
     isLoadingConfig: boolean;
+    nestedPaths?: string[];
 }
 
 export default function Line({
@@ -23,7 +24,8 @@ export default function Line({
     line,
     control,
     register,
-    isLoadingConfig
+    isLoadingConfig,
+    nestedPaths
 }: LineProps) {
     return (
         <div
@@ -35,6 +37,7 @@ export default function Line({
         >
             {line.fields.map((field, fieldIndex) => {
                 return <FormField
+                    nestedPaths={nestedPaths}
                     control={control}
                     field={field}
                     fieldIndex={fieldIndex}

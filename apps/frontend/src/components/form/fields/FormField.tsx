@@ -1,6 +1,6 @@
 import { Field } from "@/lib/fetchers"
 import TextField, { TextField as TextFieldType } from "./TextField"
-import { HTMLAttributes } from "react"
+import { HTMLAttributes, useEffect } from "react"
 import { Control, UseFormRegister } from "react-hook-form"
 import { ConfigFormSchema } from "../ConfigForm"
 import NumberField, { NumberField as NumberFieldType } from "./NumberField"
@@ -14,6 +14,7 @@ export type FormFieldProps = {
     register: UseFormRegister<ConfigFormSchema>;
     control: Control<ConfigFormSchema>;
     disabled?: boolean;
+    nestedPaths?: string[]
 }
 
 export default function FormField({
@@ -21,6 +22,8 @@ export default function FormField({
     disabled,
     ...fieldAttrs
 }: FormFieldProps) {
+    useEffect(() => { console.log(field.nested_paths, field.name, field.value) }, []);
+
     switch (field.type) {
         case 'text':
             return <TextField field={field as TextFieldType} inputAttr={{ disabled }} {...fieldAttrs} />

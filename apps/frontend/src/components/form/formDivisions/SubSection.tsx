@@ -11,7 +11,8 @@ export type SubSectionProps = {
     subsectionIndex: number
     control: Control<ConfigFormSchema>
     register: UseFormRegister<ConfigFormSchema>
-    isLoadingConfig: boolean
+    isLoadingConfig: boolean;
+    nestedPaths?: string[];
 }
 
 export default function SubSection({
@@ -21,7 +22,8 @@ export default function SubSection({
     register,
     section,
     subsection,
-    subsectionIndex
+    subsectionIndex,
+    nestedPaths,
 }: SubSectionProps) {
     return (
         <fieldset
@@ -44,6 +46,7 @@ export default function SubSection({
                         section={section}
                         subsection={subsection}
                         superSection={superSection}
+                        nestedPaths={nestedPaths}
                         key={`subsection_${subsection.id + subsectionIndex}_line${lineIndex}`}
                     />
 

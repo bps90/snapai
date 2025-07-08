@@ -21,7 +21,8 @@ export default function NumberField({
     register,
     containerAttr,
     formControlAttr,
-    inputAttr
+    inputAttr,
+    nestedPaths
 }: NumberFieldProps) {
     return (<div
         key={field.id + fieldIndex}
@@ -36,8 +37,8 @@ export default function NumberField({
                 slotProps={{ htmlInput: { step: field.is_float ? 'any' : '1' } }}
                 id={field.id}
                 required={field.required}
-                defaultValue={field.value}
-                {...register(`${field.nested_paths.join('.')}.${field.name}`, { valueAsNumber: true })}
+                defaultValue={field.value.toString()}
+                {...register(`${nestedPaths?.length ? nestedPaths.join('.') + '.' : ''}${field.nested_paths.length ? (field.nested_paths.join('.') + '.') : ''}${field.name}`, { valueAsNumber: true })}
                 {...inputAttr}
             />
         </FormControl>

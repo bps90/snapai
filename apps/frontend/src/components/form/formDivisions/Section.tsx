@@ -10,6 +10,7 @@ export type SectionProps = {
     control: Control<ConfigFormSchema>;
     isLoadingConfig: boolean;
     register: UseFormRegister<ConfigFormSchema>;
+    nestedPaths?: string[];
 }
 
 
@@ -18,7 +19,8 @@ export default function Section({
     section,
     control,
     isLoadingConfig,
-    register
+    register,
+    nestedPaths
 }: SectionProps) {
     return (
         <div
@@ -37,6 +39,7 @@ export default function Section({
                         subsection={subsection}
                         subsectionIndex={subsectionIndex}
                         superSection={superSection}
+                        nestedPaths={nestedPaths}
                         key={subsection.id + subsectionIndex}
                     />
 

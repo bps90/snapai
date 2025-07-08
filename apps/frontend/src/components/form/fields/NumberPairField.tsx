@@ -22,6 +22,7 @@ export default function NumberPairField({
     fieldIndex,
     containerAttr,
     inputsAttr,
+    nestedPaths
 }: NumberPairFieldProps) {
     return <div
         key={field.id + fieldIndex}
@@ -30,7 +31,7 @@ export default function NumberPairField({
     >
         <Controller
             control={control}
-            name={`${field.nested_paths.join('.')}.${field.name}`}
+            name={`${nestedPaths?.length ? nestedPaths.join('.') + '.' : ''}${field.nested_paths.length ? (field.nested_paths.join('.') + '.') : ''}${field.name}`}
             defaultValue={field.value}
 
             render={({ field: renderField, fieldState }) => {

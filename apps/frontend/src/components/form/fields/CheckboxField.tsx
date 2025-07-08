@@ -12,7 +12,7 @@ export type CheckboxFieldProps = FormFieldProps & {
     field: CheckboxField,
     checkboxAttr?: CheckboxProps,
     formControlAttr?: FormControlProps,
-    formControlLabelAttr?: FormControlLabelProps
+    formControlLabelAttr?: FormControlLabelProps,
 }
 
 export default function CheckboxField({
@@ -22,7 +22,8 @@ export default function CheckboxField({
     containerAttr,
     checkboxAttr,
     formControlAttr,
-    formControlLabelAttr
+    formControlLabelAttr,
+    nestedPaths
 }: CheckboxFieldProps) {
     return (
         <div
@@ -50,7 +51,8 @@ export default function CheckboxField({
                     control={
                         <Checkbox
                             id={field.id}
-                            {...register(`${field.nested_paths.join('.')}.${field.name}`)}
+                            checked={field.value}
+                            {...register(`${nestedPaths?.length ? nestedPaths.join('.') + '.' : ''}${field.nested_paths.length ? (field.nested_paths.join('.') + '.') : ''}${field.name}`)}
                             {...checkboxAttr}
                         />
                     }

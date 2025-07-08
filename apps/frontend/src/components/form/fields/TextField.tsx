@@ -18,6 +18,7 @@ function TextField({
     inputAttr,
     containerAttr,
     formControlAttr,
+    nestedPaths,
     register
 }: TextFieldProps) {
     return <div
@@ -33,7 +34,7 @@ function TextField({
                 id={field.id}
                 required={field.required}
                 defaultValue={field.value}
-                {...register(`${field.nested_paths.join('.')}.${field.name}`)}
+                {...register(`${nestedPaths?.length ? nestedPaths.join('.') + '.' : ''}${field.nested_paths.length ? (field.nested_paths.join('.') + '.') : ''}${field.name}`)}
                 {...inputAttr}
             />
         </FormControl>

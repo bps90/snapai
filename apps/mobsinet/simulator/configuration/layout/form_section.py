@@ -427,10 +427,10 @@ class FormSubSection:
         self.id = id
         self.title = title
         self.lines: list[FormSectionLine] = []
-        self.nested_paths: list[str] = []
+        self._nested_paths: list[str] = []
 
     def add_line(self, line: FormSectionLine):
-        for path in self.nested_paths:
+        for path in self._nested_paths:
             for field in line.fields:
                 field.add_nested_path(path)
         
@@ -443,19 +443,19 @@ class FormSubSection:
         return self
 
     def add_nested_path(self, path: str):
-        self.nested_paths.append(path)
+        self._nested_paths.append(path)
         self.__update_fields_nested_paths()
         return self
     
     def set_nested_paths(self, paths: list[str]):
-        self.nested_paths = paths
+        self._nested_paths = paths
         self.__update_fields_nested_paths()
         return self
 
     def __update_fields_nested_paths(self):
         for line in self.lines:
             for field in line.fields:
-                field.set_nested_paths(self.nested_paths)
+                field.set_nested_paths(self._nested_paths)
         return self
     
     def to_dict(self):
