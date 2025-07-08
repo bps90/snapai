@@ -14,7 +14,11 @@ const configFormSchema = z.object({
     dim_x: z.array(z.number()),
     dim_y: z.array(z.number()),
     nack_messages_enabled: z.boolean(),
-    save_trace: z.boolean()
+    save_trace: z.boolean(),
+    connectivity_enabled: z.boolean(),
+    interference_enabled: z.boolean(),
+    message_transmission_model: z.string(),
+    message_transmission_model_parameters: z.record(z.string(), z.any()),
 })
 
 export type ConfigFormSchema = z.infer<typeof configFormSchema>
@@ -40,7 +44,7 @@ export default function ConfigForm({
     }, [configFormLayoutError]);
 
     useEffect(() => {
-        if (errors) {
+        if (errors && Object.keys(errors).length > 0) {
             console.error(errors);
             toastError('Error validating config form');
         }
@@ -63,6 +67,47 @@ export default function ConfigForm({
         <div className="w-full h-full flex items-center justify-center text-3xl">Loading form layout...</div>
     )
 
+    const superSectionStyleClasses = [
+        'w-full',
+        'p-4',
+        'rounded-md',
+        'shadow-lg',
+    ];
+
+    const superSectionTitleStyleClasses = [
+        'text-3xl',
+        'mb-2'
+    ];
+
+    const sectionStyleClasses = [
+        'border',
+        'rounded-md',
+        'border-gray-200',
+        'p-2',
+        'mb-2',
+        'flex',
+        'flex-col',
+        'gap-6'
+    ];
+
+    const sectionTitleStyleClasses = [
+        'text-2xl',
+        'mb-2'
+    ];
+
+
+    const subSectionStyleClasses = [
+        'flex',
+        'flex-col',
+        'gap-3'
+    ];
+
+    const lineStyleClasses = [
+        'grid',
+        'grid-cols-12',
+        'gap-3'
+    ]
+
     return (
         <form
             className={clsx()}
@@ -71,14 +116,11 @@ export default function ConfigForm({
         >
             <div id="global-simulation-config" className={clsx(
                 "simulation-config",
-                "w-full",
-                "p-4",
                 "mb-8",
-                "rounded-md",
-                "shadow-lg",
+                ...superSectionStyleClasses
             )}>
                 <h2
-                    className="text-2xl mb-2"
+                    className={clsx(...superSectionTitleStyleClasses)}
                 >Global Simulation Config</h2>
 
                 {simulationConfigLayout?.sections.map((section, sectionIndex) => {
@@ -86,21 +128,10 @@ export default function ConfigForm({
                         <div
                             key={section.id + sectionIndex}
                             id={`simulation_section_${section.id}`}
-                            className={clsx(
-                                `simulation_section_${section.id}`,
-                                'border',
-                                'rounded-md',
-                                'border-gray-200',
-                                'p-2',
-                                'mb-2'
-                            )}
+                            className={clsx(`simulation_section_${section.id}`, ...sectionStyleClasses)}
                         >
-                            <h3
-                                className={clsx(
-                                    "text-2xl",
-                                    "mb-4",
-                                )}
-                            >{section.title}</h3>
+                            <h3 className={clsx(...sectionTitleStyleClasses)}>{section.title}</h3>
+
                             {section.subsections.map((subsection, subsectionIndex) => {
                                 return (
                                     <fieldset
@@ -108,9 +139,7 @@ export default function ConfigForm({
                                         id={`simulation_subsection_${section.id}_${subsection.id}`}
                                         className={clsx(
                                             `simulation_subsection_${subsection.id}`,
-                                            'flex',
-                                            'flex-col',
-                                            'gap-3'
+                                            ...subSectionStyleClasses
                                         )}
                                     >
                                         {subsection.title && <legend>{subsection.title}</legend>}
@@ -122,9 +151,7 @@ export default function ConfigForm({
                                                     id={`simulation_line_${section.id}_${subsection.id}_index_${lineIndex}`}
                                                     className={clsx(
                                                         `simulation_line_${subsection.id}_index_${lineIndex}`,
-                                                        'grid',
-                                                        'grid-cols-12',
-                                                        'gap-3'
+                                                        ...lineStyleClasses
                                                     )}
                                                 >
                                                     {line.fields.map((field, fieldIndex) => {
@@ -149,13 +176,10 @@ export default function ConfigForm({
 
             {projectConfigLayout && <div id="project-config" className={clsx(
                 "project-config",
-                "w-full",
-                "p-4",
-                "rounded-md",
-                "shadow-lg",
+                ...superSectionStyleClasses
             )}>
                 <h2
-                    className="text-2xl mb-2"
+                    className={clsx(...superSectionTitleStyleClasses)}
                 >Project Config</h2>
 
 
@@ -164,27 +188,20 @@ export default function ConfigForm({
                         <div
                             key={section.id + sectionIndex}
                             id={`project_section_${section.id}`}
-                            className={clsx(
-                                `project_section_${section.id}`,
-                                'border',
-                                'rounded-md',
-                                'border-gray-200',
-                                'p-2',
-                                'mb-2'
-                            )}
+                            className={clsx(`project_section_${section.id}`, ...sectionStyleClasses)}
                         >
                             <h3
-                                className={clsx(
-                                    "text-2xl",
-                                    "mb-4",
-                                )}
+                                className={clsx(...sectionTitleStyleClasses)}
                             >{section.title}</h3>
                             {section.subsections.map((subsection, subsectionIndex) => {
                                 return (
                                     <fieldset
                                         key={subsection.id + subsectionIndex}
                                         id={`project_subsection_${section.id}_${subsection.id}`}
-                                        className={`project_subsection_${subsection.id}`}
+                                        className={clsx(
+                                            `project_subsection_${subsection.id}`,
+                                            ...subSectionStyleClasses
+                                        )}
                                     >
                                         {subsection.title && <legend>{subsection.title}</legend>}
 
@@ -195,9 +212,7 @@ export default function ConfigForm({
                                                     id={`project_line_${section.id}_${subsection.id}_index_${lineIndex}`}
                                                     className={clsx(
                                                         `project_line_${subsection.id}_index_${lineIndex}`,
-                                                        'grid',
-                                                        'grid-cols-12',
-                                                        'gap-3'
+                                                        ...lineStyleClasses
                                                     )}
                                                 >
                                                     {line.fields.map((field, fieldIndex) => {

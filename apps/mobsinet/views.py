@@ -29,8 +29,7 @@ from .simulator.projects.sample9.mobility_models.mid_point_of_others import MidP
 from .simulator.defaults.mobility_models.random_walk import RandomWalkParameters
 import importlib
 from .simulator.configuration.base_project_config import BaseProjectConfig
-from .simulator.models.abc_model import AbcModel
-
+import traceback
 
 def index(request):
     return render(request, "mobsinet_index.html")
@@ -143,7 +142,8 @@ def update_config(request: HttpRequest):
             return JsonResponse({"status": "success", "message": "JSON atualizado com sucesso!"})
         except Exception as e:
             # Retorna uma resposta de erro
-            print(e)
+            print('Exception: ', e)
+            print(traceback.format_exc())
             return HttpResponse(status=500)
     else:
         return HttpResponse("Método não permitido", status=405)
@@ -169,7 +169,8 @@ def get_config_form_layout(request: HttpRequest):
             "project_config_layout": None
         })
     except Exception as e:
-        print(e)
+        print('Exception: ', e)
+        print(traceback.format_exc())
         return HttpResponse(status=500, content="See backend console for more details")
 
 
@@ -192,6 +193,7 @@ def get_model_subsection_layout(request: HttpRequest):
         return HttpResponse(status=404, content="Model not found")
     except Exception as e:
         print(e)
+        print(traceback.format_exc())
         return HttpResponse(status=500, content="See backend console for more details")
 
 
@@ -269,6 +271,7 @@ def calculate_degree(request):
         return JsonResponse({"degree": degree})
     except Exception as e:
         print(e)
+        print(traceback.format_exc())
         return JsonResponse({"message": e.args}, status=400)
 
 
@@ -278,6 +281,7 @@ def calculate_diameter(request):
         return JsonResponse({"diameter": diameter})
     except Exception as e:
         print(e)
+        print(traceback.format_exc())
         return JsonResponse({"message": e.args}, status=400)
 
 
@@ -298,6 +302,7 @@ def calculate_eccentricity(request):
         return JsonResponse({"eccentricity": eccentricity})
     except Exception as e:
         print(e)
+        print(traceback.format_exc())
         return JsonResponse({"message": e.args}, status=400)
 
 
@@ -321,6 +326,7 @@ def calculate_shortest_path_between_two_nodes(request):
         return JsonResponse({"shortest_path": [node.id for node in shortest_path]})
     except Exception as e:
         print(e)
+        print(traceback.format_exc())
         return JsonResponse({"message": e.args}, status=400)
 
 

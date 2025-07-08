@@ -81,6 +81,28 @@ class SimulationConfig(BaseConfig):
                     ]),
                     FormSectionLine().add_fields([
                         FormSectionCheckboxField(
+                            id='connectivity_enabled',
+                            label='Connectivity Enabled',
+                            name='connectivity_enabled',
+                            occuped_columns=6,
+                            required=True,
+                            informative=FormSectionFieldInformative(
+                                title='If this option is enabled, the simulation will use connectivity.',
+                            )
+                        ),
+                        FormSectionCheckboxField(
+                            id='interference_enabled',
+                            label='Interference Enabled',
+                            name='interference_enabled',
+                            occuped_columns=6,
+                            required=True,
+                            informative=FormSectionFieldInformative(
+                                title='If this option is enabled, the simulation will use interference.',
+                            )
+                        )
+                    ]),
+                    FormSectionLine().add_fields([
+                        FormSectionCheckboxField(
                             id='nack_messages_enabled',
                             label='NACK Messages Enabled',
                             name='nack_messages_enabled',

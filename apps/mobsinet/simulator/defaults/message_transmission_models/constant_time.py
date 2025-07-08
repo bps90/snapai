@@ -2,6 +2,7 @@ from ...models.abc_message_transmission_model import AbcMessageTransmissionModel
 from ...models.nodes.abc_node import AbcNode
 from ...models.nodes.packet import Packet
 from typing import TypedDict
+from ...configuration.layout.form_section import FormSubSection, FormSectionLine, FormSectionNumberField, FormSectionFieldInformative
 
 
 class ConstantTimeParameters(TypedDict):
@@ -9,6 +10,21 @@ class ConstantTimeParameters(TypedDict):
 
 
 class ConstantTime(AbcMessageTransmissionModel):
+    form_subsection_layout = FormSubSection(id="constant_time_parameters_subsection").add_line(
+        FormSectionLine().add_field(
+            FormSectionNumberField(
+                id="constant_time_time",
+                label="Time",
+                name="time",
+                occuped_columns=12,
+                is_float=True,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The time that the packet will take to reach the destination node.",
+                )
+            )
+        )
+    )
 
     def __init__(self, parameters: ConstantTimeParameters, *args, **kwargs):
         super().__init__(parameters, *args, **kwargs)

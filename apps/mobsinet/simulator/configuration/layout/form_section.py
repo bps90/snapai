@@ -37,6 +37,15 @@ class FormSectionField(ABC):
         self.occuped_columns = occuped_columns
         self.required = required
         self.informative = informative
+        self._nested_paths: list[str] = []
+        
+    def add_nested_path(self, path: str):
+        self._nested_paths.append(path)
+        return self
+    
+    def set_nested_paths(self, paths: list[str]):
+        self._nested_paths = paths
+        return self
 
     @abstractmethod
     def init(self, config_class: type['BaseConfig']):
@@ -61,10 +70,15 @@ class FormSectionTextField(FormSectionField):
         self.value: str | None = None
 
     def init(self, config_class):
-        if self.name not in config_class.to_dict():
-            raise Exception(f"Field {self.name} not found in project config")
+        working_config = config_class.to_dict()
+        
+        for path in self._nested_paths:
+            working_config = working_config[path]
+        
+        if self.name not in working_config:
+            raise Exception(f"Field {self.name} not found in config class")
 
-        value = config_class.to_dict()[self.name]
+        value = working_config[self.name]
         if value is None and self.required:
             raise Exception(f"Field {self.name} is required")
 
@@ -101,11 +115,16 @@ class FormSectionNumberField(FormSectionField):
         self.is_float: bool = is_float
         self.value: float | int | None = None
 
-    def init(self, project_config):
-        if self.name not in project_config.to_dict():
-            raise Exception(f"Field {self.name} not found in project config")
+    def init(self, config_class):
+        working_config = config_class.to_dict()
 
-        value = project_config.to_dict()[self.name]
+        for path in self._nested_paths:
+            working_config = working_config[path]
+            
+        if self.name not in working_config:
+            raise Exception(f"Field {self.name} not found in config class")
+
+        value = working_config[self.name]
 
         if value is None and self.required:
             raise Exception(f"Field {self.name} is required")
@@ -140,10 +159,15 @@ class FormSectionPercentageField(FormSectionNumberField):
             'type': 'percentage',
         }
 
-    def init(self, project_config):
-        super().init(project_config)
+    def init(self, config_class):
+        super().init(config_class)
+        
+        working_config = config_class.to_dict()
 
-        value = project_config.to_dict()[self.name]
+        for path in self._nested_paths:
+            working_config = working_config[path]
+
+        value = working_config[self.name]
 
         if (value is not None and value < 0):
             raise Exception(f"Field {self.name} is not a positive number")
@@ -169,11 +193,16 @@ class FormSectionSelectField(FormSectionField):
         self.options = options
         self.value: Any = None
 
-    def init(self, project_config):
-        if self.name not in project_config.to_dict():
-            raise Exception(f"Field {self.name} not found in project config")
+    def init(self, config_class):
+        working_config = config_class.to_dict()
 
-        value = project_config.to_dict()[self.name]
+        for path in self._nested_paths:
+            working_config = working_config[path]
+        
+        if self.name not in working_config:
+            raise Exception(f"Field {self.name} not found in config class")
+
+        value = working_config[self.name]
 
         if (value is None and self.required):
             raise Exception(f"Field {self.name} is required")
@@ -229,11 +258,16 @@ class FormSectionMultiSelectField(FormSectionField):
             'value': self.value
         }
 
-    def init(self, project_config):
-        if self.name not in project_config.to_dict():
-            raise Exception(f"Field {self.name} not found in project config")
+    def init(self, config_class):
+        working_config = config_class.to_dict()
 
-        value: list[Any] = project_config.to_dict()[self.name]
+        for path in self._nested_paths:
+            working_config = working_config[path]
+        
+        if self.name not in working_config:
+            raise Exception(f"Field {self.name} not found in config class")
+
+        value: list[Any] = working_config[self.name]
 
         if (len(value) < self.min_selected):
             raise Exception(
@@ -272,11 +306,16 @@ class FormSectionCheckboxField(FormSectionField):
             'value': self.value
         }
 
-    def init(self, project_config):
-        if self.name not in project_config.to_dict():
-            raise Exception(f"Field {self.name} not found in project config")
+    def init(self, config_class):
+        working_config = config_class.to_dict()
 
-        value = project_config.to_dict()[self.name]
+        for path in self._nested_paths:
+            working_config = working_config[path]
+        
+        if self.name not in working_config:
+            raise Exception(f"Field {self.name} not found in config class")
+
+        value = working_config[self.name]
         if value is None and self.required:
             raise Exception(f"Field {self.name} is required")
 
@@ -314,11 +353,16 @@ class FormSectionNumberPairField(FormSectionField):
             'value': self.value
         }
 
-    def init(self, project_config):
-        if self.name not in project_config.to_dict():
-            raise Exception(f"Field {self.name} not found in project config")
+    def init(self, config_class):
+        working_config = config_class.to_dict()
 
-        value = project_config.to_dict()[self.name]
+        for path in self._nested_paths:
+            working_config = working_config[path]
+        
+        if self.name not in working_config:
+            raise Exception(f"Field {self.name} not found in config class")
+
+        value = working_config[self.name]
 
         if value is None and self.required:
             raise Exception(f"Field {self.name} is required")
@@ -376,8 +420,13 @@ class FormSubSection:
         self.id = id
         self.title = title
         self.lines: list[FormSectionLine] = []
+        self.nested_paths: list[str] = []
 
     def add_line(self, line: FormSectionLine):
+        for path in self.nested_paths:
+            for field in line.fields:
+                field.add_nested_path(path)
+        
         self.lines.append(line)
         return self
 
@@ -386,6 +435,22 @@ class FormSubSection:
             self.add_line(line)
         return self
 
+    def add_nested_path(self, path: str):
+        self.nested_paths.append(path)
+        self.__update_fields_nested_paths()
+        return self
+    
+    def set_nested_paths(self, paths: list[str]):
+        self.nested_paths = paths
+        self.__update_fields_nested_paths()
+        return self
+
+    def __update_fields_nested_paths(self):
+        for line in self.lines:
+            for field in line.fields:
+                field.set_nested_paths(self.nested_paths)
+        return self
+    
     def to_dict(self):
         return {
             'id': self.id,
@@ -420,5 +485,5 @@ class FormSection:
         from ...tools.models_search_engine import ModelsSearchEngine
         Model = ModelsSearchEngine.find_model(model, model_type)
 
-        return self.add_subsection(Model.form_subsection_layout if 'form_subsection_layout' in Model.__dict__ else FormSubSection(
-            id=f"{model.replace(':', '_')}_parameters_subsection"))
+        return self.add_subsection((Model.form_subsection_layout if 'form_subsection_layout' in Model.__dict__ else FormSubSection(
+            id=f"{model.replace(':', '_')}_parameters_subsection")).set_nested_paths([f'{model_type}_model_parameters']))

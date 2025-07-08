@@ -28,5 +28,7 @@ export default function FormField({
             return <CheckboxField field={field as CheckboxFieldType} {...fieldAttrs} />
         case 'number_pair':
             return <NumberPairField field={field as NumberPairFieldType} {...fieldAttrs} />
+        default:
+            return null;
     }
 }
