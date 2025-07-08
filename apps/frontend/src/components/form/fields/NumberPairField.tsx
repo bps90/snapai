@@ -24,6 +24,8 @@ export default function NumberPairField({
     inputsAttr,
     nestedPaths
 }: NumberPairFieldProps) {
+    const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
+
     return <div
         key={field.id + fieldIndex}
         style={{ gridColumn: `span ${field.occuped_columns}` }}
@@ -31,7 +33,7 @@ export default function NumberPairField({
     >
         <Controller
             control={control}
-            name={`${nestedPaths?.length ? nestedPaths.join('.') + '.' : ''}${field.nested_paths.length ? (field.nested_paths.join('.') + '.') : ''}${field.name}`}
+            name={nameAsArray.join('.')}
             defaultValue={field.value}
 
             render={({ field: renderField, fieldState }) => {

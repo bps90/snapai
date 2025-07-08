@@ -25,6 +25,8 @@ export default function CheckboxField({
     formControlLabelAttr,
     nestedPaths
 }: CheckboxFieldProps) {
+    const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
+
     return (
         <div
             key={field.id + fieldIndex}
@@ -51,8 +53,7 @@ export default function CheckboxField({
                     control={
                         <Checkbox
                             id={field.id}
-                            checked={field.value}
-                            {...register(`${nestedPaths?.length ? nestedPaths.join('.') + '.' : ''}${field.nested_paths.length ? (field.nested_paths.join('.') + '.') : ''}${field.name}`)}
+                            {...register(nameAsArray.join('.'))}
                             {...checkboxAttr}
                         />
                     }

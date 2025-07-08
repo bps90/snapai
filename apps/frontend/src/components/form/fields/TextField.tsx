@@ -21,6 +21,8 @@ function TextField({
     nestedPaths,
     register
 }: TextFieldProps) {
+    const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
+
     return <div
         key={field.id + fieldIndex}
         style={{ gridColumn: `span ${field.occuped_columns}` }}
@@ -33,8 +35,7 @@ function TextField({
                 type={field.type}
                 id={field.id}
                 required={field.required}
-                defaultValue={field.value}
-                {...register(`${nestedPaths?.length ? nestedPaths.join('.') + '.' : ''}${field.nested_paths.length ? (field.nested_paths.join('.') + '.') : ''}${field.name}`)}
+                {...register(nameAsArray.join('.'))}
                 {...inputAttr}
             />
         </FormControl>

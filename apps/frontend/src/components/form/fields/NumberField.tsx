@@ -6,7 +6,7 @@ import { Field } from '@/lib/fetchers';
 export type NumberField = Field & {
     type: 'number',
     is_float: boolean,
-    value: number
+    value: number,
 }
 
 type NumberFieldProps = FormFieldProps & {
@@ -24,6 +24,8 @@ export default function NumberField({
     inputAttr,
     nestedPaths
 }: NumberFieldProps) {
+    const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
+
     return (<div
         key={field.id + fieldIndex}
         style={{ gridColumn: `span ${field.occuped_columns}` }}
@@ -37,8 +39,7 @@ export default function NumberField({
                 slotProps={{ htmlInput: { step: field.is_float ? 'any' : '1' } }}
                 id={field.id}
                 required={field.required}
-                defaultValue={field.value.toString()}
-                {...register(`${nestedPaths?.length ? nestedPaths.join('.') + '.' : ''}${field.nested_paths.length ? (field.nested_paths.join('.') + '.') : ''}${field.name}`, { valueAsNumber: true })}
+                {...register(nameAsArray.join('.'), { valueAsNumber: true })}
                 {...inputAttr}
             />
         </FormControl>

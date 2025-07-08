@@ -47,11 +47,11 @@ function buildSchema(layouts: SchemaBuilderLayout[]) {
                                 throw new Error(`Unknown field type: ${field.type}`);
                         }
 
-                        field.nested_paths = layout.nestedPaths
+                        const nestedPaths = layout.nestedPaths
                             ? [...layout.nestedPaths, ...field.nested_paths]
                             : field.nested_paths;
 
-                        if (field.nested_paths.length) {
+                        if (nestedPaths.length) {
                             const nestedSchema = buildSchema([{
                                 sections: [{
                                     id: '',
@@ -59,13 +59,13 @@ function buildSchema(layouts: SchemaBuilderLayout[]) {
                                     subsections: [{
                                         id: '',
                                         title: '',
-                                        lines: [{ fields: [{ ...field, nested_paths: field.nested_paths.slice(1) }] }]
+                                        lines: [{ fields: [{ ...field, nested_paths: nestedPaths.slice(1) }] }]
                                     }]
                                 }]
                             }]);
 
-                            schema[field.nested_paths[0]] = schema[field.nested_paths[0]]
-                                ? (schema[field.nested_paths[0]] as z.ZodObject<any>).merge(nestedSchema)
+                            schema[nestedPaths[0]] = schema[nestedPaths[0]]
+                                ? (schema[nestedPaths[0]] as z.ZodObject<any>).merge(nestedSchema)
                                 : nestedSchema;
                         } else {
                             schema[field.name] = base;
@@ -76,7 +76,50 @@ function buildSchema(layouts: SchemaBuilderLayout[]) {
         }
     }
 
+    console.log('schema:', schema);
+
     return z.object(schema);
+}
+
+function getLayoutValues(layouts: SchemaBuilderLayout[]) {
+    const values = {} as Record<string, any>;
+
+    for (const layout of layouts) {
+        for (const section of layout.sections) {
+            for (const subsection of section.subsections) {
+                for (const line of subsection.lines) {
+                    for (const field of line.fields) {
+                        const nestedPaths = layout.nestedPaths
+                            ? [...layout.nestedPaths, ...field.nested_paths]
+                            : field.nested_paths;
+
+                        if (nestedPaths.length) {
+                            console.log('inner nested paths:', nestedPaths);
+                            const nestedValues = getLayoutValues([{
+                                sections: [{
+                                    id: '',
+                                    title: '',
+                                    subsections: [{
+                                        id: '',
+                                        title: '',
+                                        lines: [{ fields: [{ ...field, nested_paths: nestedPaths.slice(1) }] }]
+                                    }]
+                                }]
+                            }]);
+
+                            values[nestedPaths[0]] = values[nestedPaths[0]]
+                                ? { ...values[nestedPaths[0]], ...nestedValues }
+                                : nestedValues;
+                        } else {
+                            values[field.name] = field.value;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    console.log('inner values:', values);
+    return values;
 }
 
 export type ConfigFormSchema = {
@@ -126,9 +169,9 @@ export default function ConfigForm({
         formState,
         formState: { errors: formErrors },
         reset,
-        watch,
+        watch
     } = useForm<ConfigFormSchema>({
-        resolver: configFormSchema ? zodResolver(configFormSchema as unknown as Parameters<typeof zodResolver<ConfigFormSchema, any, ConfigFormSchema>>[0]) : undefined
+        resolver: configFormSchema ? zodResolver(configFormSchema as unknown as Parameters<typeof zodResolver<ConfigFormSchema, any, ConfigFormSchema>>[0]) : undefined,
     });
 
     const {
@@ -268,11 +311,16 @@ export default function ConfigForm({
 
     useEffect(() => {
         if (configFormLayout) {
-            setConfigFormSchema(buildSchema(superSections
+            const layouts = superSections
                 .map((superSection) => superSection.layout ? ({ ...superSection.layout, nestedPaths: superSection.nestedPaths! }) : undefined)
-                .filter((x) => x) as SchemaBuilderLayout[]) as unknown as z.ZodType<ConfigFormSchema>);
+                .filter((x) => x) as SchemaBuilderLayout[]
+
+            console.log('getLayoutValues: ', getLayoutValues(layouts));
+
+            setConfigFormSchema(buildSchema(layouts) as unknown as z.ZodType<ConfigFormSchema>);
+            reset(getLayoutValues(layouts));
         }
-    }, [configFormLayout, superSections])
+    }, [configFormLayout, superSections, reset]);
 
 
     const handleConfigSubmit = (data: ConfigFormSchema) => {

@@ -22,8 +22,6 @@ export default function FormField({
     disabled,
     ...fieldAttrs
 }: FormFieldProps) {
-    useEffect(() => { console.log(field.nested_paths, field.name, field.value) }, []);
-
     switch (field.type) {
         case 'text':
             return <TextField field={field as TextFieldType} inputAttr={{ disabled }} {...fieldAttrs} />
