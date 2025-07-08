@@ -51,7 +51,7 @@ export default function CheckboxField({
                     control={
                         <Checkbox
                             id={field.id}
-                            {...register(field.name as keyof ConfigFormSchema)}
+                            {...register(`${field.nested_paths.join('.')}.${field.name}` as keyof ConfigFormSchema)}
                             {...checkboxAttr}
                         />
                     }

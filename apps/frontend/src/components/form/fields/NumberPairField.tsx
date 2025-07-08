@@ -31,7 +31,7 @@ export default function NumberPairField({
     >
         <Controller
             control={control}
-            name={field.name as keyof ConfigFormSchema}
+            name={`${field.nested_paths.join('.')}.${field.name}` as keyof ConfigFormSchema}
             defaultValue={field.value}
 
             render={({ field: renderField, fieldState }) => {

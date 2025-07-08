@@ -29,7 +29,8 @@ class FormSectionField(ABC):
                  name: str,
                  occuped_columns: int,
                  required: bool = True,
-                 informative: FormSectionFieldInformative | None = None
+                 informative: FormSectionFieldInformative | None = None,
+                 nested_paths: list[str] = []
                  ):
         self.id = id
         self.label = label
@@ -37,14 +38,14 @@ class FormSectionField(ABC):
         self.occuped_columns = occuped_columns
         self.required = required
         self.informative = informative
-        self._nested_paths: list[str] = []
+        self.nested_paths: list[str] = nested_paths
         
     def add_nested_path(self, path: str):
-        self._nested_paths.append(path)
+        self.nested_paths.append(path)
         return self
     
     def set_nested_paths(self, paths: list[str]):
-        self._nested_paths = paths
+        self.nested_paths = paths
         return self
 
     @abstractmethod
@@ -72,7 +73,7 @@ class FormSectionTextField(FormSectionField):
     def init(self, config_class):
         working_config = config_class.to_dict()
         
-        for path in self._nested_paths:
+        for path in self.nested_paths:
             working_config = working_config[path]
         
         if self.name not in working_config:
@@ -97,7 +98,8 @@ class FormSectionTextField(FormSectionField):
             'occuped_columns': self.occuped_columns,
             'required': self.required,
             'informative': self.informative.to_dict() if self.informative else None,
-            'value': self.value
+            'value': self.value,
+            'nested_paths': self.nested_paths
         }
 
 
@@ -118,7 +120,7 @@ class FormSectionNumberField(FormSectionField):
     def init(self, config_class):
         working_config = config_class.to_dict()
 
-        for path in self._nested_paths:
+        for path in self.nested_paths:
             working_config = working_config[path]
             
         if self.name not in working_config:
@@ -148,7 +150,8 @@ class FormSectionNumberField(FormSectionField):
             'is_float': self.is_float,
             'required': self.required,
             'informative': self.informative.to_dict() if self.informative else None,
-            'value': self.value
+            'value': self.value,
+            'nested_paths': self.nested_paths
         }
 
 
@@ -164,7 +167,7 @@ class FormSectionPercentageField(FormSectionNumberField):
         
         working_config = config_class.to_dict()
 
-        for path in self._nested_paths:
+        for path in self.nested_paths:
             working_config = working_config[path]
 
         value = working_config[self.name]
@@ -196,7 +199,7 @@ class FormSectionSelectField(FormSectionField):
     def init(self, config_class):
         working_config = config_class.to_dict()
 
-        for path in self._nested_paths:
+        for path in self.nested_paths:
             working_config = working_config[path]
         
         if self.name not in working_config:
@@ -224,7 +227,8 @@ class FormSectionSelectField(FormSectionField):
             'options': self.options,
             'required': self.required,
             'informative': self.informative.to_dict() if self.informative else None,
-            'value': self.value
+            'value': self.value,
+            'nested_paths': self.nested_paths
         }
 
 
@@ -255,13 +259,14 @@ class FormSectionMultiSelectField(FormSectionField):
             'min_selected': self.min_selected,
             'required': self.required,
             'informative': self.informative.to_dict() if self.informative else None,
-            'value': self.value
+            'value': self.value,
+            'nested_paths': self.nested_paths
         }
 
     def init(self, config_class):
         working_config = config_class.to_dict()
 
-        for path in self._nested_paths:
+        for path in self.nested_paths:
             working_config = working_config[path]
         
         if self.name not in working_config:
@@ -303,13 +308,14 @@ class FormSectionCheckboxField(FormSectionField):
             'occuped_columns': self.occuped_columns,
             'required': self.required,
             'informative': self.informative.to_dict() if self.informative else None,
-            'value': self.value
+            'value': self.value,
+            'nested_paths': self.nested_paths
         }
 
     def init(self, config_class):
         working_config = config_class.to_dict()
 
-        for path in self._nested_paths:
+        for path in self.nested_paths:
             working_config = working_config[path]
         
         if self.name not in working_config:
@@ -350,13 +356,14 @@ class FormSectionNumberPairField(FormSectionField):
             'is_float': self.is_float,
             'required': self.required,
             'informative': self.informative.to_dict() if self.informative else None,
-            'value': self.value
+            'value': self.value,
+            'nested_paths': self.nested_paths
         }
 
     def init(self, config_class):
         working_config = config_class.to_dict()
 
-        for path in self._nested_paths:
+        for path in self.nested_paths:
             working_config = working_config[path]
         
         if self.name not in working_config:

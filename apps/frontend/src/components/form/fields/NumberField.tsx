@@ -38,7 +38,7 @@ export default function NumberField({
                 id={field.id}
                 required={field.required}
                 defaultValue={field.value}
-                {...register(field.name as keyof ConfigFormSchema)}
+                {...register(`${field.nested_paths.join('.')}.${field.name}` as keyof ConfigFormSchema)}
                 {...inputAttr}
             />
         </FormControl>
