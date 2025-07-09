@@ -94,7 +94,7 @@ function getLayoutValues(layouts: SchemaBuilderLayout[]) {
                             : field.nested_paths;
 
                         if (nestedPaths.length) {
-                            console.log('inner nested paths:', nestedPaths);
+
                             const nestedValues = getLayoutValues([{
                                 sections: [{
                                     id: '',
@@ -118,7 +118,7 @@ function getLayoutValues(layouts: SchemaBuilderLayout[]) {
             }
         }
     }
-    console.log('inner values:', values);
+
     return values;
 }
 
@@ -166,7 +166,6 @@ export default function ConfigForm({
         register,
         control,
         handleSubmit,
-        formState,
         formState: { errors: formErrors },
         reset,
         watch
@@ -301,21 +300,10 @@ export default function ConfigForm({
     }, [configFormLayout]);
 
     useEffect(() => {
-        console.log('watch:', watch());
-    }, [formState, watch]);
-
-    useEffect(() => {
-        console.log('simulationConfigLayout:', simulationConfigLayout);
-        console.log('projectConfigLayout:', projectConfigLayout);
-    }, [simulationConfigLayout, projectConfigLayout]);
-
-    useEffect(() => {
         if (configFormLayout) {
             const layouts = superSections
                 .map((superSection) => superSection.layout ? ({ ...superSection.layout, nestedPaths: superSection.nestedPaths! }) : undefined)
-                .filter((x) => x) as SchemaBuilderLayout[]
-
-            console.log('getLayoutValues: ', getLayoutValues(layouts));
+                .filter((x) => x) as SchemaBuilderLayout[];
 
             setConfigFormSchema(buildSchema(layouts) as unknown as z.ZodType<ConfigFormSchema>);
             reset(getLayoutValues(layouts));
@@ -326,11 +314,6 @@ export default function ConfigForm({
     const handleConfigSubmit = (data: ConfigFormSchema) => {
         console.log('submited form data:', data);
     }
-
-    const handleClickSubmitButton = () => {
-        console.log('watch:', watch());
-    }
-
 
     if (configFormLayoutError) return;
 
@@ -376,7 +359,6 @@ export default function ConfigForm({
             <div className="flex justify-end">
                 <button
                     type="submit"
-                    onClick={handleClickSubmitButton}
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                 >
                     Submit

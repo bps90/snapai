@@ -1,6 +1,6 @@
 import { Field } from "@/lib/fetchers"
 import TextField, { TextField as TextFieldType } from "./TextField"
-import { HTMLAttributes, useEffect } from "react"
+import { HTMLAttributes } from "react"
 import { Control, UseFormRegister } from "react-hook-form"
 import { ConfigFormSchema } from "../ConfigForm"
 import NumberField, { NumberField as NumberFieldType } from "./NumberField"

@@ -2,6 +2,7 @@ import { Field } from "@/lib/fetchers";
 import { FormFieldProps } from "./FormField";
 import { Checkbox, CheckboxProps, FormControl, FormControlLabel, FormControlLabelProps, FormControlProps } from "@mui/material";
 import clsx from "clsx";
+import { Controller } from "react-hook-form";
 
 export type CheckboxField = Field & {
     type: 'checkbox',
@@ -18,12 +19,12 @@ export type CheckboxFieldProps = FormFieldProps & {
 export default function CheckboxField({
     field,
     fieldIndex,
-    register,
     containerAttr,
     checkboxAttr,
     formControlAttr,
     formControlLabelAttr,
-    nestedPaths
+    nestedPaths,
+    control
 }: CheckboxFieldProps) {
     const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
 
@@ -49,16 +50,23 @@ export default function CheckboxField({
                     formControlAttr?.className
                 )}
             >
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            id={field.id}
-                            {...register(nameAsArray.join('.'))}
-                            {...checkboxAttr}
+                <Controller
+                    name={nameAsArray.join('.')}
+                    control={control}
+                    render={({ field: controllerField }) => (
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    id={field.id}
+                                    checked={controllerField.value ?? false}
+                                    onChange={(e) => controllerField.onChange(e.target.checked)}
+                                    {...checkboxAttr}
+                                />
+                            }
+                            label={field.label}
+                            {...formControlLabelAttr}
                         />
-                    }
-                    label={field.label}
-                    {...formControlLabelAttr}
+                    )}
                 />
             </FormControl>
         </div>
