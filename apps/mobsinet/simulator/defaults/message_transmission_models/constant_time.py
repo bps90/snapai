@@ -21,7 +21,8 @@ class ConstantTime(AbcMessageTransmissionModel):
                 required=True,
                 informative=FormSectionFieldInformative(
                     title="The time that the packet will take to reach the destination node.",
-                )
+                ),
+                min_value=0
             )
         )
     )

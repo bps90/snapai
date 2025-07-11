@@ -27,6 +27,7 @@ class CircularDist(AbcDistributionModel):
                 informative=FormSectionFieldInformative(
                     title="The distance from the midpoint to the edge of the circle.",
                 ),
+                min_value=0
             ),
             FormSectionSelectField(
                 id="circular_dist_rotation_direction",
@@ -63,6 +64,7 @@ class CircularDist(AbcDistributionModel):
                 informative=FormSectionFieldInformative(
                     title="The number of nodes for the model.",
                 ),
+                min_value=0
             ),
         ])
     ])

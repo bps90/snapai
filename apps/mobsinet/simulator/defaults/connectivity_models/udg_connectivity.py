@@ -21,6 +21,7 @@ class UDGConnectivity(AbcConnectivityModel):
                 informative=FormSectionFieldInformative(
                     title="The radius of a node having a connection.",
                 ),
+                min_value=0
             )
         ])
     )

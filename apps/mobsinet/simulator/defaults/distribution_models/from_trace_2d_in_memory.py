@@ -36,7 +36,6 @@ class FromTrace2DInMemory(AbcDistributionModel):
                 label="Is Latitude/Longitude",
                 name="is_lat_long",
                 occuped_columns=4,
-                required=True,
                 informative=FormSectionFieldInformative(
                     title="Whether the trace file contains latitude and longitude coordinates.",
                 ),
@@ -46,7 +45,6 @@ class FromTrace2DInMemory(AbcDistributionModel):
                 label="Addapt to Simulation Dimensions",
                 name="addapt_to_dimensions",
                 occuped_columns=4,
-                required=True,
                 informative=FormSectionFieldInformative(
                     title="Whether to addapt the trace to the simulation dimensions.",
                 ),

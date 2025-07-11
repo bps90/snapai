@@ -49,6 +49,7 @@ class LinearDist(AbcDistributionModel):
                 informative=FormSectionFieldInformative(
                     title="The number of nodes to be placed. The nodes will be placed evenly from the center to the edges of the line.",
                 ),
+                min_value=0
             ),
         ])
     )

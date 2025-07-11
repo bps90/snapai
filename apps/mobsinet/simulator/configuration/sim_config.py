@@ -49,7 +49,6 @@ class SimulationConfig(BaseConfig):
                                 label='Asynchronous Simulation',
                                 name='asynchronous',
                                 occuped_columns=6,
-                                required=True,
                                 informative=FormSectionFieldInformative(
                                     title='If this option is enabled, the simulation will run in asynchronous mode.',
                                 )
@@ -65,7 +64,8 @@ class SimulationConfig(BaseConfig):
                             required=True,
                             informative=FormSectionFieldInformative(
                                 title='The X dimension of the simulation. (min, max)',
-                            )
+                            ),
+                            right_should_be_gte_left=True
                         ),
                         FormSectionNumberPairField(
                             id='dim_y',
@@ -76,7 +76,8 @@ class SimulationConfig(BaseConfig):
                             required=True,
                             informative=FormSectionFieldInformative(
                                 title='The Y dimension of the simulation. (min, max)',
-                            )
+                            ),
+                            right_should_be_gte_left=True
                         ),
                     ]),
                     FormSectionLine().add_fields([
@@ -85,7 +86,6 @@ class SimulationConfig(BaseConfig):
                             label='Connectivity Enabled',
                             name='connectivity_enabled',
                             occuped_columns=6,
-                            required=True,
                             informative=FormSectionFieldInformative(
                                 title='If this option is enabled, the simulation will use connectivity.',
                             )
@@ -95,7 +95,6 @@ class SimulationConfig(BaseConfig):
                             label='Interference Enabled',
                             name='interference_enabled',
                             occuped_columns=6,
-                            required=True,
                             informative=FormSectionFieldInformative(
                                 title='If this option is enabled, the simulation will use interference.',
                             )
@@ -107,7 +106,6 @@ class SimulationConfig(BaseConfig):
                             label='NACK Messages Enabled',
                             name='nack_messages_enabled',
                             occuped_columns=6,
-                            required=True,
                             informative=FormSectionFieldInformative(
                                 title='If this option is enabled, the simulation will use NACK messages.',
                             )
@@ -117,7 +115,6 @@ class SimulationConfig(BaseConfig):
                             label='Save Trace',
                             name='save_trace',
                             occuped_columns=6,
-                            required=True,
                             informative=FormSectionFieldInformative(
                                 title='If this option is enabled, the simulation will save the trace of all simulation nodes positions. (only in synchronous mode)',
                             )

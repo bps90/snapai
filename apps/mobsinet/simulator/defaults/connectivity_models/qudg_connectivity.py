@@ -24,6 +24,7 @@ class QUDGConnectivity(AbcConnectivityModel):
                 informative=FormSectionFieldInformative(
                     title="The radius of a node having a sure connection.",
                 ),
+                min_value=0
             ),
             FormSectionNumberField(
                 id="qudg_connectivity_unsure_connection_radius",
@@ -35,6 +36,7 @@ class QUDGConnectivity(AbcConnectivityModel):
                 informative=FormSectionFieldInformative(
                     title="The radius of a node having an unsure connection.",
                 ),
+                min_value=0
             ),
             FormSectionPercentageField(
                 id="qudg_connectivity_unsure_radius_probability",
