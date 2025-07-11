@@ -57,6 +57,7 @@ export default function CheckboxField({
                         <FormControlLabel
                             control={
                                 <Checkbox
+                                    required={field.required}
                                     id={field.id}
                                     checked={controllerField.value ?? false}
                                     onChange={(e) => controllerField.onChange(e.target.checked)}

@@ -4,7 +4,9 @@ import { FormFieldProps } from './FormField';
 
 export type TextField = Field & {
     type: 'text'
-    value: string
+    value: string,
+    min_length: number,
+    max_length: number | null
 }
 
 export type TextFieldProps = FormFieldProps & {
@@ -14,7 +16,8 @@ export type TextFieldProps = FormFieldProps & {
 }
 
 function TextField({
-    field, fieldIndex,
+    field,
+    fieldIndex,
     inputAttr,
     containerAttr,
     formControlAttr,
@@ -35,6 +38,7 @@ function TextField({
                 type={field.type}
                 id={field.id}
                 required={field.required}
+                slotProps={{ htmlInput: { minLength: field.min_length, maxLength: field.max_length } }}
                 {...register(nameAsArray.join('.'))}
                 {...inputAttr}
             />

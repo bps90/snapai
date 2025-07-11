@@ -8,6 +8,11 @@ export type NumberPairField = Field & {
     type: 'number_pair',
     value: [number, number],
     is_float: boolean,
+    min_left_value: number | null,
+    max_left_value: number | null,
+    min_right_value: number | null,
+    max_right_value: number | null,
+    right_should_be_gte_left: boolean
 }
 
 export type NumberPairFieldProps = FormFieldProps & {
@@ -25,6 +30,7 @@ export default function NumberPairField({
     nestedPaths
 }: NumberPairFieldProps) {
     const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
+    let leftGreaterThanRight: NodeJS.Timeout | null = null;
 
     return <div
         key={field.id + fieldIndex}
@@ -38,8 +44,32 @@ export default function NumberPairField({
 
             render={({ field: renderField, fieldState }) => {
                 const [min, max] = renderField.value as [number, number];
-                const setMin = (val: number) => renderField.onChange([val, max]);
-                const setMax = (val: number) => renderField.onChange([min, val]);
+                const setMin = (val: number) => {
+                    renderField.onChange([val, max])
+                    if (field.right_should_be_gte_left) {
+                        if (leftGreaterThanRight) {
+                            clearTimeout(leftGreaterThanRight);
+                        }
+                        leftGreaterThanRight = setTimeout(() => {
+                            if (val > max) {
+                                renderField.onChange([max, max])
+                            }
+                        }, 500)
+                    }
+                };
+                const setMax = (val: number) => {
+                    renderField.onChange([min, val])
+                    if (field.right_should_be_gte_left) {
+                        if (leftGreaterThanRight) {
+                            clearTimeout(leftGreaterThanRight);
+                        }
+                        leftGreaterThanRight = setTimeout(() => {
+                            if (val < min) {
+                                renderField.onChange([min, min])
+                            }
+                        }, 500)
+                    }
+                }
                 return (<>
                     <InputLabel
                         shrink
@@ -73,6 +103,7 @@ export default function NumberPairField({
                                 '& fieldset': { border: 'none' },
                                 flex: 1,
                             }}
+                            slotProps={{ htmlInput: { min: field.min_left_value, max: field.max_left_value } }}
                             onChange={(e) => setMin(Number(e.target.value))}
                             error={!!fieldState.error}
                             {...inputsAttr}
@@ -85,6 +116,7 @@ export default function NumberPairField({
                                 '& fieldset': { border: 'none' },
                                 flex: 1,
                             }}
+                            slotProps={{ htmlInput: { min: field.min_right_value, max: field.max_right_value } }}
                             onChange={(e) => setMax(Number(e.target.value))}
                             error={!!fieldState.error}
                             helperText={fieldState.error?.message}

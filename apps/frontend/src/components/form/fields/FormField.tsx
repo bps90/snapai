@@ -6,6 +6,9 @@ import { ConfigFormSchema } from "../ConfigForm"
 import NumberField, { NumberField as NumberFieldType } from "./NumberField"
 import CheckboxField, { CheckboxField as CheckboxFieldType } from "./CheckboxField"
 import NumberPairField, { NumberPairField as NumberPairFieldType } from "./NumberPairField"
+import ModelSelectField, { ModelSelectField as ModelSelectFieldType } from "./ModelSelectField"
+import PercentageField, { PercentageField as PercentageFieldType } from "./PercentageField"
+import SelectField, { SelectField as SelectFieldType } from "./SelectField"
 
 export type FormFieldProps = {
     field: Field
@@ -31,6 +34,12 @@ export default function FormField({
             return <CheckboxField field={field as CheckboxFieldType} checkboxAttr={{ disabled }} {...fieldAttrs} />
         case 'number_pair':
             return <NumberPairField field={field as NumberPairFieldType} inputsAttr={{ disabled }} {...fieldAttrs} />
+        case 'model_select':
+            return <ModelSelectField field={field as ModelSelectFieldType} selectAttr={{ disabled }} {...fieldAttrs} />
+        case 'percentage':
+            return <PercentageField field={field as PercentageFieldType} inputAttr={{ disabled }} {...fieldAttrs} />
+        case 'select':
+            return <SelectField field={field as SelectFieldType} selectAttr={{ disabled }} {...fieldAttrs} />
         default:
             return null;
     }

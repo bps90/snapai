@@ -1,23 +1,19 @@
-import { FormControl, FormControlProps, TextField, TextFieldProps } from "@mui/material";
+import { FormControl, FormControlProps, InputAdornment, TextField, TextFieldProps } from "@mui/material";
 import { FormFieldProps } from "./FormField";
-import { Field } from '@/lib/fetchers';
+import { NumberField } from "./NumberField";
 
 
-export type NumberField = Field & {
-    type: 'number',
-    is_float: boolean,
-    value: number,
-    min_value: number | null,
-    max_value: number | null
+export type PercentageField = Omit<NumberField, 'type'> & {
+    type: 'percentage',
 }
 
-type NumberFieldProps = FormFieldProps & {
-    field: NumberField,
+type PercentageFieldProps = FormFieldProps & {
+    field: PercentageField,
     formControlAttr?: FormControlProps,
     inputAttr?: TextFieldProps,
 }
 
-export default function NumberField({
+export default function PercentageField({
     field,
     fieldIndex,
     register,
@@ -25,7 +21,7 @@ export default function NumberField({
     formControlAttr,
     inputAttr,
     nestedPaths
-}: NumberFieldProps) {
+}: PercentageFieldProps) {
     const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
 
     return (<div
@@ -37,8 +33,11 @@ export default function NumberField({
             <TextField
                 variant='outlined'
                 label={field.label}
-                type={field.type}
-                slotProps={{ htmlInput: { step: field.is_float ? 'any' : '1', min: field.min_value, max: field.max_value } }}
+                type={'number'}
+                slotProps={{
+                    htmlInput: { step: field.is_float ? 'any' : '1', min: field.min_value, max: field.max_value },
+                    input: { endAdornment: <InputAdornment position="end">%</InputAdornment> }
+                }}
                 id={field.id}
                 required={field.required}
                 {...register(nameAsArray.join('.'), { valueAsNumber: true })}

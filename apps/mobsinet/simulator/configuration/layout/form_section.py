@@ -65,9 +65,13 @@ class FormSectionTextField(FormSectionField):
                  name: str,
                  occuped_columns: int,
                  required: bool = True,
-                 informative: FormSectionFieldInformative | None = None
+                 informative: FormSectionFieldInformative | None = None,
+                 min_length: int = 0,
+                 max_length: int | None = None
                  ):
         super().__init__(id, label, name, occuped_columns, required, informative)
+        self.min_length = min_length
+        self.max_length = max_length
         self.value: str | None = None
 
     def init(self, config_class):
@@ -85,6 +89,12 @@ class FormSectionTextField(FormSectionField):
 
         if value is not None and not isinstance(value, str):
             raise Exception(f"Field {self.name} is not a string")
+        
+        if value is not None and len(value) < self.min_length:
+            raise Exception(f"Field {self.name} is too short")
+
+        if value is not None and self.max_length is not None and len(value) > self.max_length:
+            raise Exception(f"Field {self.name} is too long")
 
         self.value = value
         return self
@@ -99,7 +109,9 @@ class FormSectionTextField(FormSectionField):
             'required': self.required,
             'informative': self.informative.to_dict() if self.informative else None,
             'value': self.value,
-            'nested_paths': self.nested_paths
+            'nested_paths': self.nested_paths,
+            'min_length': self.min_length,
+            'max_length': self.max_length
         }
 
 
@@ -111,10 +123,14 @@ class FormSectionNumberField(FormSectionField):
                  occuped_columns: int,
                  is_float: bool = False,
                  required: bool = True,
-                 informative: FormSectionFieldInformative | None = None
+                 informative: FormSectionFieldInformative | None = None,
+                 min_value: float | int | None = None,
+                 max_value: float | int | None = None
                  ):
         super().__init__(id, label, name, occuped_columns, required, informative)
         self.is_float: bool = is_float
+        self.min_value = min_value
+        self.max_value = max_value
         self.value: float | int | None = None
 
     def init(self, config_class):
@@ -136,6 +152,12 @@ class FormSectionNumberField(FormSectionField):
 
         if not self.is_float and (not isinstance(value, int) or value is not None):
             raise Exception(f"Field {self.name} is not an int")
+        
+        if value is not None and self.min_value is not None and value < self.min_value:
+            raise Exception(f"Field {self.name} is too small")
+
+        if value is not None and self.max_value is not None and value > self.max_value:
+            raise Exception(f"Field {self.name} is too big")
 
         self.value = value
         return self
@@ -151,35 +173,29 @@ class FormSectionNumberField(FormSectionField):
             'required': self.required,
             'informative': self.informative.to_dict() if self.informative else None,
             'value': self.value,
-            'nested_paths': self.nested_paths
+            'nested_paths': self.nested_paths,
+            'min_value': self.min_value,
+            'max_value': self.max_value
         }
 
 
 class FormSectionPercentageField(FormSectionNumberField):
+    def __init__(self,
+                 id: str,
+                 label: str,
+                 name: str,
+                 occuped_columns: int,
+                 is_float: bool = False,
+                 required: bool = True,
+                 informative: FormSectionFieldInformative | None = None,
+                 ):
+        super().__init__(id, label, name, occuped_columns, is_float, required, informative, 0, 100)
+    
     def to_dict(self):
         return {
             **super().to_dict(),
             'type': 'percentage',
         }
-
-    def init(self, config_class):
-        super().init(config_class)
-        
-        working_config = config_class.to_dict()
-
-        for path in self.nested_paths:
-            working_config = working_config[path]
-
-        value = working_config[self.name]
-
-        if (value is not None and value < 0):
-            raise Exception(f"Field {self.name} is not a positive number")
-
-        if (value is not None and value > 100):
-            raise Exception(f"Field {self.name} is not a percentage")
-
-        self.value = value
-        return self
 
 
 class FormSectionSelectField(FormSectionField):
@@ -248,6 +264,7 @@ class FormSectionModelSelectField(FormSectionSelectField):
     def to_dict(self):
         return {
             **super().to_dict(),
+            'type': 'model_select',
             'model_type': self.model_type        
         }
 
@@ -260,11 +277,13 @@ class FormSectionMultiSelectField(FormSectionField):
                  options: list[dict[Literal['value', 'label'], Any]],
                  min_selected: int = 0,
                  required: bool = True,
-                 informative: FormSectionFieldInformative | None = None
+                 informative: FormSectionFieldInformative | None = None,
+                 max_selected: int | None = None
                  ):
         super().__init__(id, label, name, occuped_columns, required, informative)
         self.options = options
         self.min_selected = min_selected
+        self.max_selected = max_selected
         self.value: list[Any] = []
 
     def to_dict(self):
@@ -279,7 +298,8 @@ class FormSectionMultiSelectField(FormSectionField):
             'required': self.required,
             'informative': self.informative.to_dict() if self.informative else None,
             'value': self.value,
-            'nested_paths': self.nested_paths
+            'nested_paths': self.nested_paths,
+            'max_selected': self.max_selected
         }
 
     def init(self, config_class):
@@ -302,6 +322,10 @@ class FormSectionMultiSelectField(FormSectionField):
                 raise Exception(
                     f"Field {self.name} value {v} not found in options")
 
+        if (self.max_selected is not None and len(value) > self.max_selected):
+            raise Exception(
+                f"Field {self.name} must have at most {self.max_selected} selected")
+
         self.value = value
         return self
 
@@ -312,7 +336,7 @@ class FormSectionCheckboxField(FormSectionField):
                  label: str,
                  name: str,
                  occuped_columns: int,
-                 required: bool = True,
+                 required: bool = False,
                  informative: FormSectionFieldInformative | None = None
                  ):
         super().__init__(id, label, name, occuped_columns, required, informative)
@@ -359,10 +383,20 @@ class FormSectionNumberPairField(FormSectionField):
                  occuped_columns: int,
                  is_float: bool = False,
                  required: bool = True,
-                 informative: FormSectionFieldInformative | None = None
+                 informative: FormSectionFieldInformative | None = None,
+                 min_left_value: float | int | None = None,
+                 max_left_value: float | int | None = None,
+                 min_right_value: float | int | None = None,
+                 max_right_value: float | int | None = None,
+                 right_should_be_gte_left: bool = False
                  ):
         super().__init__(id, label, name, occuped_columns, required, informative)
         self.is_float: bool = is_float
+        self.min_left_value = min_left_value
+        self.max_left_value = max_left_value
+        self.min_right_value = min_right_value
+        self.max_right_value = max_right_value
+        self.right_should_be_gte_left = right_should_be_gte_left
         self.value: list[float | int] | None = None
 
     def to_dict(self):
@@ -376,7 +410,12 @@ class FormSectionNumberPairField(FormSectionField):
             'required': self.required,
             'informative': self.informative.to_dict() if self.informative else None,
             'value': self.value,
-            'nested_paths': self.nested_paths
+            'nested_paths': self.nested_paths,
+            'min_left_value': self.min_left_value,
+            'max_left_value': self.max_left_value,
+            'min_right_value': self.min_right_value,
+            'max_right_value': self.max_right_value,
+            'right_should_be_gte_left': self.right_should_be_gte_left
         }
 
     def init(self, config_class):
@@ -403,6 +442,21 @@ class FormSectionNumberPairField(FormSectionField):
 
                 if not self.is_float and not isinstance(v, int):
                     raise Exception(f"Field {self.name} is not an int")
+                
+            if (self.min_left_value is not None and value[0] < self.min_left_value):
+                raise Exception(f"Field {self.name} left value is too small")
+
+            if (self.max_left_value is not None and value[0] > self.max_left_value):
+                raise Exception(f"Field {self.name} left value is too big")
+
+            if (self.min_right_value is not None and value[1] < self.min_right_value):
+                raise Exception(f"Field {self.name} right value is too small")
+
+            if (self.max_right_value is not None and value[1] > self.max_right_value):
+                raise Exception(f"Field {self.name} right value is too big")
+
+            if (self.right_should_be_gte_left and value[1] < value[0]):
+                raise Exception(f"Field {self.name} right value should be greater than or equal to left value")
 
         self.value = value
         return self
@@ -543,8 +597,8 @@ class FormModelSection(FormSection):
         Model = ModelsSearchEngine.find_model(self.model, self.model_type)
 
         return self.add_subsection(
-            FormParametersSubSection.convert_to_paramters_sub_section(Model.form_subsection_layout, self.model, self.model_type) if 'form_subsection_layout' in Model.__dict__ else FormParametersSubSection(
+            (FormParametersSubSection.convert_to_paramters_sub_section(Model.form_subsection_layout, self.model, self.model_type) if 'form_subsection_layout' in Model.__dict__ else FormParametersSubSection(
             id=f"{self.model.replace(':', '_')}_parameters_subsection",
             model=self.model,
             model_type=self.model_type
-        )).set_nested_paths([f'{self.model_type}_model_parameters'])
+        )).set_nested_paths([f'{self.model_type}_model_parameters']))

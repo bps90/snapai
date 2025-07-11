@@ -8,6 +8,10 @@ import useSWR from "swr";
 import { z } from 'zod'
 import clsx from 'clsx'
 import Section from "./formDivisions/Section";
+import { TextField } from "./fields/TextField";
+import { NumberField } from "./fields/NumberField";
+import { CheckboxField } from "./fields/CheckboxField";
+import { MultiSelectField } from "./fields/MultiSelectField";
 
 
 type SchemaBuilderLayout = Layout & { nestedPaths?: string[] }
@@ -24,25 +28,29 @@ function buildSchema(layouts: SchemaBuilderLayout[]) {
 
                         switch (field.type) {
                             case 'text':
-                                base = z.string();
+                                base = z.string().min((field as TextField).min_length).max((field as TextField).max_length || Infinity);
                                 break;
                             case 'number':
-                                base = z.number();
+                                base = ((field as NumberField).is_float ? z.number() : z.number().int()).min((field as NumberField).min_value || -Infinity).max((field as NumberField).max_value || Infinity);
                                 break;
                             case 'checkbox':
-                                base = z.boolean();
+                                base = (field as CheckboxField).required ? z.literal(true) : z.boolean();
                                 break;
                             case 'number_pair':
-                                base = z.array(z.number());
+                                base = z.array(((field as NumberField).is_float ? z.number() : z.number().int())).length(2);
                                 break;
                             case 'select':
-                                base = z.string();
+                                base = z.any();
                                 break;
                             case 'multiselect':
-                                base = z.array(z.string());
+                                base = z.array(z.any()).min((field as MultiSelectField).min_selected).max((field as MultiSelectField).max_selected || Infinity);
                                 break;
                             case 'percentage':
                                 base = z.number().max(100).min(0);
+                                break
+                            case 'model_select':
+                                base = z.string();
+                                break
                             default:
                                 throw new Error(`Unknown field type: ${field.type}`);
                         }
