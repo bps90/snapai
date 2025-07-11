@@ -76,8 +76,6 @@ function buildSchema(layouts: SchemaBuilderLayout[]) {
         }
     }
 
-    console.log('schema:', schema);
-
     return z.object(schema);
 }
 
