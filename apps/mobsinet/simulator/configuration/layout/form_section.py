@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Literal, Any
+from typing import TYPE_CHECKING, Literal, Any, cast
 from abc import ABC, abstractmethod
 
 if TYPE_CHECKING:
@@ -230,7 +230,26 @@ class FormSectionSelectField(FormSectionField):
             'value': self.value,
             'nested_paths': self.nested_paths
         }
+        
+class FormSectionModelSelectField(FormSectionSelectField):
+    def __init__(self,
+                 id: str,
+                 label: str,
+                 name: str,
+                 occuped_columns: int,
+                 model_type: Literal['connectivity', 'mobility', 'interference', 'reliability', 'distribution', 'message_transmission'],
+                 required: bool = True,
+                 informative: FormSectionFieldInformative | None = None):
+        from ...tools.models_search_engine import ModelsSearchEngine
+        options = cast(list[dict[Literal['value', 'label'], Any]], [({ 'value': model, 'label': model }) for model in ModelsSearchEngine.get_models_names(model_type)])
+        super().__init__(id, label, name, occuped_columns, options, required, informative)
+        self.model_type = model_type
 
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            'model_type': self.model_type        
+        }
 
 class FormSectionMultiSelectField(FormSectionField):
     def __init__(self,
@@ -465,6 +484,22 @@ class FormSubSection:
             'lines': [line.to_dict() for line in self.lines]
         }
 
+class FormParametersSubSection(FormSubSection):
+    def __init__(self, id: str, model: str, model_type: Literal['connectivity', 'mobility', 'interference', 'reliability', 'distribution', 'message_transmission'], title: str | None = None):
+        super().__init__(id, title)
+        self.model = model
+        self.model_type = model_type
+        
+    @staticmethod
+    def convert_to_paramters_sub_section(subsection: FormSubSection, model: str, model_type: Literal['connectivity', 'mobility', 'interference', 'reliability', 'distribution', 'message_transmission']):
+        return FormParametersSubSection(subsection.id, model, model_type, subsection.title)
+        
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            'model': self.model,
+            'model_type': self.model_type
+        }
 
 class FormSection:
     def __init__(self, id: str, title: str):
@@ -488,9 +523,28 @@ class FormSection:
             self.add_subsection(subsection)
         return self
 
-    def add_model_subsection(self, model: str, model_type: Literal['connectivity', 'mobility', 'interference', 'reliability', 'distribution', 'message_transmission']):
-        from ...tools.models_search_engine import ModelsSearchEngine
-        Model = ModelsSearchEngine.find_model(model, model_type)
+    
 
-        return self.add_subsection((Model.form_subsection_layout if 'form_subsection_layout' in Model.__dict__ else FormSubSection(
-            id=f"{model.replace(':', '_')}_parameters_subsection")).set_nested_paths([f'{model_type}_model_parameters']))
+class FormModelSection(FormSection):
+    def __init__(self, id: str, title: str, model: str, model_type: Literal['connectivity', 'mobility', 'interference', 'reliability', 'distribution', 'message_transmission']):
+        super().__init__(id, title)
+        self.model = model
+        self.model_type = model_type
+        
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            'model': self.model,
+            'model_type': self.model_type
+        }
+        
+    def add_parameters_subsection(self):
+        from ...tools.models_search_engine import ModelsSearchEngine
+        Model = ModelsSearchEngine.find_model(self.model, self.model_type)
+
+        return self.add_subsection(
+            FormParametersSubSection.convert_to_paramters_sub_section(Model.form_subsection_layout, self.model, self.model_type) if 'form_subsection_layout' in Model.__dict__ else FormParametersSubSection(
+            id=f"{self.model.replace(':', '_')}_parameters_subsection",
+            model=self.model,
+            model_type=self.model_type
+        )).set_nested_paths([f'{self.model_type}_model_parameters'])

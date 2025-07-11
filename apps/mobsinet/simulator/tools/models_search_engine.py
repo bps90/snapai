@@ -1,5 +1,6 @@
 import importlib
-
+import sys
+import os
 from typing import Type, TYPE_CHECKING, Optional, Literal
 from ..configuration.sim_config import SimulationConfig
 
@@ -250,3 +251,21 @@ class ModelsSearchEngine:
                 f'apps.mobsinet.simulator.defaults.nodes.{node_arg}').node
 
         return node_implementation
+
+    @staticmethod
+    def get_models_names(model_type: Literal['connectivity', 'mobility', 'interference', 'reliability', 'distribution', 'message_transmission']) -> list[str]:
+       
+        # Get default models
+        names = [model.split(".")[0] for model in os.listdir(
+            f'apps/mobsinet/simulator/defaults/{model_type}_models') if not model.startswith('__')]
+
+        # Get project models
+        for project in os.listdir(SimulationConfig.PROJECTS_DIR):
+            projectDir = os.listdir(f'{SimulationConfig.PROJECTS_DIR}{project}')
+            if (model_type + '_models') in projectDir:
+                models = [f'{project}:{model.split(".")[0]}' for model in os.listdir(
+                    f'{SimulationConfig.PROJECTS_DIR}{project}/{model_type}_models') if not model.startswith('__')]
+                names.extend(models)
+
+        return names
+    

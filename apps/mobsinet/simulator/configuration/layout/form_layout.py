@@ -1,4 +1,4 @@
-from .form_section import FormSection, FormSubSection, FormSectionLine, FormSectionTextField, FormSectionFieldInformative
+from .form_section import FormSection, FormSubSection, FormSectionLine, FormSectionModelSelectField, FormSectionFieldInformative, FormModelSection
 from typing import TYPE_CHECKING, Literal
 from ...tools.dictable_class import DictableClass
 
@@ -18,19 +18,22 @@ class FormLayout(DictableClass):
 
     def add_model_section(self, model_type: Literal['connectivity', 'mobility', 'interference', 'reliability', 'distribution', 'message_transmission']):
         return self.add_section(
-            FormSection(
+            FormModelSection(
                 id=f'{model_type}_model_section',
-                title=f'{' '.join(model_type.split("_")).capitalize()} Model Parameters'
+                title=f'{' '.join(model_type.split("_")).capitalize()} Model Parameters',
+                model=self.config_class.to_dict()[f'{model_type}_model'],
+                model_type=model_type
             ).add_subsections([
                 FormSubSection(
                     id=f"{model_type}_model_subsection",
                 ).add_line(
                     FormSectionLine().add_field(
-                        FormSectionTextField(
+                        FormSectionModelSelectField(
                             id=f"{model_type}_model_name",
                             label=f"{' '.join(model_type.split("_")).capitalize()} Model",
                             name=f"{model_type}_model",
                             occuped_columns=12,
+                            model_type=model_type,
                             required=True,
                             informative=FormSectionFieldInformative(
                                 title=f"The name of the {' '.join(model_type.split('_'))} model.",
@@ -40,10 +43,7 @@ class FormLayout(DictableClass):
                         )
                     )
                 ),
-            ]).add_model_subsection(
-                model=self.config_class.to_dict()[f'{model_type}_model'],
-                model_type=model_type
-            )
+            ]).add_parameters_subsection()
         )
 
     def add_model_sections(self, model_types: list[Literal['connectivity', 'mobility', 'interference', 'reliability', 'distribution', 'message_transmission']]):
