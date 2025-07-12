@@ -1,5 +1,6 @@
 import SideMenu from "@/components/SideMenu";
 import { SimulationProvider } from "@/contexts/SimulationContext";
+import { ErrorModalProvider } from '@/contexts/ErrorModalContext';
 
 type DashBoardLayoutProps = {
     children: React.ReactNode;
@@ -8,10 +9,12 @@ type DashBoardLayoutProps = {
 export default function DashboardLayout({
     children,
 }: DashBoardLayoutProps) {
-    return <SimulationProvider>
-        <div className="flex">
-            <SideMenu />
-            {children}
-        </div>
-    </SimulationProvider>;
+    return <ErrorModalProvider>
+        <SimulationProvider>
+            <div className="flex">
+                <SideMenu />
+                {children}
+            </div>
+        </SimulationProvider>
+    </ErrorModalProvider>;
 }

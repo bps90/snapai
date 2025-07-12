@@ -43,7 +43,7 @@ export default function NumberPairField({
             defaultValue={field.value}
 
             render={({ field: renderField, fieldState }) => {
-                const [min, max] = renderField.value as [number, number];
+                const [min, max] = renderField.value ?? [0, 0] as [number, number];
                 const setMin = (val: number) => {
                     renderField.onChange([val, max])
                     if (field.right_should_be_gte_left) {

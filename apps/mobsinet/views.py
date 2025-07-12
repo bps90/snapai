@@ -30,6 +30,7 @@ from .simulator.defaults.mobility_models.random_walk import RandomWalkParameters
 import importlib
 from .simulator.configuration.base_project_config import BaseProjectConfig
 import traceback
+from .simulator.configuration.layout.form_section import FormSubSection
 
 def index(request):
     return render(request, "mobsinet_index.html")
@@ -188,7 +189,9 @@ def get_model_subsection_layout(request: HttpRequest):
         Model = ModelsSearchEngine.find_model(model_name, cast(Literal['connectivity', 'mobility', 'interference', 'reliability',
                                                                        'distribution', 'message_transmission'], model_type))
 
-        return JsonResponse({"model_subsection_layout": Model.form_subsection_layout.to_dict() if 'form_subsection_layout' in Model.__dict__ else None})
+        return JsonResponse((Model.form_subsection_layout if 'form_subsection_layout' in Model.__dict__ else FormSubSection(
+            id=f"{model_name.replace(':', '_')}_parameters_subsection"
+        )).set_model_parameters(True).set_nested_paths([f'{model_type}_model_parameters']).to_dict())
     except ModuleNotFoundError as e:
         return HttpResponse(status=404, content="Model not found")
     except Exception as e:

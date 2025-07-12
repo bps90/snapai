@@ -496,9 +496,10 @@ class FormSectionLine:
 
 
 class FormSubSection:
-    def __init__(self, id: str, title: str | None = None):
+    def __init__(self, id: str, title: str | None = None, model: bool = False):
         self.id = id
         self.title = title
+        self.model_parameters: bool = model
         self.lines: list[FormSectionLine] = []
         self._nested_paths: list[str] = []
 
@@ -531,11 +532,16 @@ class FormSubSection:
                 field.set_nested_paths(self._nested_paths)
         return self
     
+    def set_model_parameters(self, model_parameters: bool):
+        self.model_parameters = model_parameters
+        return self
+    
     def to_dict(self):
         return {
             'id': self.id,
             'title': self.title,
-            'lines': [line.to_dict() for line in self.lines]
+            'lines': [line.to_dict() for line in self.lines],
+            'model_parameters': self.model_parameters
         }
 
 class FormSection:
@@ -582,4 +588,4 @@ class FormModelSection(FormSection):
         return self.add_subsection(
             (Model.form_subsection_layout if 'form_subsection_layout' in Model.__dict__ else FormSubSection(
             id=f"{self.model.replace(':', '_')}_parameters_subsection"
-        )).set_nested_paths([f'{self.model_type}_model_parameters']))
+        )).set_model_parameters(True).set_nested_paths([f'{self.model_type}_model_parameters']))

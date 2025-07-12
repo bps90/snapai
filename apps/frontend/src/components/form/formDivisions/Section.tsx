@@ -11,6 +11,7 @@ export type SectionProps = {
     isLoadingConfig: boolean;
     register: UseFormRegister<ConfigFormSchema>;
     nestedPaths?: string[];
+    [key: string]: unknown
 }
 
 
@@ -20,14 +21,15 @@ export default function Section({
     control,
     isLoadingConfig,
     register,
-    nestedPaths
+    nestedPaths,
+    ...props
 }: SectionProps) {
     return (
         <div
             id={`${superSection.prefix}_section_${section.id}`}
-            className={clsx(`${superSection.prefix}_section_${section.id}`, ...superSection.styleClasses.section)}
+            className={clsx(`${superSection.prefix}_section_${section.id}`, 'border', 'rounded-md', 'border-gray-200', 'p-2', 'mb-2', 'flex', 'flex-col', 'gap-6', ...superSection.styleClasses.section)}
         >
-            <h3 className={clsx(...superSection.styleClasses.sectionTitle)}>{section.title}</h3>
+            <h3 className={clsx('text-2xl', 'mb-2', ...superSection.styleClasses.sectionTitle)}>{section.title}</h3>
 
             {section.subsections.map((subsection, subsectionIndex) => {
                 return (
@@ -41,6 +43,7 @@ export default function Section({
                         superSection={superSection}
                         nestedPaths={nestedPaths}
                         key={subsection.id + subsectionIndex}
+                        {...props}
                     />
 
                 )

@@ -14,6 +14,7 @@ export type LineProps = {
     control: Control<ConfigFormSchema>;
     isLoadingConfig: boolean;
     nestedPaths?: string[];
+    [key: string]: unknown;
 }
 
 export default function Line({
@@ -25,13 +26,15 @@ export default function Line({
     control,
     register,
     isLoadingConfig,
-    nestedPaths
+    nestedPaths,
+    ...props
 }: LineProps) {
     return (
         <div
             id={`${superSection.prefix}_line_${section.id}_${subsection.id}_index_${lineIndex}`}
             className={clsx(
                 `${superSection.prefix}_line_${subsection.id}_index_${lineIndex}`,
+                'grid', 'grid-cols-12', 'gap-3', 'items-end',
                 ...superSection.styleClasses.line
             )}
         >
@@ -44,6 +47,7 @@ export default function Line({
                     register={register}
                     key={field.id + fieldIndex}
                     disabled={isLoadingConfig}
+                    {...props}
                 ></FormField>
             })}
         </div>

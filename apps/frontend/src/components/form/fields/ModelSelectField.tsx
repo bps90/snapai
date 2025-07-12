@@ -13,7 +13,8 @@ export type ModelSelectField = Omit<SelectField, 'type' | 'value' | 'options'> &
 export type ModelSelectFieldProps = FormFieldProps & {
     field: ModelSelectField,
     formControlAttr?: FormControlProps,
-    selectAttr?: SelectProps
+    selectAttr?: SelectProps,
+    onModelNameChange?: (modelName: string) => void
 }
 
 export default function ModelSelectField({
@@ -24,6 +25,7 @@ export default function ModelSelectField({
     formControlAttr,
     fieldIndex,
     containerAttr,
+    onModelNameChange,
 }: ModelSelectFieldProps) {
     const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
     const name = nameAsArray.join('.');
@@ -49,6 +51,11 @@ export default function ModelSelectField({
                             id={field.id}
                             {...controllerField}
                             {...selectAttr}
+                            onChange={(e, child) => {
+                                controllerField.onChange(e, child);
+                                selectAttr?.onChange?.(e, child);
+                                onModelNameChange?.(nameAsArray.join('.'));
+                            }}
                         >
                             {field.options.map((option, optionIndex) => (
                                 <MenuItem

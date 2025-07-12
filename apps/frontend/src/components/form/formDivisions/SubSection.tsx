@@ -13,6 +13,7 @@ export type SubSectionProps = {
     register: UseFormRegister<ConfigFormSchema>
     isLoadingConfig: boolean;
     nestedPaths?: string[];
+    [key: string]: unknown
 }
 
 export default function SubSection({
@@ -24,12 +25,14 @@ export default function SubSection({
     subsection,
     subsectionIndex,
     nestedPaths,
+    ...props
 }: SubSectionProps) {
     return (
         <fieldset
             id={`${superSection.prefix}_subsection_${section.id}_${subsection.id}`}
             className={clsx(
                 `${superSection.prefix}_subsection_${subsection.id}`,
+                'flex', 'flex-col', 'gap-3',
                 ...superSection.styleClasses.subSection
             )}
         >
@@ -48,6 +51,7 @@ export default function SubSection({
                         superSection={superSection}
                         nestedPaths={nestedPaths}
                         key={`subsection_${subsection.id + subsectionIndex}_line${lineIndex}`}
+                        {...props}
                     />
 
                 )

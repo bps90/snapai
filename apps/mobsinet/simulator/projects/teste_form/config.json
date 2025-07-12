@@ -1,0 +1,44 @@
+{
+    "simulation_name": "Sample9-Simulation-Mobility-from-a-trace",
+    "simulation_rounds": 100,
+    "simulation_refresh_rate": 0,
+    "nack_messages_enabled": false,
+    "dim_x": [
+        410000,
+        470000
+    ],
+    "dim_y": [
+        6430000,
+        6490000
+    ],
+    "dim_z": [
+        0,
+        0
+    ],
+    "save_trace": true,
+    "asynchronous": false,
+    "connectivity_enabled": true,
+    "message_transmission_model": "random_time",
+    "message_transmission_model_parameters": {
+        "time_range": [
+            1,
+            10
+        ]
+    },
+    "project_config": {
+        "connectivity_model": "qudg_connectivity",
+        "connectivity_model_parameters": {
+            "sure_connection_radius": 30,
+            "unsure_connection_radius": 500,
+            "unsure_radius_probability": 70
+        },
+        "reliability_model": "probabilistic_reliability",
+        "reliability_model_parameters": {
+            "success_probability": 99
+        },
+        "interference_model": "probability_interference",
+        "interference_model_parameters": {
+            "intensity": 20
+        }
+    }
+}

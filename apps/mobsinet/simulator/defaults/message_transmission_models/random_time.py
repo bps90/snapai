@@ -3,6 +3,7 @@ from ...models.abc_message_transmission_model import AbcMessageTransmissionModel
 from ...models.nodes.abc_node import AbcNode
 from ...models.nodes.packet import Packet
 from typing import TypedDict
+from ...configuration.layout.form_section import FormSubSection, FormSectionLine, FormSectionNumberPairField, FormSectionFieldInformative
 
 
 class RandomTimeParameters(TypedDict):
@@ -10,6 +11,26 @@ class RandomTimeParameters(TypedDict):
 
 
 class RandomTime(AbcMessageTransmissionModel):
+    form_subsection_layout = FormSubSection(
+        'random_time_parameters_subsection').add_line(
+        FormSectionLine().add_field(
+            FormSectionNumberPairField(
+                id="random_time_time_range",
+                label="Time Range",
+                name="time_range",
+                occuped_columns=12,
+                is_float=True,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The min and max time limits.",
+                ),
+                min_left_value=0,
+                min_right_value=0,
+                right_should_be_gte_left=True
+            )
+        )
+    )
+    
     def __init__(self, parameters: RandomTimeParameters, *args, **kwargs):
         super().__init__(parameters, *args, **kwargs)
         self.set_parameters(parameters)

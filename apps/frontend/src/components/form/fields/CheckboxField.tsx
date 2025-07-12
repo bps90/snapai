@@ -41,6 +41,8 @@ export default function CheckboxField({
                     borderRadius: '4px',
                     display: 'flex',
                     justifyContent: 'center',
+                    height: '100%',
+                    minHeight: '56px',
                 }}
                 variant="outlined"
                 fullWidth

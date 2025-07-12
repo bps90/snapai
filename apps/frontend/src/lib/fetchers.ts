@@ -29,13 +29,16 @@ export type Line = {
 export type Subsection = {
     id: string,
     title: string | null,
-    lines: Line[]
+    lines: Line[],
+    model_parameters: boolean,
 }
 
 export type Section = {
     id: string,
     title: string,
-    subsections: Subsection[]
+    subsections: Subsection[],
+    model?: string,
+    model_type?: string,
 }
 
 export type Layout = {
@@ -58,28 +61,28 @@ export type ConfigForm = {
     project_config: Record<string, unknown>
 }
 
-export const fetchProjectsNames = async (): Promise<string[]> => {
+export const fetchProjectsNamesDelay = async (): Promise<string[]> => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
-            fetchProjectsNamesOri().then(resolve).catch(reject)
+            fetchProjectsNames().then(resolve).catch(reject)
         }, 1500);
     })
 }
 
-export const fetchProjectsNamesOri = async (): Promise<string[]> => {
+export const fetchProjectsNames = async (): Promise<string[]> => {
     const response = await axios.get<string[]>(`${API_BASE_URL}/graph/projects_names/`);
     return response.data;
 };
 
-export const fetchConfigFormLayout = (project: string): Promise<{ simulation_config_layout: Layout; project_config_layout: Layout | null }> => {
+export const fetchConfigFormLayoutDelay = (project: string): Promise<{ simulation_config_layout: Layout; project_config_layout: Layout | null }> => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
-            fetchConfigFormLayoutOri(project).then(resolve).catch(reject);
+            fetchConfigFormLayout(project).then(resolve).catch(reject);
         }, 1500)
     })
 }
 
-export const fetchConfigFormLayoutOri = async (
+export const fetchConfigFormLayout = async (
     project: string
 ): Promise<{ simulation_config_layout: Layout; project_config_layout: Layout | null }> => {
     const response = await axios.get(`${API_BASE_URL}/graph/get_config_form_layout/`, {
@@ -88,19 +91,35 @@ export const fetchConfigFormLayoutOri = async (
     return response.data;
 };
 
-export const fetchConfigForm = (project: string): Promise<ConfigForm> => {
+export const fetchConfigFormDelay = (project: string): Promise<ConfigForm> => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
-            fetchConfigFormOri(project).then(resolve).catch(reject);
+            fetchConfigForm(project).then(resolve).catch(reject);
         }, 3000)
     })
 }
 
-
-
-export const fetchConfigFormOri = async (project: string): Promise<ConfigForm> => {
+export const fetchConfigForm = async (project: string): Promise<ConfigForm> => {
     const response = await axios.get(`${API_BASE_URL}/graph/get_config/`, {
         params: { project },
     });
     return response.data;
 };
+
+export const fetchModelSubsectionLayoutDelay = (model: string, model_type: string): Promise<Subsection> => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            fetchModelSubsectionLayout(model, model_type).then(resolve).catch(reject);
+        }, 1500)
+    })
+}
+
+export const fetchModelSubsectionLayout = async (
+    model: string,
+    model_type: string,
+): Promise<Subsection> => {
+    const response = await axios.get(`${API_BASE_URL}/graph/get_model_subsection_layout/`, {
+        params: { model, model_type },
+    });
+    return response.data;
+}

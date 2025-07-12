@@ -9,6 +9,7 @@ import NumberPairField, { NumberPairField as NumberPairFieldType } from "./Numbe
 import ModelSelectField, { ModelSelectField as ModelSelectFieldType } from "./ModelSelectField"
 import PercentageField, { PercentageField as PercentageFieldType } from "./PercentageField"
 import SelectField, { SelectField as SelectFieldType } from "./SelectField"
+import MultiSelectField, { MultiSelectField as MultiSelectFieldType } from "./MultiSelectField"
 
 export type FormFieldProps = {
     field: Field
@@ -18,6 +19,7 @@ export type FormFieldProps = {
     control: Control<ConfigFormSchema>;
     disabled?: boolean;
     nestedPaths?: string[]
+    [key: string]: unknown
 }
 
 export default function FormField({
@@ -40,6 +42,8 @@ export default function FormField({
             return <PercentageField field={field as PercentageFieldType} inputAttr={{ disabled }} {...fieldAttrs} />
         case 'select':
             return <SelectField field={field as SelectFieldType} selectAttr={{ disabled }} {...fieldAttrs} />
+        case 'multiselect':
+            return <MultiSelectField field={field as MultiSelectFieldType} selectAttr={{ disabled }} {...fieldAttrs} />
         default:
             return null;
     }

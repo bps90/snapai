@@ -2,6 +2,7 @@ import { Field } from "@/lib/fetchers"
 import { FormFieldProps } from "./FormField"
 import { FormControl, FormControlProps, InputLabel, MenuItem, Select, SelectProps } from "@mui/material"
 import { Controller } from "react-hook-form"
+import clsx from "clsx"
 
 export type MultiSelectField = Field & {
     type: 'multiselect',
@@ -52,6 +53,7 @@ export default function MultiSelectField({
                             value={controllerField.value || []}
                             onChange={controllerField.onChange}
                             {...selectAttr}
+                            className={clsx(selectAttr?.className, 'h-full')}
                         >
                             {field.options.map((option, optionIndex) => (
                                 <MenuItem
