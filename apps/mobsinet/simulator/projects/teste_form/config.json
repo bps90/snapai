@@ -23,6 +23,8 @@
     "project_config": {
         "connectivity_model": "qudg_connectivity",
         "connectivity_model_parameters": {
+            "sure_connection_radius": 40,
+            "unsure_connection_radius": 100,
             "unsure_radius_probability": 70
         },
         "reliability_model": "probabilistic_reliability",

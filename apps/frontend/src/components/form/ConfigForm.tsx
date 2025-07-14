@@ -15,13 +15,14 @@ import { MultiSelectField } from "./fields/MultiSelectField";
 import { useErrorModal } from "@/contexts/ErrorModalContext";
 import dynamic from 'next/dynamic';
 import { toast } from "sonner";
+import { zodToJsonSchema } from 'zod-to-json-schema';
 
 const ReactJson = dynamic(() => import('react-json-view'), { ssr: false });
 
 type SchemaBuilderLayout = Layout & { nestedPaths?: string[] }
 
-function buildSchema(layouts: SchemaBuilderLayout[]) {
-    const schema: Record<string, z.ZodType> = {};
+function buildSchema(layouts: SchemaBuilderLayout[], defaultSchema: Record<string, z.ZodType> = {}) {
+    const schema: Record<string, z.ZodType> = defaultSchema;
 
     for (const layout of layouts) {
         for (const section of layout.sections) {
@@ -75,7 +76,10 @@ function buildSchema(layouts: SchemaBuilderLayout[]) {
                                         lines: [{ fields: [{ ...field, nested_paths: nestedPaths.slice(1) }] }]
                                     }]
                                 }]
-                            }]);
+                            }], schema[nestedPaths[0]] ? { ...(schema[nestedPaths[0]] as z.ZodObject<any>).shape } : {});
+
+                            if (['sure_connection_radius', 'unsure_connection_radius', 'unsure_radius_probability'].includes(field.name))
+                                console.log('nested:', zodToJsonSchema(nestedSchema).properties, nestedPaths, schema[nestedPaths[0]]);
 
                             schema[nestedPaths[0]] = schema[nestedPaths[0]]
                                 ? (schema[nestedPaths[0]] as z.ZodObject<any>).merge(nestedSchema)
@@ -83,6 +87,9 @@ function buildSchema(layouts: SchemaBuilderLayout[]) {
                         } else {
                             schema[field.name] = base;
                         }
+
+                        if (['sure_connection_radius', 'unsure_connection_radius', 'unsure_radius_probability'].includes(field.name))
+                            console.log(nestedPaths, field.name, field.type, 'schema:', zodToJsonSchema(z.object(schema)).properties);
                     }
                 }
             }
