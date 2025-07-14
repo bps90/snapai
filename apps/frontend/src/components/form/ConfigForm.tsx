@@ -78,9 +78,6 @@ function buildSchema(layouts: SchemaBuilderLayout[], defaultSchema: Record<strin
                                 }]
                             }], schema[nestedPaths[0]] ? { ...(schema[nestedPaths[0]] as z.ZodObject<any>).shape } : {});
 
-                            if (['sure_connection_radius', 'unsure_connection_radius', 'unsure_radius_probability'].includes(field.name))
-                                console.log('nested:', zodToJsonSchema(nestedSchema).properties, nestedPaths, schema[nestedPaths[0]]);
-
                             schema[nestedPaths[0]] = schema[nestedPaths[0]]
                                 ? (schema[nestedPaths[0]] as z.ZodObject<any>).merge(nestedSchema)
                                 : nestedSchema;
@@ -88,8 +85,6 @@ function buildSchema(layouts: SchemaBuilderLayout[], defaultSchema: Record<strin
                             schema[field.name] = base;
                         }
 
-                        if (['sure_connection_radius', 'unsure_connection_radius', 'unsure_radius_probability'].includes(field.name))
-                            console.log(nestedPaths, field.name, field.type, 'schema:', zodToJsonSchema(z.object(schema)).properties);
                     }
                 }
             }
