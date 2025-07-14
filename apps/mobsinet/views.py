@@ -126,18 +126,14 @@ def update_config(request: HttpRequest):
     if request.method == "POST":
         try:
             # Carrega os dados enviados no formulário
-            form_data = request.POST.dict()
-
-            # Carrega o JSON existente
-            with open(os.path.join(SimulationConfig.PROJECTS_DIR, form_data['project'], 'config.json'), "r") as json_file:
-                existing_data = json.load(json_file)
-
-            # Atualiza os dados existentes com os dados do formulário
-            updated_data = merge_data(existing_data, form_data)
-
+            form_data = request.body.decode('utf-8')
+            print(request.GET.get('project'), json.loads(form_data))
+            
+            if (request.GET.get('project') is None):
+                return HttpResponse(status=400, content="Project name not provided")
             # Salva o JSON atualizado no arquivo
-            with open(os.path.join(SimulationConfig.PROJECTS_DIR, form_data['project'], 'config.json'), "w") as json_file:
-                json.dump(updated_data, json_file, indent=4)
+            with open(os.path.join(SimulationConfig.PROJECTS_DIR, cast(str, request.GET.get('project')), 'config.json'), "w") as json_file:
+                json.dump(json.loads(form_data), json_file, indent=4)
 
             # Retorna uma resposta de sucesso
             return JsonResponse({"status": "success", "message": "JSON atualizado com sucesso!"})
@@ -200,23 +196,6 @@ def get_model_subsection_layout(request: HttpRequest):
         return HttpResponse(status=500, content="See backend console for more details")
 
 
-def merge_data(existing_data, form_data):
-    """
-    Atualiza os dados existentes com base nos dados do formulário.
-    Converte os dados do formulário em tipos apropriados.
-    """
-    for key, value in form_data.items():
-        # Trata chaves aninhadas (ex.: network_parameters[type] -> network_parameters['type'])
-        if "[" in key and "]" in key:
-            keys = key.replace("]", "").split("[")
-            sub_data = existing_data
-            for sub_key in keys[:-1]:
-                sub_data = sub_data.setdefault(sub_key, {})
-            sub_data[keys[-1]] = parse_value(value)
-        else:
-            # Atualiza diretamente se for uma chave simples
-            existing_data[key] = parse_value(value)
-    return existing_data
 
 
 def parse_value(value):

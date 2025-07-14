@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { toastError } from "@/hooks/toastError";
-import { fetchConfigForm, fetchConfigFormLayout, fetchModelSubsectionLayout, Layout, Section as SectionType, Subsection } from "@/lib/fetchers";
+import { fetchConfigForm, fetchConfigFormLayout, fetchModelSubsectionLayout, Layout, Section as SectionType, Subsection, updateConfig } from "@/lib/fetchers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -14,6 +14,7 @@ import { CheckboxField } from "./fields/CheckboxField";
 import { MultiSelectField } from "./fields/MultiSelectField";
 import { useErrorModal } from "@/contexts/ErrorModalContext";
 import dynamic from 'next/dynamic';
+import { toast } from "sonner";
 
 const ReactJson = dynamic(() => import('react-json-view'), { ssr: false });
 
@@ -368,6 +369,15 @@ export default function ConfigForm({
 
     const handleConfigSubmit = (data: ConfigFormSchema) => {
         console.log('submited form data:', data);
+        updateConfig(project_name, data)
+            .then(() => {
+                toast.success(`Config of project ${project_name} updated`);
+            })
+            .catch((error) => {
+                console.error(error);
+                toastError('Error updating config');
+                return;
+            });
     }
 
     if (configFormLayoutError) return;

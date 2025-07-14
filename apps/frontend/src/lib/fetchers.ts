@@ -123,3 +123,13 @@ export const fetchModelSubsectionLayout = async (
     });
     return response.data;
 }
+
+export const updateConfig = async (project: string, data: Record<string, unknown>): Promise<void> => {
+    await axios.post(`${API_BASE_URL}/graph/update_config/`, {
+        ...data
+    }, {
+        params: {
+            project
+        }
+    });
+}

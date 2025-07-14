@@ -1,8 +1,6 @@
 {
     "simulation_name": "Sample9-Simulation-Mobility-from-a-trace",
-    "simulation_rounds": 100,
-    "simulation_refresh_rate": 0,
-    "nack_messages_enabled": false,
+    "asynchronous": false,
     "dim_x": [
         410000,
         470000
@@ -11,13 +9,10 @@
         6430000,
         6490000
     ],
-    "dim_z": [
-        0,
-        0
-    ],
-    "save_trace": true,
-    "asynchronous": false,
     "connectivity_enabled": true,
+    "interference_enabled": true,
+    "nack_messages_enabled": false,
+    "save_trace": true,
     "message_transmission_model": "random_time",
     "message_transmission_model_parameters": {
         "time_range": [
@@ -28,8 +23,6 @@
     "project_config": {
         "connectivity_model": "qudg_connectivity",
         "connectivity_model_parameters": {
-            "sure_connection_radius": 30,
-            "unsure_connection_radius": 500,
             "unsure_radius_probability": 70
         },
         "reliability_model": "probabilistic_reliability",
@@ -39,6 +32,20 @@
         "interference_model": "probability_interference",
         "interference_model_parameters": {
             "intensity": 20
-        }
+        },
+        "number_pair_test": [
+            0,
+            40
+        ],
+        "multiselect_test": [
+            0,
+            1
+        ],
+        "multiselect_test2": [
+            "a",
+            "b"
+        ],
+        "select_test": 0,
+        "select_test2": "a"
     }
 }
