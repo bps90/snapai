@@ -15,7 +15,6 @@ import { MultiSelectField } from "./fields/MultiSelectField";
 import { useErrorModal } from "@/contexts/ErrorModalContext";
 import dynamic from 'next/dynamic';
 import { toast } from "sonner";
-import { zodToJsonSchema } from 'zod-to-json-schema';
 
 const ReactJson = dynamic(() => import('react-json-view'), { ssr: false });
 
