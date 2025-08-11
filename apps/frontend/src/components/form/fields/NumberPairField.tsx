@@ -97,7 +97,12 @@ export default function NumberPairField({
                             {...inputsAttr}
                         />
                     </Box>
-                    <FormHelperText className="block w-full" error>{fieldState.error?.message}</FormHelperText></>
+                    {fieldState.error?.message && (
+                        <FormHelperText className="block w-full" error>
+                            {fieldState.error.message}
+                        </FormHelperText>
+                    )}
+                </>
                 );
             }}
         />

@@ -45,7 +45,7 @@ function buildSchema(layouts: SchemaBuilderLayout[], defaultSchema: Record<strin
                                 base = z.tuple([
                                     ((field as NumberPairField).is_float ? z.number() : z.number().int()).min((field as NumberPairField).min_left_value || -Infinity).max((field as NumberPairField).max_left_value || Infinity),
                                     ((field as NumberPairField).is_float ? z.number() : z.number().int()).min((field as NumberPairField).min_right_value || -Infinity).max((field as NumberPairField).max_right_value || Infinity),
-                                ]).refine(([left, right]) => (field as NumberPairField).right_should_be_gte_left ? left <= right : true, { message: 'Right value should be greater than left value' });
+                                ]).refine(([left, right]) => (field as NumberPairField).right_should_be_gte_left ? left <= right : true, { message: 'Right value should be greater than or equal to left value' });
                                 break;
                             case 'select':
                                 base = z.any();
