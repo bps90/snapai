@@ -15,6 +15,7 @@ import { MultiSelectField } from "./fields/MultiSelectField";
 import { useErrorModal } from "@/contexts/ErrorModalContext";
 import dynamic from 'next/dynamic';
 import { toast } from "sonner";
+import { NumberPairField } from "./fields/NumberPairField";
 
 const ReactJson = dynamic(() => import('react-json-view'), { ssr: false });
 
@@ -41,7 +42,10 @@ function buildSchema(layouts: SchemaBuilderLayout[], defaultSchema: Record<strin
                                 base = (field as CheckboxField).required ? z.literal(true) : z.boolean();
                                 break;
                             case 'number_pair':
-                                base = z.array(((field as NumberField).is_float ? z.number() : z.number().int())).length(2);
+                                base = z.tuple([
+                                    ((field as NumberPairField).is_float ? z.number() : z.number().int()).min((field as NumberPairField).min_left_value || -Infinity).max((field as NumberPairField).max_left_value || Infinity),
+                                    ((field as NumberPairField).is_float ? z.number() : z.number().int()).min((field as NumberPairField).min_right_value || -Infinity).max((field as NumberPairField).max_right_value || Infinity),
+                                ]).refine(([left, right]) => (field as NumberPairField).right_should_be_gte_left ? left <= right : true, { message: 'Right value should be greater than left value' });
                                 break;
                             case 'select':
                                 base = z.any();

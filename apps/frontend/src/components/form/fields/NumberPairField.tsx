@@ -1,7 +1,7 @@
 import { Field } from "@/lib/fetchers";
 import { FormFieldProps } from "./FormField";
 import { Controller, ControllerProps } from "react-hook-form";
-import { Box, Divider, InputLabel, TextField, TextFieldProps } from "@mui/material";
+import { Box, Divider, FormHelperText, InputLabel, TextField, TextFieldProps } from "@mui/material";
 import clsx from "clsx";
 
 export type NumberPairField = Field & {
@@ -44,32 +44,8 @@ export default function NumberPairField({
 
             render={({ field: renderField, fieldState }) => {
                 const [min, max] = renderField.value ?? [0, 0] as [number, number];
-                const setMin = (val: number) => {
-                    renderField.onChange([val, max])
-                    if (field.right_should_be_gte_left) {
-                        if (leftGreaterThanRight) {
-                            clearTimeout(leftGreaterThanRight);
-                        }
-                        leftGreaterThanRight = setTimeout(() => {
-                            if (val > max) {
-                                renderField.onChange([max, max])
-                            }
-                        }, 500)
-                    }
-                };
-                const setMax = (val: number) => {
-                    renderField.onChange([min, val])
-                    if (field.right_should_be_gte_left) {
-                        if (leftGreaterThanRight) {
-                            clearTimeout(leftGreaterThanRight);
-                        }
-                        leftGreaterThanRight = setTimeout(() => {
-                            if (val < min) {
-                                renderField.onChange([min, min])
-                            }
-                        }, 500)
-                    }
-                }
+                const setMin = (val: number) => renderField.onChange([val, max]);
+                const setMax = (val: number) => renderField.onChange([min, val]);
                 return (<>
                     <InputLabel
                         shrink
@@ -89,10 +65,9 @@ export default function NumberPairField({
                         {field.label}
                     </InputLabel>
                     <Box
-                        display="flex"
-                        alignItems="center"
                         sx={{
                             display: 'flex',
+                            alignItems: 'center',
                             border: '1px solid rgba(0, 0, 0, 0.23)',
                             borderRadius: '4px',
                         }}>
@@ -119,10 +94,10 @@ export default function NumberPairField({
                             slotProps={{ htmlInput: { min: field.min_right_value, max: field.max_right_value } }}
                             onChange={(e) => setMax(Number(e.target.value))}
                             error={!!fieldState.error}
-                            helperText={fieldState.error?.message}
                             {...inputsAttr}
                         />
-                    </Box></>
+                    </Box>
+                    <FormHelperText className="block w-full" error>{fieldState.error?.message}</FormHelperText></>
                 );
             }}
         />
