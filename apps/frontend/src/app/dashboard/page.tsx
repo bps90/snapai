@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Dashboard() {
     return (
-        <main className="flex flex-col items-center justify-center min-h-screen px-4 col-start-3 col-end-13">
+        <main className="flex flex-col w-full items-center justify-center min-h-screen px-4 col-start-3 col-end-13">
             <h1 className="text-5xl font-bold text-gray-900 mb-8 text-center">
                 Start work with <span className="text-blue-600">SnapAI</span>
             </h1>
