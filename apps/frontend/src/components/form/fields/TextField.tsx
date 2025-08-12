@@ -1,6 +1,7 @@
 import { Field } from '@/lib/fetchers';
-import { FormControl, FormControlProps, TextField as MaterialTextField, TextFieldProps as MaterialTextFieldProps, TextField } from '@mui/material';
+import { FormControl, FormControlProps, IconButton, InputAdornment, TextField as MaterialTextField, TextFieldProps as MaterialTextFieldProps, TextField, Tooltip } from '@mui/material';
 import { FormFieldProps } from './FormField';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 export type TextField = Field & {
     type: 'text'
@@ -38,7 +39,28 @@ function TextField({
                 type={field.type}
                 id={field.id}
                 required={field.required}
-                slotProps={{ htmlInput: { minLength: field.min_length, maxLength: field.max_length } }}
+                slotProps={{
+                    htmlInput: {
+                        minLength: field.min_length,
+                        maxLength: field.max_length
+                    },
+                    input: {
+                        endAdornment: field.informative?.help_text && (
+                            <InputAdornment position="end">
+                                <Tooltip
+                                    arrow
+                                    placement="bottom-end"
+                                    title={field.informative.as_html
+                                        ? <span dangerouslySetInnerHTML={{ __html: field.informative.help_text }}></span>
+                                        : field.informative.help_text}>
+                                    <IconButton disableTouchRipple sx={{ mr: '-8px' }}>
+                                        <HelpOutlineIcon fontSize="small" />
+                                    </IconButton>
+                                </Tooltip>
+                            </InputAdornment>
+                        )
+                    }
+                }}
                 {...register(nameAsArray.join('.'))}
                 {...inputAttr}
             />

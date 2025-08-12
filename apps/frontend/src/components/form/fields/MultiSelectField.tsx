@@ -1,8 +1,9 @@
 import { Field } from "@/lib/fetchers"
 import { FormFieldProps } from "./FormField"
-import { FormControl, FormControlProps, InputLabel, MenuItem, Select, SelectProps } from "@mui/material"
+import { FormControl, FormControlProps, IconButton, InputAdornment, InputLabel, MenuItem, Select, SelectProps, Tooltip } from "@mui/material"
 import { Controller } from "react-hook-form"
 import clsx from "clsx"
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 export type MultiSelectField = Field & {
     type: 'multiselect',
@@ -52,6 +53,22 @@ export default function MultiSelectField({
                             id={field.id}
                             value={controllerField.value || []}
                             onChange={controllerField.onChange}
+                            endAdornment={
+                                field.informative?.help_text && (
+                                    <InputAdornment position="end">
+                                        <Tooltip
+                                            arrow
+                                            placement="bottom-end"
+                                            title={field.informative.as_html
+                                                ? <span dangerouslySetInnerHTML={{ __html: field.informative.help_text }}></span>
+                                                : field.informative.help_text}>
+                                            <IconButton disableTouchRipple sx={{ mr: '16px' }}>
+                                                <HelpOutlineIcon fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </InputAdornment>
+                                )
+                            }
                             {...selectAttr}
                             className={clsx(selectAttr?.className, 'h-full')}
                         >

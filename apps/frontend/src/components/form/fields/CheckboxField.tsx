@@ -1,8 +1,10 @@
 import { Field } from "@/lib/fetchers";
 import { FormFieldProps } from "./FormField";
-import { Checkbox, CheckboxProps, FormControl, FormControlLabel, FormControlLabelProps, FormControlProps } from "@mui/material";
+import { Checkbox, CheckboxProps, FormControl, FormControlLabel, FormControlLabelProps, FormControlProps, IconButton, Tooltip } from "@mui/material";
 import clsx from "clsx";
 import { Controller } from "react-hook-form";
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import { Fragment } from "react";
 
 export type CheckboxField = Field & {
     type: 'checkbox',
@@ -40,7 +42,9 @@ export default function CheckboxField({
                     border: '1px solid #ccc',
                     borderRadius: '4px',
                     display: 'flex',
-                    justifyContent: 'center',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexDirection: 'row',
                     height: '100%',
                     minHeight: '56px',
                 }}
@@ -57,6 +61,7 @@ export default function CheckboxField({
                     control={control}
                     render={({ field: controllerField }) => (
                         <FormControlLabel
+                            title={field.informative?.title}
                             control={
                                 <Checkbox
                                     required={field.required}
@@ -71,6 +76,17 @@ export default function CheckboxField({
                         />
                     )}
                 />
+                {field.informative?.help_text &&
+                    <Tooltip
+                        arrow
+                        placement="bottom-end"
+                        title={field.informative.as_html
+                            ? <span dangerouslySetInnerHTML={{ __html: field.informative.help_text }}></span>
+                            : field.informative.help_text}>
+                        <IconButton disableTouchRipple sx={{ mr: '-8px' }}>
+                            <HelpOutlineIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>}
             </FormControl>
         </div>
     )

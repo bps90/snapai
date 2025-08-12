@@ -1,7 +1,8 @@
 import { Field } from "@/lib/fetchers"
 import { FormFieldProps } from "./FormField"
-import { FormControl, FormControlProps, InputLabel, MenuItem, Select, SelectProps } from "@mui/material"
+import { FormControl, FormControlProps, IconButton, InputAdornment, InputLabel, MenuItem, Select, SelectProps, Tooltip } from "@mui/material"
 import { Controller } from "react-hook-form"
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 export type SelectField = Field & {
     type: 'select',
@@ -48,6 +49,22 @@ export default function SelectField({
                             id={field.id}
                             value={controllerField.value ?? ''}
                             onChange={controllerField.onChange}
+                            endAdornment={
+                                field.informative?.help_text && (
+                                    <InputAdornment position="end">
+                                        <Tooltip
+                                            arrow
+                                            placement="bottom-end"
+                                            title={field.informative.as_html
+                                                ? <span dangerouslySetInnerHTML={{ __html: field.informative.help_text }}></span>
+                                                : field.informative.help_text}>
+                                            <IconButton disableTouchRipple sx={{ mr: '16px' }}>
+                                                <HelpOutlineIcon fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </InputAdornment>
+                                )
+                            }
                             {...selectAttr}
                         >
                             {field.options.map((option, optionIndex) => (

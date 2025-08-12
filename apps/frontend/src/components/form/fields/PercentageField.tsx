@@ -1,7 +1,7 @@
-import { FormControl, FormControlProps, InputAdornment, TextField, TextFieldProps } from "@mui/material";
+import { FormControl, FormControlProps, IconButton, InputAdornment, TextField, TextFieldProps, Tooltip } from "@mui/material";
 import { FormFieldProps } from "./FormField";
 import { NumberField } from "./NumberField";
-
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 export type PercentageField = Omit<NumberField, 'type'> & {
     type: 'percentage',
@@ -36,7 +36,25 @@ export default function PercentageField({
                 type={'number'}
                 slotProps={{
                     htmlInput: { step: field.is_float ? 'any' : '1', min: field.min_value, max: field.max_value },
-                    input: { endAdornment: <InputAdornment position="end">%</InputAdornment> }
+                    input: {
+                        endAdornment: (<>
+                            <InputAdornment position="end">%</InputAdornment>
+                            {field.informative?.help_text && (
+                                <InputAdornment position="end">
+                                    <Tooltip
+                                        arrow
+                                        placement="bottom-end"
+                                        title={field.informative.as_html
+                                            ? <span dangerouslySetInnerHTML={{ __html: field.informative.help_text }}></span>
+                                            : field.informative.help_text}>
+                                        <IconButton disableTouchRipple sx={{ mr: '-8px' }}>
+                                            <HelpOutlineIcon fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
+                                </InputAdornment>
+                            )}
+                        </>)
+                    }
                 }}
                 id={field.id}
                 required={field.required}

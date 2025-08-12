@@ -1,8 +1,9 @@
 import { Field } from "@/lib/fetchers";
 import { FormFieldProps } from "./FormField";
 import { Controller, ControllerProps } from "react-hook-form";
-import { Box, Divider, FormHelperText, InputLabel, TextField, TextFieldProps } from "@mui/material";
+import { Box, Divider, FormHelperText, IconButton, InputAdornment, InputLabel, TextField, TextFieldProps, Tooltip } from "@mui/material";
 import clsx from "clsx";
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 export type NumberPairField = Field & {
     type: 'number_pair',
@@ -91,7 +92,30 @@ export default function NumberPairField({
                                 '& fieldset': { border: 'none' },
                                 flex: 1,
                             }}
-                            slotProps={{ htmlInput: { min: field.min_right_value, max: field.max_right_value } }}
+                            slotProps={{
+                                htmlInput: {
+                                    min: field.min_right_value,
+                                    max: field.max_right_value
+                                },
+                                input: {
+                                    endAdornment: (
+                                        field.informative?.help_text && (
+                                            <InputAdornment position="end">
+                                                <Tooltip
+                                                    arrow
+                                                    placement="bottom-end"
+                                                    title={field.informative.as_html
+                                                        ? <span dangerouslySetInnerHTML={{ __html: field.informative.help_text }}></span>
+                                                        : field.informative.help_text}>
+                                                    <IconButton disableTouchRipple sx={{ mr: '-8px' }}>
+                                                        <HelpOutlineIcon fontSize="small" />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </InputAdornment>
+                                        )
+                                    )
+                                }
+                            }}
                             onChange={(e) => setMax(Number(e.target.value))}
                             error={!!fieldState.error}
                             {...inputsAttr}
