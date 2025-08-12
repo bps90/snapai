@@ -376,7 +376,7 @@ export default function ConfigForm({
         console.log('submited form data:', data);
         updateConfig(project_name, data)
             .then(() => {
-                toast.success(`Config of project ${project_name} updated`);
+                toast.success(<>Config of project <b>{project_name}</b> updated</>);
             })
             .catch((error) => {
                 console.error(error);
