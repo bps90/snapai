@@ -2,8 +2,7 @@ import ControlButton from "@/components/ControlButton";
 import StopCircleRoundedIcon from '@mui/icons-material/StopCircleRounded';
 import PlayCircleRoundedIcon from '@mui/icons-material/PlayCircleRounded';
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
-import { Divider, IconButton } from "@mui/material";
-import Image from "next/image";
+import { Divider } from "@mui/material";
 import ControlInput from "@/components/ControlInput";
 
 export default function DashboardControls() {
@@ -16,18 +15,20 @@ export default function DashboardControls() {
                         src: "/assets/initialize.svg",
                         alt: "Gear with a reloading wheel icon",
                     }}
+                    helpText="Reset all variables and prepare the simulator for a new simulation."
                 />
                 <ControlButton
                     label="Add Nodes"
                     icon={<AddCircleRoundedIcon style={{ color: "#2867CE" }} />}
+                    helpText="Open form to add nodes to the network."
                 />
-
                 <ControlButton
                     label="Reevaluate Connections"
                     iconImage={{
                         alt: "Network icon",
                         src: "/assets/reevaluate-connections.svg"
                     }}
+                    helpText="Reevaluate the connections between the nodes in the network."
                 />
                 <Divider orientation="vertical" flexItem />
                 <div className="playpause-bar flex gap-1">
@@ -42,12 +43,15 @@ export default function DashboardControls() {
                             alt: "Play icon with a number 1",
                             src: "/assets/run1.svg"
                         }}
+                        helpText="Run the simulation for one round."
                     />
                     <ControlButton
                         icon={<PlayCircleRoundedIcon style={{ color: "#27ae60" }} />}
+                        helpText="Run the simulation for the specified number of rounds."
                     />
                     <ControlButton
                         icon={<StopCircleRoundedIcon style={{ color: "#E74C3C" }} />}
+                        helpText="Stop the simulation."
                     />
                 </div>
             </div>
