@@ -17,7 +17,7 @@ import dynamic from 'next/dynamic';
 import { toast } from "sonner";
 import { NumberPairField } from "./fields/NumberPairField";
 
-const ReactJson = dynamic(() => import('react-json-view'), { ssr: false });
+const ReactJson = dynamic(() => import('@microlink/react-json-view'), { ssr: false });
 
 type SchemaBuilderLayout = Layout & { nestedPaths?: string[] }
 
