@@ -74,7 +74,7 @@ const ControlBar = forwardRef<ControlBarRef, ControlBarProps>(({
     }, [selectedProject])
 
     useEffect(() => {
-        setInitializeButtonBg(initializeButtonState === 'success' ? '#89d1a9' : initializeButtonState === 'error' ? '#fca5a5' : undefined);
+        setInitializeButtonBg(initializeButtonState === 'success' ? '#E9CC2840' : initializeButtonState === 'error' ? '#ff4d4d40' : undefined);
     }, [initializeButtonState])
 
     return (
@@ -86,10 +86,7 @@ const ControlBar = forwardRef<ControlBarRef, ControlBarProps>(({
                     src: "/assets/reload.svg",
                     alt: "Gear with a reloading wheel icon",
                 }}
-                style={{
-                    backgroundColor: initializeButtonBg,
-                    borderColor: initializeButtonBg
-                }}
+                style={{ backgroundColor: initializeButtonBg }}
                 helpText={initializeButtonDisabled ? "Select a project first!" : "Reset all variables and prepare the simulator for a new simulation."}
                 onClick={onInitializeButtonClick}
             />

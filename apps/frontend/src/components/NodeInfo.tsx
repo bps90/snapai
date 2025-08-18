@@ -2,7 +2,6 @@ import { Divider } from "@mui/material";
 import { useEffect, useState } from "react";
 import { GraphViewerNode } from "./GraphViewer";
 import { useSimulationContext } from "@/contexts/SimulationContext";
-import { set } from "react-hook-form";
 
 export type NodeInfoProps = {
     node?: string;

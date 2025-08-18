@@ -1,4 +1,4 @@
-import Link from "next/link";
+import LinkWithQuery from "@/components/LinkWithQuery";
 
 export default function Dashboard() {
     return (
@@ -7,12 +7,12 @@ export default function Dashboard() {
                 Start work with <span className="text-blue-600">SnapAI</span>
             </h1>
 
-            <Link
+            <LinkWithQuery
                 href="/dashboard/configuration"
                 className="inline-flex items-center px-8 py-4 text-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-2xl shadow-lg transition duration-300"
             >
                 Start by configuring your project ⚙️
-            </Link>
+            </LinkWithQuery>
         </main>
 
     );

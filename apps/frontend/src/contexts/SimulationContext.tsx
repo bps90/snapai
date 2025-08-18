@@ -1,5 +1,6 @@
 "use client";
 import { GraphData } from '@/components/GraphViewer';
+import { useQueryState } from 'nuqs';
 import React, { createContext, useState, useContext } from 'react';
 import { CameraState } from 'sigma/types';
 
@@ -27,9 +28,15 @@ type SimulationProviderProps = {
 }
 
 export const SimulationProvider = ({ children }: SimulationProviderProps) => {
-    const [selectedProject, setSelectedProject] = useState<string | null>(null);
-    const [showArrows, setShowArrows] = useState(true);
-    const [showIds, setShowIds] = useState(true);
+    const [selectedProject, setSelectedProject] = useQueryState<string | null>('project', { defaultValue: null, parse: (s) => s ? s : null });
+    const [showArrows, setShowArrows] = useQueryState('showArrows', {
+        defaultValue: true,
+        parse: (s) => s === 'true',
+    });
+    const [showIds, setShowIds] = useQueryState('showIds', {
+        defaultValue: true,
+        parse: (s) => s === 'true',
+    });
     const [mouseInNode, setMouseInNode] = useState<string | null>(null);
     const [graphData, setGraphData] = useState<GraphData>({
         links: [],

@@ -4,6 +4,7 @@ import { Tooltip } from "@mui/material";
 import Link from "next/link"
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import LinkWithQuery from "./LinkWithQuery";
 
 type MenuItem = {
     href: string,
@@ -48,8 +49,8 @@ function MenuItem({ item, currentPathname }: MenuItemProps) {
     })
 
     return (
-        <Link
-            href={isEnabled ? item.href : "#"}
+        <LinkWithQuery
+            href={isEnabled ? item.href : ""}
             style={{
                 cursor: isEnabled ? "pointer" : "not-allowed",
                 opacity: isEnabled ? 1 : 0.5
@@ -58,7 +59,7 @@ function MenuItem({ item, currentPathname }: MenuItemProps) {
         >
             <span>{item.icon}</span>
             <span className="aside-item-label ml-4">{item.label}</span>
-        </Link>
+        </LinkWithQuery>
     )
 }
 

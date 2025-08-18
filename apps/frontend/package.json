@@ -23,6 +23,7 @@
     "graphology": "^0.26.0",
     "graphology-types": "^0.24.8",
     "next": "15.3.3",
+    "nuqs": "^2.4.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-force-graph-2d": "^1.28.0",

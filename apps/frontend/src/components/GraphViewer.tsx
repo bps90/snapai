@@ -25,7 +25,7 @@ export type GraphViewerLink = {
     target: string;
     color?: string;
     label?: string;
-    type?: 'line' | 'arrow' | 'curve' | 'quadratic' | 'curvedArrow' | 'curvedLine';
+    type?: 'line' | 'arrow';
     width?: number;
     highlighted?: boolean;
     bound?: boolean;
@@ -63,7 +63,6 @@ const GraphViewer = forwardRef<GraphViewerRef, GraphViewerProps>(({
     showArrows,
     arrowHeadSize
 }, ref) => {
-    const renderId = uuid();
     const containerRef = useRef<HTMLDivElement>(null);
     const sigmaRef = useRef<Sigma | null>(null);
     const graphRef = useRef<Graph | null>(null);
@@ -157,7 +156,6 @@ const GraphViewer = forwardRef<GraphViewerRef, GraphViewerProps>(({
     }
 
     useEffect(() => {
-        console.log(showArrows, renderLabels)
         if (!containerRef.current) return;
 
         if (sigmaRef.current) {
@@ -172,9 +170,7 @@ const GraphViewer = forwardRef<GraphViewerRef, GraphViewerProps>(({
         data.nodes.forEach(n => g.addNode(n.id, n));
         data.links.forEach(e => g.addEdge(e.source, e.target, {
             ...e,
-            arrowSize: 5,
-            weight: 7,
-            type: e.type ?? showArrows ? 'arrow' : 'line',
+            type: e.type ?? (showArrows ? 'arrow' : 'line'),
         }));
 
         graphRef.current = g;
@@ -197,7 +193,6 @@ const GraphViewer = forwardRef<GraphViewerRef, GraphViewerProps>(({
         // Função de animação
         let interval: NodeJS.Timeout | null | undefined = null;
         const animate = () => {
-            console.log(renderId)
             if (graphRef.current) {
                 graphRef.current.forEachNode((node, attr) => {
                     if (attr.bound === true) return null;
@@ -212,12 +207,14 @@ const GraphViewer = forwardRef<GraphViewerRef, GraphViewerProps>(({
                     if (coords.y > 100) coords.y = 100;
 
                     if (node.length < 2) {
+
+                        const newId = uuid();
                         graphRef.current!.updateNodeAttributes(node, (attr) => ({
                             ...attr,
                             ...coords,
+                            lastTraceId: newId,
                             label: node
                         }));
-                        const newId = uuid();
                         graphRef.current!.addNode(newId, {
                             ...attr,
                             ...coords,
@@ -225,14 +222,33 @@ const GraphViewer = forwardRef<GraphViewerRef, GraphViewerProps>(({
                             id: newId,
                             label: graphRef.current!.nodes().length
                         });
+                        if (attr.lastTraceId) {
+                            graphRef.current!.addEdge(attr.lastTraceId, newId, {
+                                color: attr.color,
+                                type: 'line' as const
+                            })
+                        }
 
                         setGraphData((prev) => ({
                             ...prev,
+                            links: [
+                                ...prev.links,
+                                ...(attr.lastTraceId ?
+                                    [{
+                                        source: attr.lastTraceId,
+                                        target: newId,
+                                        color: attr.color,
+                                        type: 'line' as const
+                                    }] :
+                                    []
+                                )
+                            ],
                             nodes: [
                                 ...prev.nodes.filter(n => n.id !== node),
                                 {
                                     ...attr,
                                     ...coords,
+                                    lastTraceId: newId,
                                     id: node,
                                     label: node
                                 },
@@ -250,7 +266,7 @@ const GraphViewer = forwardRef<GraphViewerRef, GraphViewerProps>(({
 
             }
         };
-        interval = isRunning ? setInterval(animate, 50) : undefined;
+        interval = isRunning ? setInterval(animate) : undefined;
 
         return () => interval && clearTimeout(interval);
     }, [renderLabels, arrowHeadSize, showArrows, isRunning]);

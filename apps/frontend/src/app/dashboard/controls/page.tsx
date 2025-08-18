@@ -1,19 +1,17 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import ControlBar, { ControlBarRef, PreRunFormSchema } from "@/components/ControlBar";
-import { useEffect, useRef, useState } from "react";
-import { Button, Chip, Divider } from "@mui/material";
-import { GraphData, GraphViewerProps, GraphViewerRef } from "@/components/GraphViewer";
+import ControlBar, { PreRunFormSchema } from "@/components/ControlBar";
+import { useEffect, useRef } from "react";
+import { Divider } from "@mui/material";
+import { GraphData, GraphViewerRef } from "@/components/GraphViewer";
 
-import Image from "next/image";
 import SimulationInfoBar from "@/components/SimulationInfoBar";
 import { useSimulationContext } from "@/contexts/SimulationContext";
 import NodeInfo from "@/components/NodeInfo";
-import { on } from "events";
 import Logs from "@/components/Logs";
-import { redirect, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useQueryState } from 'nuqs';
+import LinkWithQuery from "@/components/LinkWithQuery";
 
 // Importa sem SSR
 const GraphViewer = dynamic(() => import("@/components/GraphViewer"), { ssr: false });
@@ -33,7 +31,7 @@ const mockData: GraphData = {
         { source: '4', target: '2' },
         { source: '0', target: '1' },
         { source: '0', target: '2' },
-        { source: '0', target: '4' },
+        { source: '0', target: '4', type: 'line' },
         { source: '4', target: '0' },
     ],
 }
@@ -41,13 +39,15 @@ const mockData: GraphData = {
 type BypassKeys = "projectValidation";
 
 export default function DashboardControls() {
-    const searchParams = useSearchParams();
+    const [bypass] = useQueryState<BypassKeys[]>('bypass', {
+        defaultValue: [],
+        parse: (s) => s.split(",") as BypassKeys[]
+    });
     const graphViewerRef = useRef<GraphViewerRef>(null);
     const {
         showIds, showArrows, graphData, setGraphData, mouseInNode,
         setIsRunning, selectedProject
     } = useSimulationContext();
-    const [bypass, setBypass] = useState<BypassKeys[]>([]);
 
     const onPlay = (data: PreRunFormSchema) => {
         console.log(data);
@@ -56,14 +56,10 @@ export default function DashboardControls() {
 
     const onPause = () => {
         setIsRunning(false);
-        if (!selectedProject) {
-            redirect("/dashboard/configuration");
-        }
     };
 
     useEffect(() => {
         setGraphData(mockData);
-        setBypass(searchParams.getAll("bypass") as BypassKeys[]);
     }, []);
 
     if (!selectedProject && !bypass.includes("projectValidation"))
@@ -73,7 +69,7 @@ export default function DashboardControls() {
                 <main className="mx-auto max-w-5xl flex flex-col items-center justify-center px-4 ">
                     <div className="text-9xl mb-10 -mt-32">⚠️</div>
                     <h1 className="text-5xl font-bold text-gray-900 mb-8 text-center">
-                        Go to <Link href="/dashboard/configuration" className="text-blue-600 underline">Configurations</Link> page to select a project
+                        Go to <LinkWithQuery href="/dashboard/configuration" className="text-blue-600 underline">Configurations</LinkWithQuery> page to select a project
                     </h1>
                 </main></div>
         )
