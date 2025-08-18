@@ -35,6 +35,7 @@ const ControlBar = forwardRef<ControlBarRef, ControlBarProps>(({
     onPlay,
     onPauseButtonClick
 }, ref) => {
+    const [initializeButtonLoading, setInitializeButtonLoading] = useState(false);
     const [initializeButtonDisabled, setInitializeButtonDisabled] = useState(false);
     const [initializeButtonState, setInitializeButtonState] = useState<'success' | 'error' | 'idle'>('idle');
     const [initializeButtonBg, setInitializeButtonBg] = useState<string | undefined>(undefined);
@@ -58,13 +59,13 @@ const ControlBar = forwardRef<ControlBarRef, ControlBarProps>(({
 
     const onInitializeButtonClick = async () => {
         if (!selectedProject) return;
-        setInitializeButtonDisabled(true);
+        setInitializeButtonLoading(true);
         await initSimulation(selectedProject)
             .then(() => setInitializeButtonState('success'),
                 () => setInitializeButtonState('error'));
         setTimeout(() => {
             setInitializeButtonState('idle');
-            setInitializeButtonDisabled(false);
+            setInitializeButtonLoading(false);
         }, 1000);
     }
 
@@ -79,7 +80,7 @@ const ControlBar = forwardRef<ControlBarRef, ControlBarProps>(({
     return (
         <div className="control-bar gap-1 flex">
             <ControlButton
-                disabled={initializeButtonDisabled}
+                disabled={initializeButtonDisabled || initializeButtonLoading}
                 label="Initialize"
                 iconImage={{
                     src: "/assets/reload.svg",
@@ -89,8 +90,7 @@ const ControlBar = forwardRef<ControlBarRef, ControlBarProps>(({
                     backgroundColor: initializeButtonBg,
                     borderColor: initializeButtonBg
                 }}
-                helpText="Reset all variables and prepare the simulator for a new simulation."
-                helpTextOnDisabled="Select a project first!"
+                helpText={initializeButtonDisabled ? "Select a project first!" : "Reset all variables and prepare the simulator for a new simulation."}
                 onClick={onInitializeButtonClick}
             />
             <ControlButton

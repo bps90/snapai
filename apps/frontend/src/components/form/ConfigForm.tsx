@@ -13,6 +13,9 @@ import dynamic from 'next/dynamic';
 import { toast } from "sonner";
 import { v6 as uuidv6 } from 'uuid';
 import { FormLayoutHelper, LayoutWithNestedPaths } from "@/utils/FormLayoutHelper";
+import { Button } from "@mui/material";
+import SaveIcon from '@mui/icons-material/Save';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 const ReactJson = dynamic(() => import('@microlink/react-json-view'), { ssr: false });
 
@@ -72,12 +75,11 @@ export default function ConfigForm({
         resolver: configFormSchema ? zodResolver(configFormSchema as unknown as Parameters<typeof zodResolver<ConfigFormSchema, any, ConfigFormSchema>>[0]) : undefined,
     });
 
-    // const [configFormLayout, setConfigFormLayout] = useState<Awaited<ReturnType<typeof fetchConfigFormLayout>> | undefined>();
-    // const [configFormLayoutError, ]
     const {
         data: configFormLayout,
         error: configFormLayoutError,
         isLoading: isLoadingConfigFormLayout,
+        mutate
     } = useSWR(`config_form_layout_${project_name}`, () => fetchConfigFormLayout(project_name));
     const {
         data: config,
@@ -162,10 +164,9 @@ export default function ConfigForm({
 
 
     useEffect(() => {
-        console.log(config, configFormLayout)
         if (config && configFormLayout) {
             reset({ ...watch(), ...config, project_config: { ...watch().project_config, ...config.project_config } });
-            console.log('useEffect(config)', watch())
+
             modelNameFields.forEach((inputName) => {
                 updateModelSections(inputName);
             });
@@ -183,7 +184,6 @@ export default function ConfigForm({
             ]
 
             reset(FormLayoutHelper.getLayoutValues(layouts));
-            console.log('useEffect(configFormLayout)', watch())
 
             setSimulationConfigLayout(configFormLayout.simulation_config_layout);
             setProjectConfigLayout(configFormLayout.project_config_layout);
@@ -204,7 +204,6 @@ export default function ConfigForm({
         setConfigFormSchema(FormLayoutHelper.buildSchema(layouts) as unknown as z.ZodObject<ConfigFormSchema>);
 
         reset({ ...config, ...watch(), project_config: { ...config?.project_config, ...watch().project_config } });
-        console.log('useEffect(superSections)', watch())
     }, [superSections]);
 
     useEffect(() => {
@@ -238,7 +237,6 @@ export default function ConfigForm({
     }, [configError]);
 
     const handleConfigSubmit = (data: ConfigFormSchema) => {
-        console.log('submited form data:', data);
         updateConfig(project_name, data)
             .then(() => {
                 toast.success(<>Config of project <b>{project_name}</b> updated</>);
@@ -250,10 +248,15 @@ export default function ConfigForm({
             });
     }
 
+    const onResetButtonClick = () => {
+        mutate(undefined, {
+            revalidate: true,
+        });
+    }
+
     if (configFormLayoutError) return;
 
     if (isLoadingConfigFormLayout || isLoadingConfig) {
-        console.log('isLoadingConfigFormLayout');
         return (
             <div className="w-full h-full flex items-center justify-center text-3xl">Loading form layout...</div>
         )
@@ -263,7 +266,7 @@ export default function ConfigForm({
 
     return (
         <form
-            className={clsx("flex", "flex-col", "gap-8")}
+            className={clsx("flex", "flex-col", "gap-8", 'relative')}
             onSubmit={handleSubmit(handleConfigSubmit)}
             id="config-form"
         >
@@ -297,13 +300,27 @@ export default function ConfigForm({
             })}
 
 
-            <div className="flex justify-end">
-                <button
-                    type="submit"
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            <div className="button-bar-spacer h-16"></div>
+            <div className="fixed flex gap-4 bottom-0 rounded-t-lg bg-white p-4 shadow-2xl shadow-gray-700 left-1/2 -translate-x-1/2 z-10">
+                <Button
+                    type="button"
+                    variant="contained"
+                    size="large"
+                    color="warning"
+                    className="flex items-center gap-2"
+                    onClick={onResetButtonClick}
                 >
-                    Submit
-                </button>
+                    <RefreshIcon /> Reset
+                </Button>
+                <Button
+                    type="submit"
+                    variant="contained"
+                    color="success"
+                    size="large"
+                    className="flex items-center gap-2"
+                >
+                    <SaveIcon /> Save
+                </Button>
             </div>
         </form>
     )

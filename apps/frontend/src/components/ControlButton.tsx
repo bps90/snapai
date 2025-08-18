@@ -10,7 +10,6 @@ export type ControlButtonProps<Label extends string | undefined> = (Label extend
     }
     label?: Label,
     helpText?: ReactNode,
-    helpTextOnDisabled?: ReactNode
 }
 
 export default function ControlButton<Label extends string | undefined>({
@@ -18,12 +17,11 @@ export default function ControlButton<Label extends string | undefined>({
     iconImage,
     label,
     helpText,
-    helpTextOnDisabled,
     ...props
 }: ControlButtonProps<Label>) {
     return <Tooltip
         arrow
-        title={props.disabled ? helpTextOnDisabled : helpText}
+        title={helpText}
     >
         <div>
             {label ? (
