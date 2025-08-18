@@ -1,0 +1,80 @@
+{
+    "project_name": "sample5",
+    "simulation_name": "Sample5-Simulation",
+    "simulation_rounds": 1,
+    "simulation_refresh_rate": 0,
+    "num_nodes": 20,
+    "node_size": 3,
+    "dimX": 7000,
+    "dimY": 7000,
+    "dimZ": 0,
+    "node": "sample5:ping_node",
+    "distribution_model": "circular_dist",
+    "distribution_model_parameters": {
+        "orientation": "horizontal",
+        "line_position": 0,
+        "number_of_nodes": 20,
+        "midpoint": [
+            5000,
+            5000
+        ],
+        "rotation_direction": "anti-clockwise",
+        "radius": 500,
+        "trace_file": null,
+        "is_lat_long": true,
+        "should_padding": true,
+        "addapt_to_dimensions": true
+    },
+    "mobility_model": "random_walk",
+    "mobility_model_parameters": {
+        "speed_range": [
+            0,
+            20
+        ],
+        "direction_range": [
+            0,
+            6.283185307179586
+        ],
+        "prioritize_speed": false,
+        "travel_distance": null,
+        "travel_time": 50,
+        "waiting_time_range": null,
+        "move_time_range": null,
+        "trace_file": null,
+        "waypoint_radius_range": null,
+        "is_lat_long": true,
+        "should_padding": true,
+        "addapt_to_dimensions": true
+    },
+    "connectivity_model": "qudg_connectivity",
+    "connectivity_model_parameters": {
+        "max_radius": 500,
+        "min_radius": 200,
+        "big_radius_probability": 0.5
+    },
+    "message_transmission_model": "constant_time",
+    "message_transmission_model_parameters": {
+        "constant_transmission_time": 1,
+        "random_transmission_min_time": 1,
+        "random_transmission_max_time": 10
+    },
+    "reliability_model": "reliable_delivery",
+    "reliability_model_parameters": {},
+    "interference_model": "probability_interference",
+    "interference_model_parameters": {
+        "intensity": 100
+    },
+    "message_protocol": "TCP",
+    "verbose_logging": false,
+    "csrfmiddlewaretoken": "nYFp0kAhhRByX7rBZz54RZDJVBbIk5RS5LXSYvGlLIeYWo2JB8s9WFNDUezwtMpB",
+    "project": "sample5",
+    "nack_messages_enabled": true,
+    "node_color": null,
+    "asynchronous": false,
+    "save_trace": true,
+    "minDimX": null,
+    "minDimY": null,
+    "connectivity_enabled": true,
+    "dim_x": null,
+    "dim_y": null
+}

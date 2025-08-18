@@ -31,7 +31,7 @@ export default function ControlInput({
     return (
         <Tooltip
             title={title ?? placeholder}
-            placement="top"
+            placement="left"
             arrow
         >
             <TextField

@@ -4,10 +4,14 @@ import ControlButton from "./ControlButton"
 import StopCircleRoundedIcon from '@mui/icons-material/StopCircleRounded';
 import PlayCircleRoundedIcon from '@mui/icons-material/PlayCircleRounded';
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded';
-import { FieldErrors, useForm, UseFormRegister } from "react-hook-form";
+import { FieldErrors, set, useForm, UseFormRegister } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
+import FitScreenIcon from '@mui/icons-material/FitScreen';
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import FileDownloadRoundedIcon from '@mui/icons-material/FileDownloadRounded';
+import { useSimulationContext } from "@/contexts/SimulationContext";
+import { initSimulation } from "@/lib/fetchers";
 
 const preRunFormSchema = z.object({
     rounds: z.number().int().min(1).optional(),
@@ -16,19 +20,32 @@ const preRunFormSchema = z.object({
 
 export type PreRunFormSchema = z.infer<typeof preRunFormSchema>;
 
-export type ControlBarProps = {
+export type ControlBarRef = {};
 
+export type ControlBarProps = {
+    onResetCamButtonClick?: () => void;
+    onDownloadGraphButtonClick?: () => void;
+    onPlay?: (data: PreRunFormSchema) => void;
+    onPauseButtonClick?: () => void;
 }
 
-export default function ControlBar({
-}: ControlBarProps) {
+const ControlBar = forwardRef<ControlBarRef, ControlBarProps>(({
+    onResetCamButtonClick,
+    onDownloadGraphButtonClick,
+    onPlay,
+    onPauseButtonClick
+}, ref) => {
+    const [initializeButtonDisabled, setInitializeButtonDisabled] = useState(false);
+    const [initializeButtonState, setInitializeButtonState] = useState<'success' | 'error' | 'idle'>('idle');
+    const [initializeButtonBg, setInitializeButtonBg] = useState<string | undefined>(undefined);
+    const { showArrows, showIds, setShowArrows, setShowIds, selectedProject } = useSimulationContext();
 
     const { register, handleSubmit, formState: { errors } } = useForm<PreRunFormSchema>({
         resolver: zodResolver(preRunFormSchema)
     });
 
     const handlePreRunFormSubmit = (data: PreRunFormSchema) => {
-        console.log(data);
+        if (onPlay) onPlay(data);
     }
 
     const handlePreRunFormSubmitBuilder = (oneRound: boolean) => {
@@ -39,15 +56,42 @@ export default function ControlBar({
         }
     }
 
+    const onInitializeButtonClick = async () => {
+        if (!selectedProject) return;
+        setInitializeButtonDisabled(true);
+        await initSimulation(selectedProject)
+            .then(() => setInitializeButtonState('success'),
+                () => setInitializeButtonState('error'));
+        setTimeout(() => {
+            setInitializeButtonState('idle');
+            setInitializeButtonDisabled(false);
+        }, 1000);
+    }
+
+    useEffect(() => {
+        setInitializeButtonDisabled(!selectedProject);
+    }, [selectedProject])
+
+    useEffect(() => {
+        setInitializeButtonBg(initializeButtonState === 'success' ? '#89d1a9' : initializeButtonState === 'error' ? '#fca5a5' : undefined);
+    }, [initializeButtonState])
+
     return (
         <div className="control-bar gap-1 flex">
             <ControlButton
+                disabled={initializeButtonDisabled}
                 label="Initialize"
                 iconImage={{
-                    src: "/assets/initialize.svg",
+                    src: "/assets/reload.svg",
                     alt: "Gear with a reloading wheel icon",
                 }}
+                style={{
+                    backgroundColor: initializeButtonBg,
+                    borderColor: initializeButtonBg
+                }}
                 helpText="Reset all variables and prepare the simulator for a new simulation."
+                helpTextOnDisabled="Select a project first!"
+                onClick={onInitializeButtonClick}
             />
             <ControlButton
                 label="Add Nodes"
@@ -98,8 +142,38 @@ export default function ControlBar({
                 <ControlButton
                     icon={<StopCircleRoundedIcon style={{ color: "#E74C3C" }} />}
                     helpText="Stop the simulation."
+                    onClick={onPauseButtonClick}
                 />
             </div>
+            <Divider orientation="vertical" flexItem />
+            <ControlButton
+                icon={<FitScreenIcon className="text-gray-400" fontSize="small" />}
+                helpText="Reset camera to fit the screen. (Autoscale)"
+                onClick={onResetCamButtonClick}
+            />
+            <ControlButton
+                iconImage={{
+                    src: `/assets/arrow-${showArrows ? "closed" : "open"}-eye.svg`,
+                    alt: "Arrow with an eye icon"
+                }}
+                helpText={`${showArrows ? "Hide" : "Show"} the network graph arrows.`}
+                onClick={() => setShowArrows(!showArrows)}
+            />
+            <ControlButton
+                iconImage={{
+                    src: `/assets/${showIds ? "not-" : ""}id.svg`,
+                    alt: "ID icon"
+                }}
+                helpText={`${showIds ? "Hide" : "Show"} the network nodes IDs.`}
+                onClick={() => setShowIds(!showIds)}
+            />
+            <ControlButton
+                icon={<FileDownloadRoundedIcon className="text-gray-400" fontSize="small" />}
+                helpText="Download the network graph as an image."
+                onClick={onDownloadGraphButtonClick}
+            />
         </div>
     )
-}
+});
+
+export default ControlBar;

@@ -159,9 +159,9 @@ class FromTrace2DInMemory(AbcDistributionModel):
 
         if (self.is_lat_long):
             self.__min_trace_x, self.__min_trace_y = utm.from_latlon(
-                self.__min_trace_x, self.__min_trace_y)
+                self.__min_trace_x, self.__min_trace_y)[:2]
             self.__max_trace_x, self.__max_trace_y = utm.from_latlon(
-                self.__max_trace_x, self.__max_trace_y)
+                self.__max_trace_x, self.__max_trace_y)[:2]
 
         self.__trace.sort(key=lambda x: x[3])  # sort by id
 

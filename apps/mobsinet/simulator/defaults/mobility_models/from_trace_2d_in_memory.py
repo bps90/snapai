@@ -144,9 +144,9 @@ class FromTrace2DInMemory(AbcMobilityModel):
 
         if (self.is_lat_long):
             min_x, min_y = utm.from_latlon(
-                FromTrace2DInMemory.__traces[filename][1], FromTrace2DInMemory.__traces[filename][3])
+                FromTrace2DInMemory.__traces[filename][1], FromTrace2DInMemory.__traces[filename][3])[:2]
             max_x, max_y = utm.from_latlon(
-                FromTrace2DInMemory.__traces[filename][2], FromTrace2DInMemory.__traces[filename][4])
+                FromTrace2DInMemory.__traces[filename][2], FromTrace2DInMemory.__traces[filename][4])[:2]
 
             FromTrace2DInMemory.__traces[filename] = (
                 FromTrace2DInMemory.__traces[filename][0],

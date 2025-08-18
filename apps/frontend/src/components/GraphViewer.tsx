@@ -1,90 +1,90 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { MultiDirectedGraph as Graph } from "graphology";
-import "@react-sigma/core/lib/style.css";
+import { downloadAsPNG } from '@sigma/export-image';
 import { Sigma } from "sigma";
-import { Button } from "@mui/material";
+import { createEdgeArrowProgram } from "sigma/rendering";
+import { useSimulationContext } from "@/contexts/SimulationContext";
+import { v4 as uuid } from 'uuid';
 
-const boundData = {
-    nodes: [
-        { id: 'b-lb', x: 0, y: 0, size: 0, color: "#00000000", dragable: false, forceLabel: false, highlighted: false, bound: true, },
-        { id: 'b-rb', x: 100, y: 0, size: 0, color: "#00000000", bound: true, },
-        { id: 'b-lt', x: 0, y: 100, size: 0, color: "#00000000", bound: true, },
-        { id: 'b-rt', x: 100, y: 100, size: 0, color: "#00000000", bound: true, },
-    ],
-    links: [
-        { source: 'b-lb', target: 'b-rb', color: "#ccc" },
-        { source: 'b-lt', target: 'b-lb', color: "#ccc" },
-        { source: 'b-lt', target: 'b-rt', color: "#ccc" },
-        { source: 'b-rt', target: 'b-rb', color: "#ccc" },
-    ],
-};
+export type GraphViewerNode = {
+    id: string;
+    x: number;
+    y: number;
+    label?: string;
+    size?: number;
+    color?: string;
+    dragable?: boolean;
+    forceLabel?: boolean;
+    highlighted?: boolean;
+    bound?: boolean;
+}
 
-const initialData = {
-    nodes: [
-        { id: 1, x: 20, y: 70, size: 10, label: "(20,70)" },
-        { id: 2, x: 80, y: 70, size: 10, label: "(80,70)" },
-        { id: 3, x: 20, y: 30, size: 10, label: "(20,30)" },
-        { id: 4, x: 60, y: 40, size: 10, label: "(60,40)" },
-        { id: 0, x: 50, y: 50, size: 10, color: "#ff0000", label: "(50,50)" },
-    ],
-    links: [
-        { source: 1, target: 2 },
-        { source: 3, target: 1 },
-        { source: 1, target: 4 },
-        { source: 4, target: 2 },
-        { source: 0, target: 1 },
-        { source: 0, target: 2 },
-        { source: 0, target: 4 },
-    ],
-};
+export type GraphViewerLink = {
+    source: string;
+    target: string;
+    color?: string;
+    label?: string;
+    type?: 'line' | 'arrow' | 'curve' | 'quadratic' | 'curvedArrow' | 'curvedLine';
+    width?: number;
+    highlighted?: boolean;
+    bound?: boolean;
+    forceLabel?: boolean;
+    dragable?: boolean;
+}
 
-export default function GraphViewer() {
+export type GraphData = {
+    nodes: GraphViewerNode[];
+    links: GraphViewerLink[];
+}
+
+export type GraphViewerProps = {
+    dimensions: {
+        x: [number, number];
+        y: [number, number];
+    }
+    data: GraphData,
+    renderLabels?: boolean;
+    showArrows?: boolean;
+    arrowHeadSize?: number;
+}
+
+export type GraphViewerRef = {
+    resetCam: () => void;
+    getSigma: () => Sigma;
+    getGraph: () => Graph;
+    toImage: () => void;
+}
+
+const GraphViewer = forwardRef<GraphViewerRef, GraphViewerProps>(({
+    dimensions,
+    data,
+    renderLabels,
+    showArrows,
+    arrowHeadSize
+}, ref) => {
+    const renderId = uuid();
     const containerRef = useRef<HTMLDivElement>(null);
     const sigmaRef = useRef<Sigma | null>(null);
     const graphRef = useRef<Graph | null>(null);
+    const {
+        setGraphData,
+        mouseInNode, setMouseInNode,
+        cameraState, setCameraState,
+        isRunning
+    } = useSimulationContext();
 
-    useEffect(() => {
-        if (!containerRef.current) return;
-
-        // Se já existir uma instância, limpa antes de criar nova
-        if (sigmaRef.current) {
-            sigmaRef.current.kill();
-            sigmaRef.current = null;
-        }
-
-        // Cria grafo
-        const g = new Graph();
-        boundData.nodes.forEach(n => g.addNode(n.id, {
-            ...n,
-            size: -1,
-            highlighted: false,
-            color: '#00000000',
-            dragable: false,
-            forceLabel: false,
-            bound: true,
-        }));
-        boundData.links.forEach(e => g.addEdge(e.source, e.target, e));
-        initialData.nodes.forEach(n => g.addNode(n.id, n));
-        initialData.links.forEach(e => g.addEdge(e.source, e.target, e));
-
-        graphRef.current = g;
-
-        // Cria instância do Sigma
-        sigmaRef.current = new Sigma(g, containerRef.current, {
-            renderEdgeLabels: true,
-            defaultNodeColor: "#3388ff",
-        });
-
+    const enableDrag = () => {
+        if (!graphRef.current) return;
+        if (!sigmaRef.current) return;
         let draggedNode: string | null = null;
 
-        // Quando clicar num nó, marca ele como sendo arrastado
         sigmaRef.current.on("downNode", (e) => {
+            if (!graphRef.current?.getNodeAttributes(e.node)?.dragable) return;
             draggedNode = e.node;
             sigmaRef.current!.getCamera().disable(); // Desativa o pan/zoom enquanto arrasta
         });
 
-        // Quando mover o mouse, se estiver arrastando, atualiza a posição
         sigmaRef.current.getMouseCaptor().on("mousemove", (e) => {
             if (draggedNode) {
                 const pos = sigmaRef.current!.viewportToGraph(e);
@@ -94,16 +94,110 @@ export default function GraphViewer() {
             }
         });
 
-        // Quando soltar o mouse, para de arrastar
         sigmaRef.current.getMouseCaptor().on("mouseup", () => {
             if (draggedNode) {
                 draggedNode = null;
                 sigmaRef.current!.getCamera().enable(); // Reativa pan/zoom
             }
         });
+    }
+
+    const enableNodeInfo = () => {
+        if (!graphRef.current) return;
+        if (!sigmaRef.current) return;
+        sigmaRef.current.on("enterNode", (e) => {
+            if (mouseInNode) return;
+            setMouseInNode(e.node);
+        });
+        sigmaRef.current.on("leaveNode", (e) => {
+            setMouseInNode(null);
+        });
+    }
+
+    const createBoundary = (g: Graph) => {
+        const boundData = {
+            nodes: [
+                { id: 'b-lb', x: dimensions.x[0], y: dimensions.y[0] },
+                { id: 'b-rb', x: dimensions.x[1], y: dimensions.y[0] },
+                { id: 'b-lt', x: dimensions.x[0], y: dimensions.y[1] },
+                { id: 'b-rt', x: dimensions.x[1], y: dimensions.y[1] },
+            ],
+            links: [
+                { source: 'b-lb', target: 'b-rb' },
+                { source: 'b-lt', target: 'b-lb' },
+                { source: 'b-lt', target: 'b-rt' },
+                { source: 'b-rt', target: 'b-rb' },
+            ],
+        }
+        boundData.nodes.forEach(n => g.addNode(n.id, {
+            ...n,
+            size: -1,
+            highlighted: false,
+            color: '#00000000',
+            dragable: false,
+            forceLabel: false,
+            bound: true,
+        }));
+        boundData.links.forEach(e => g.addEdge(e.source, e.target, {
+            ...e,
+            color: '#ccc',
+            bound: true,
+            dragable: false,
+            highlighted: false,
+            forceLabel: false,
+        }));
+    }
+
+    const initCamera = () => {
+        if (!graphRef.current) return;
+        if (!sigmaRef.current) return;
+        if (cameraState) sigmaRef.current.getCamera().setState(cameraState);
+
+        sigmaRef.current.getCamera().on('updated', (state) => setCameraState(state));
+    }
+
+    useEffect(() => {
+        console.log(showArrows, renderLabels)
+        if (!containerRef.current) return;
+
+        if (sigmaRef.current) {
+            sigmaRef.current.kill();
+            sigmaRef.current = null;
+        }
+
+        const g = new Graph();
+
+        createBoundary(g);
+
+        data.nodes.forEach(n => g.addNode(n.id, n));
+        data.links.forEach(e => g.addEdge(e.source, e.target, {
+            ...e,
+            arrowSize: 5,
+            weight: 7,
+            type: e.type ?? showArrows ? 'arrow' : 'line',
+        }));
+
+        graphRef.current = g;
+
+        sigmaRef.current = new Sigma(g, containerRef.current, {
+            renderEdgeLabels: true,
+            autoCenter: false,
+            renderLabels: renderLabels ?? true,
+            edgeProgramClasses: {
+                arrow: createEdgeArrowProgram({
+                    lengthToThicknessRatio: 2.5 * (arrowHeadSize ?? 1),
+                    widenessToThicknessRatio: 2 * (arrowHeadSize ?? 1)
+                })
+            }
+        });
+
+        enableDrag();
+        enableNodeInfo();
+        initCamera();
         // Função de animação
-        let interval: NodeJS.Timeout | null = null;
+        let interval: NodeJS.Timeout | null | undefined = null;
         const animate = () => {
+            console.log(renderId)
             if (graphRef.current) {
                 graphRef.current.forEachNode((node, attr) => {
                     if (attr.bound === true) return null;
@@ -116,18 +210,50 @@ export default function GraphViewer() {
                     if (coords.y < 0) coords.y = 0;
                     if (coords.x > 100) coords.x = 100;
                     if (coords.y > 100) coords.y = 100;
-                    graphRef.current!.updateNodeAttributes(node, (attr) => ({
-                        ...attr,
-                        ...coords,
-                        label: coords.x + ',' + coords.y
-                    }));
-                })
+
+                    if (node.length < 2) {
+                        graphRef.current!.updateNodeAttributes(node, (attr) => ({
+                            ...attr,
+                            ...coords,
+                            label: node
+                        }));
+                        const newId = uuid();
+                        graphRef.current!.addNode(newId, {
+                            ...attr,
+                            ...coords,
+                            size: 1,
+                            id: newId,
+                            label: graphRef.current!.nodes().length
+                        });
+
+                        setGraphData((prev) => ({
+                            ...prev,
+                            nodes: [
+                                ...prev.nodes.filter(n => n.id !== node),
+                                {
+                                    ...attr,
+                                    ...coords,
+                                    id: node,
+                                    label: node
+                                },
+                                {
+                                    ...attr,
+                                    ...coords,
+                                    size: 1,
+                                    id: newId,
+                                    label: (graphRef.current!.nodes().length - 1).toString()
+                                }
+                            ]
+                        }));
+                    }
+                });
+
             }
         };
-        interval = setInterval(animate);
+        interval = isRunning ? setInterval(animate, 50) : undefined;
 
-        return () => clearTimeout(interval);
-    }, []);
+        return () => interval && clearTimeout(interval);
+    }, [renderLabels, arrowHeadSize, showArrows, isRunning]);
 
     const resetCam = () => {
         if (sigmaRef.current) {
@@ -137,8 +263,30 @@ export default function GraphViewer() {
         }
     }
 
+    const toImage = () => {
+        if (!sigmaRef.current) return;
+
+        downloadAsPNG(sigmaRef.current, {
+            fileName: "graph",       // nome do arquivo sem extensão
+            backgroundColor: "#fff", // cor de fundo (ou transparente)
+            width: null,             // usa largura do container
+            height: null,            // usa altura do container
+            layers: null,            // exporta todos os layers
+            cameraState: null        // estado atual da câmera
+        });
+    };
+
+
+    useImperativeHandle(ref, () => ({
+        resetCam,
+        toImage,
+        getSigma: () => sigmaRef.current!,
+        getGraph: () => graphRef.current!,
+    }));
+
     return (<>
-        <div ref={containerRef} style={{ width: "90dvh", height: "90dvh", border: '1px solid #ccc' }} />
-        <Button onClick={resetCam}>Reset Camera</Button>
+        <div ref={containerRef} style={{ width: "100%", height: "100%", border: '1px solid #ccc' }} />
     </>);
-}
+})
+
+export default GraphViewer;

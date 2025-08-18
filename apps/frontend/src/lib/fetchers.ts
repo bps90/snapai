@@ -61,6 +61,16 @@ export type ConfigForm = {
     project_config: Record<string, unknown>
 }
 
+export type GraphData = {
+    msg_r: number,
+    msg_a: number,
+    t: number,
+    r: boolean,
+    n: [string, number, number, number, number, string][],
+    l: [string, string, 0 | 1][],
+    logs: string[]
+}
+
 export const fetchProjectsNamesDelay = async (): Promise<string[]> => {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -131,5 +141,18 @@ export const updateConfig = async (project: string, data: Record<string, unknown
         params: {
             project
         }
+    });
+}
+
+export const getData = async (withLogs: boolean): Promise<GraphData> => {
+    const response = await axios.get(`${API_BASE_URL}/graph/update_graph/`, {
+        params: { with_logs: withLogs },
+    });
+    return response.data;
+}
+
+export const initSimulation = async (project: string): Promise<void> => {
+    await axios.post(`${API_BASE_URL}/graph/init_simulation/`, {}, {
+        params: { project },
     });
 }

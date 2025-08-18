@@ -1,20 +1,23 @@
 {
-    "simulation_name": "Network Simulation",
+    "simulation_name": "Sample2-Simulation",
     "asynchronous": false,
     "dim_x": [
         0,
-        100
+        15000
     ],
     "dim_y": [
         0,
-        100
+        15000
     ],
     "connectivity_enabled": true,
     "interference_enabled": true,
-    "nack_messages_enabled": true,
+    "nack_messages_enabled": false,
     "save_trace": false,
-    "message_transmission_model": "constant_time",
+    "message_transmission_model": "random_time",
     "message_transmission_model_parameters": {
-        "time": 1
+        "time_range": [
+            1,
+            3
+        ]
     }
 }

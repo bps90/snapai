@@ -91,12 +91,19 @@ def get_projects_names(request):
     return JsonResponse(os.listdir(SimulationConfig.PROJECTS_DIR), safe=False)
 
 
-def init_simulation(request):
-    project = request.GET.get('project')
+@csrf_exempt
+def init_simulation(request: HttpRequest):
+    if (request.method == "POST"):
+        project = request.GET.get('project')
 
-    Main.init(project)
+        if (project is None):
+            return HttpResponse(status=400, content="Project name not provided")
 
-    return HttpResponse(status=200)
+        Main.init(project)
+
+        return HttpResponse(status=200)
+
+    return HttpResponse(status=405)
 
 
 def reevaluate_connections(request):

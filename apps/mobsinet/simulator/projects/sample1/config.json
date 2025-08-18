@@ -1,83 +1,6 @@
 {
-    "project_name": "sample1",
-    "simulation_rounds": 1,
     "simulation_name": "PingPong",
-    "simulation_refresh_rate": 0,
-    "num_nodes": 2,
-    "node_size": 10,
-    "dimX": 1000,
-    "dimY": 1000,
-    "dimZ": 0,
-    "node": "sample1:pingpong_node",
-    "distribution_model": "linear_dist",
-    "distribution_model_parameters": {
-        "orientation": "horizontal",
-        "line_position": 0,
-        "number_of_nodes": 2,
-        "midpoint": [
-            500,
-            500
-        ],
-        "rotation_direction": "anti-clockwise",
-        "radius": 200,
-        "trace_file": null,
-        "is_lat_long": true,
-        "should_padding": true,
-        "addapt_to_dimensions": true
-    },
-    "mobility_model": "random_walk",
-    "mobility_model_parameters": {
-        "speed_range": [
-            0,
-            20
-        ],
-        "direction_range": [
-            0,
-            6.283185307179586
-        ],
-        "prioritize_speed": false,
-        "travel_distance": null,
-        "travel_time": 70,
-        "trace_file": null,
-        "waiting_time_range": null,
-        "move_time_range": null,
-        "waypoint_radius_range": null,
-        "is_lat_long": true,
-        "should_padding": true,
-        "addapt_to_dimensions": true
-    },
-    "connectivity_model": "qudg_connectivity",
-    "connectivity_model_parameters": {
-        "max_radius": 1000,
-        "min_radius": 800,
-        "big_radius_probability": 0.75
-    },
-    "message_transmission_model": "random_time",
-    "message_transmission_model_parameters": {
-        "constant_transmission_time": 3,
-        "random_transmission_min_time": 2,
-        "random_transmission_max_time": 4,
-        "time": 3,
-        "min_time": 2,
-        "max_time": 4
-    },
-    "reliability_model": "reliable_delivery",
-    "reliability_model_parameters": {},
-    "interference_model": "probability_interference",
-    "interference_model_parameters": {
-        "intensity": 5
-    },
-    "message_protocol": "TCP",
-    "verbose_logging": false,
-    "csrfmiddlewaretoken": "nYFp0kAhhRByX7rBZz54RZDJVBbIk5RS5LXSYvGlLIeYWo2JB8s9WFNDUezwtMpB",
-    "project": "sample1",
-    "nack_messages_enabled": false,
     "asynchronous": false,
-    "save_trace": true,
-    "node_color": null,
-    "minDimX": null,
-    "minDimY": null,
-    "connectivity_enabled": true,
     "dim_x": [
         0,
         1000
@@ -85,5 +8,16 @@
     "dim_y": [
         0,
         1000
-    ]
+    ],
+    "connectivity_enabled": true,
+    "interference_enabled": true,
+    "nack_messages_enabled": false,
+    "save_trace": true,
+    "message_transmission_model": "random_time",
+    "message_transmission_model_parameters": {
+        "time_range": [
+            2,
+            4
+        ]
+    }
 }

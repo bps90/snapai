@@ -1,0 +1,20 @@
+{
+    "simulation_name": "Network Simulation",
+    "asynchronous": false,
+    "dim_x": [
+        0,
+        100
+    ],
+    "dim_y": [
+        0,
+        100
+    ],
+    "connectivity_enabled": true,
+    "interference_enabled": true,
+    "nack_messages_enabled": true,
+    "save_trace": false,
+    "message_transmission_model": "constant_time",
+    "message_transmission_model_parameters": {
+        "time": 1
+    }
+}
