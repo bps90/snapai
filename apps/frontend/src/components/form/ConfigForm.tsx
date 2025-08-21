@@ -72,7 +72,9 @@ export default function ConfigForm({
         reset,
         watch,
     } = useForm<ConfigFormSchema>({
-        resolver: configFormSchema ? zodResolver(configFormSchema as unknown as Parameters<typeof zodResolver<ConfigFormSchema, any, ConfigFormSchema>>[0]) : undefined,
+        resolver: configFormSchema
+            ? zodResolver(configFormSchema as unknown as Parameters<typeof zodResolver<ConfigFormSchema, any, ConfigFormSchema>>[0])
+            : undefined,
     });
 
     const {

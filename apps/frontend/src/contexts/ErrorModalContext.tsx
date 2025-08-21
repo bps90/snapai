@@ -1,8 +1,8 @@
 "use client";
 import CodeBlock from '@/components/CodeBlock';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
+import { Button } from '@mui/material';
 import clsx from 'clsx';
-// context/ModalContext.tsx
 import { createContext, useContext, useState, ReactNode, Fragment } from 'react';
 
 type ErrorModalContextType = {
@@ -70,13 +70,14 @@ export function ErrorModalProvider({ children }: { children: ReactNode }) {
                                     </div>
 
                                     <div className="mt-4">
-                                        <button
+                                        <Button
                                             type="button"
-                                            className="inline-flex justify-center rounded-md border border-transparent bg-gray-100 px-4 py-2 text-sm hover:bg-gray-200"
+                                            variant="contained"
+                                            color="inherit"
                                             onClick={closeModal}
                                         >
                                             Fechar
-                                        </button>
+                                        </Button>
                                     </div>
                                 </DialogPanel>
                             </TransitionChild>
