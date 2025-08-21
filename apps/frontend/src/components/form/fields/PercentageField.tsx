@@ -58,7 +58,7 @@ export default function PercentageField({
                 }}
                 id={field.id}
                 required={field.required}
-                {...register(nameAsArray.join('.'), { valueAsNumber: true })}
+                {...register(nameAsArray.join('.'), { valueAsNumber: true, onChange: (e) => field.afterChange?.(Number(e.target.value)) })}
                 {...inputAttr}
             />
         </FormControl>

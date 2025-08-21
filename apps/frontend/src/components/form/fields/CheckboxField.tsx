@@ -4,7 +4,6 @@ import { Checkbox, CheckboxProps, FormControl, FormControlLabel, FormControlLabe
 import clsx from "clsx";
 import { Controller } from "react-hook-form";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import { Fragment } from "react";
 
 export type CheckboxField = Field & {
     type: 'checkbox',
@@ -67,7 +66,10 @@ export default function CheckboxField({
                                     required={field.required}
                                     id={field.id}
                                     checked={controllerField.value ?? false}
-                                    onChange={(e) => controllerField.onChange(e.target.checked)}
+                                    onChange={(e) => {
+                                        controllerField.onChange(e.target.checked);
+                                        field.afterChange?.(e.target.checked);
+                                    }}
                                     {...checkboxAttr}
                                 />
                             }

@@ -52,7 +52,10 @@ export default function MultiSelectField({
                             label={field.label}
                             id={field.id}
                             value={controllerField.value || []}
-                            onChange={controllerField.onChange}
+                            onChange={(e) => {
+                                controllerField.onChange(e);
+                                field.afterChange?.(e.target.value);
+                            }}
                             endAdornment={
                                 field.informative?.help_text && (
                                     <InputAdornment position="end">

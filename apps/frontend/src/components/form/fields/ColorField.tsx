@@ -1,22 +1,21 @@
 import { Field } from '@/lib/fetchers';
-import { FormControl, FormControlProps, IconButton, InputAdornment, TextField as MaterialTextField, TextFieldProps as MaterialTextFieldProps, TextField, Tooltip } from '@mui/material';
+import { FormControl, FormControlProps, IconButton, InputAdornment, TextField as MaterialTextField, TextFieldProps as MaterialTextFieldProps, TextField as ColorField, Tooltip } from '@mui/material';
 import { FormFieldProps } from './FormField';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
-export type TextField = Field & {
-    type: 'text'
-    value: string,
-    min_length: number,
-    max_length: number | null
+export type ColorField = Field & {
+    type: 'color'
+    value: `#${string}`,
 }
 
-export type TextFieldProps = FormFieldProps & {
+export type ColorFieldProps = FormFieldProps & {
     inputAttr?: MaterialTextFieldProps,
     formControlAttr?: FormControlProps,
-    field: TextField,
+    field: ColorField,
 }
 
-function TextField({
+
+function ColorField({
     field,
     fieldIndex,
     inputAttr,
@@ -24,7 +23,7 @@ function TextField({
     formControlAttr,
     nestedPaths,
     register
-}: TextFieldProps) {
+}: ColorFieldProps) {
     const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
 
     return <div
@@ -40,10 +39,6 @@ function TextField({
                 id={field.id}
                 required={field.required}
                 slotProps={{
-                    htmlInput: {
-                        minLength: field.min_length,
-                        maxLength: field.max_length
-                    },
                     input: {
                         endAdornment: field.informative?.help_text && (
                             <InputAdornment position="end">
@@ -70,4 +65,4 @@ function TextField({
     </div>;
 }
 
-export default TextField;
+export default ColorField;

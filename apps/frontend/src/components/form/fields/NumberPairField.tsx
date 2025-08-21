@@ -45,8 +45,14 @@ export default function NumberPairField({
 
             render={({ field: renderField, fieldState }) => {
                 const [min, max] = renderField.value ?? [0, 0] as [number, number];
-                const setMin = (val: number) => renderField.onChange([val, max]);
-                const setMax = (val: number) => renderField.onChange([min, val]);
+                const setMin = (val: number) => {
+                    renderField.onChange([val, max]);
+                    field.afterChange?.([val, max]);
+                };
+                const setMax = (val: number) => {
+                    renderField.onChange([min, val]);
+                    field.afterChange?.([min, val]);
+                };
                 return (<>
                     <InputLabel
                         shrink

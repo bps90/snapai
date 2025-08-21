@@ -4,21 +4,20 @@ import { SelectField } from "./SelectField"
 import { Controller } from "react-hook-form"
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
-export type ModelSelectField = Omit<SelectField, 'type' | 'value' | 'options'> & {
-    type: 'model_select',
-    model_type: 'connectivity' | 'mobility' | 'interference' | 'reliability' | 'distribution' | 'message_transmission'
+export type NodeSelectField = Omit<SelectField, 'type' | 'value' | 'options'> & {
+    type: 'node_select',
     value: string,
     options: ({ value: string, label: string })[]
 }
 
-export type ModelSelectFieldProps = FormFieldProps & {
-    field: ModelSelectField,
+export type NodeSelectFieldProps = FormFieldProps & {
+    field: NodeSelectField,
     formControlAttr?: FormControlProps,
     selectAttr?: SelectProps,
-    onModelNameChange?: (modelName: string) => void
+    onNodeNameChange?: (nodeName: string) => void
 }
 
-export default function ModelSelectField({
+export default function NodeSelectField({
     nestedPaths,
     field,
     control,
@@ -26,8 +25,8 @@ export default function ModelSelectField({
     formControlAttr,
     fieldIndex,
     containerAttr,
-    onModelNameChange,
-}: ModelSelectFieldProps) {
+    onNodeNameChange,
+}: NodeSelectFieldProps) {
     const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
     const name = nameAsArray.join('.');
 
@@ -55,7 +54,7 @@ export default function ModelSelectField({
                             onChange={(e, child) => {
                                 controllerField.onChange(e, child);
                                 selectAttr?.onChange?.(e, child);
-                                onModelNameChange?.(nameAsArray.join('.'));
+                                onNodeNameChange?.(nameAsArray.join('.'));
                                 field.afterChange?.(e.target.value);
                             }}
                             endAdornment={

@@ -10,6 +10,8 @@ import ModelSelectField, { ModelSelectField as ModelSelectFieldType } from "./Mo
 import PercentageField, { PercentageField as PercentageFieldType } from "./PercentageField"
 import SelectField, { SelectField as SelectFieldType } from "./SelectField"
 import MultiSelectField, { MultiSelectField as MultiSelectFieldType } from "./MultiSelectField"
+import NodeSelectField, { NodeSelectField as NodeSelectFieldType } from "./NodeSelectField"
+import ColorField, { ColorField as ColorFieldType } from "./ColorField"
 
 export type FormFieldProps = {
     field: Field
@@ -44,6 +46,10 @@ export default function FormField({
             return <SelectField field={field as SelectFieldType} selectAttr={{ disabled }} {...fieldAttrs} />
         case 'multiselect':
             return <MultiSelectField field={field as MultiSelectFieldType} selectAttr={{ disabled }} {...fieldAttrs} />
+        case 'node_select':
+            return <NodeSelectField field={field as NodeSelectFieldType} selectAttr={{ disabled }} {...fieldAttrs} />
+        case 'color':
+            return <ColorField field={field as ColorFieldType} inputAttr={{ disabled }} {...fieldAttrs} />
         default:
             return null;
     }
