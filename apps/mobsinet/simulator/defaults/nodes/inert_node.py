@@ -2,6 +2,8 @@ from ...models.nodes.abc_node import AbcNode
 
 
 class InertNode(AbcNode):
+    default_parameters = True
+    
     def __init__(self, id, position=None, mobility_model=None, connectivity_model=None, interference_model=None, reliability_model=None):
         super().__init__(id, position, mobility_model,
                          connectivity_model, interference_model, reliability_model)

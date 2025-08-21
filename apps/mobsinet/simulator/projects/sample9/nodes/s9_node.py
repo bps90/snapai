@@ -10,6 +10,9 @@ if TYPE_CHECKING:
 
 
 class S9Node(AbcNode):
+    default_parameters = False
+
+    
     def __init__(
             self,
             id: int,

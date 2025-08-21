@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Union, Optional, cast
+from typing import TYPE_CHECKING, Union, Optional, cast, TypedDict
 from abc import ABC, abstractmethod
 from ...tools.inbox_packet_buffer import InboxPacketBuffer
 from .packet import Packet
@@ -12,6 +12,8 @@ from ...tools.color import Color
 from ...configuration.sim_config import SimulationConfig
 from ...tools.packet_event import PacketEvent
 from ...tools.position import Position
+from ...configuration.layout.form_section import FormSubSection
+
 
 if TYPE_CHECKING:
     from .abc_timer import AbcTimer
@@ -22,7 +24,19 @@ if TYPE_CHECKING:
     from ...tools.inbox import Inbox
 
 
+class AbcNodeParameters(TypedDict):
+    pass
+
 class AbcNode(ABC):
+    form_subsection_layout: FormSubSection
+    default_parameters: bool = True
+    """
+    Use False in your implementation of Node if you want to disable the default parameters:
+        - color
+        - size
+        - ...
+    """
+    
     def __init__(
             self,
             id: int,
@@ -32,7 +46,8 @@ class AbcNode(ABC):
             reliability_model: 'AbcReliabilityModel',
             color: Color = Color(0, 0, 0),
             size: int = 1,
-            position: 'Position' = Position()):
+            position: 'Position' = Position(),
+            parameters: AbcNodeParameters = {}):
         self.id = id
         self.position: Position = position
         self.mobility_model: AbcMobilityModel = mobility_model
@@ -41,6 +56,7 @@ class AbcNode(ABC):
         self.reliability_model: AbcReliabilityModel = reliability_model
         self.node_color: Color = color
         self.size = size
+        self.parameters = parameters
 
         self.timers: list[AbcTimer] = []
         self.neighborhood_changed: bool = False
@@ -50,6 +66,41 @@ class AbcNode(ABC):
         self.nack_box: 'NackBox' | None = None
         self.inbox: 'Inbox' | None = None
         self.intensity: float = 1.0
+        
+    @abstractmethod
+    def check_parameters(self, parameters: AbcNodeParameters) -> bool:
+        """
+        Validate the provided parameters for the node.
+
+        This method checks if the given parameters meet the required
+        criteria for the node. It should be implemented by subclasses
+        to enforce specific parameter validation logic.
+
+        Parameters
+        ----------
+        parameters : AbcNodeParameters
+            A dictionary containing parameter names and their values.
+
+        Returns
+        -------
+        bool
+            `True` if the parameters are valid, `False` otherwise.
+        """
+
+    @abstractmethod
+    def set_parameters(self, parameters: AbcNodeParameters) -> None:
+        """
+        Set the parameters for the node.
+
+        This method updates the node with the provided parameters. It should be
+        implemented by subclasses to apply specific parameter settings according
+        to the node's requirements.
+
+        Parameters
+        ----------
+        parameters : AbcNodeParameters
+            A dictionary containing parameter names and their values.
+        """
 
     def __str__(self):
         return f'{self.id}'

@@ -8,6 +8,9 @@ from ....network_simulator import simulation
 
 
 class PingPongNode(AbcNode):
+    default_parameters = True
+
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.pingpong_inited = False

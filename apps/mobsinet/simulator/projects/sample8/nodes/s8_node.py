@@ -2,12 +2,15 @@ from ....models.nodes.abc_node import AbcNode
 from ..messages.s8_message import S8Message
 from ....global_vars import Global
 from ....tools.color import Color, GREEN, YELLOW, RED, BLUE
-from ....defaults.nodes.message_timer import MessageTimer
+from ....defaults.timers.message_timer import MessageTimer
 from random import random
 from typing import Optional
 
 
 class S8Node(AbcNode):
+    default_parameters = True
+
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.size = 3
