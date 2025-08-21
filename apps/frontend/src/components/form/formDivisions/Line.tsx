@@ -9,7 +9,7 @@ export type LineProps = {
     line: LineType;
     lineIndex: number;
     section: Section;
-    superSection: SuperSection;
+    superSection?: SuperSection;
     register: UseFormRegister<ConfigFormSchema>;
     control: Control<ConfigFormSchema>;
     isLoadingConfig: boolean;
@@ -31,11 +31,11 @@ export default function Line({
 }: LineProps) {
     return (
         <div
-            id={`${superSection.prefix}_line_${section.id}_${subsection.id}_index_${lineIndex}`}
+            id={`${superSection?.prefix ?? ''}_line_${section.id}_${subsection.id}_index_${lineIndex}`}
             className={clsx(
-                `${superSection.prefix}_line_${subsection.id}_index_${lineIndex}`,
+                `${superSection?.prefix ?? ''}_line_${subsection.id}_index_${lineIndex}`,
                 'grid', 'grid-cols-12', 'gap-3', 'items-end',
-                ...superSection.styleClasses.line
+                ...(superSection?.styleClasses.line ?? [])
             )}
         >
             {line.fields.map((field, fieldIndex) => {

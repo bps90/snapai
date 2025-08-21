@@ -1,16 +1,16 @@
 import { Section, Subsection } from "@/lib/fetchers"
 import { Control, UseFormRegister } from "react-hook-form"
-import { ConfigFormSchema, SuperSection } from "../ConfigForm"
+import { SuperSection } from "../ConfigForm"
 import clsx from "clsx"
 import Line from "./Line"
 
 export type SubSectionProps = {
-    superSection: SuperSection
+    superSection?: SuperSection
     section: Section
     subsection: Subsection
     subsectionIndex: number
-    control: Control<ConfigFormSchema>
-    register: UseFormRegister<ConfigFormSchema>
+    control: Control<any>
+    register: UseFormRegister<any>
     isLoadingConfig: boolean;
     nestedPaths?: string[];
     [key: string]: unknown
@@ -29,11 +29,11 @@ export default function SubSection({
 }: SubSectionProps) {
     return (
         <fieldset
-            id={`${superSection.prefix}_subsection_${section.id}_${subsection.id}`}
+            id={`${superSection?.prefix ?? ''}_subsection_${section.id}_${subsection.id}`}
             className={clsx(
-                `${superSection.prefix}_subsection_${subsection.id}`,
+                `${superSection?.prefix ?? ''}_subsection_${subsection.id}`,
                 'flex', 'flex-col', 'gap-3',
-                ...superSection.styleClasses.subSection
+                ...(superSection?.styleClasses.subSection ?? [])
             )}
         >
             {subsection.title && <legend>{subsection.title}</legend>}
