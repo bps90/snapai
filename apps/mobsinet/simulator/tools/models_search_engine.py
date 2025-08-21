@@ -269,3 +269,18 @@ class ModelsSearchEngine:
 
         return names
     
+    @staticmethod
+    def get_nodes_names() -> list[str]:
+        # Get default nodes
+        names = [node.split(".")[0] for node in os.listdir(
+            'apps/mobsinet/simulator/defaults/nodes') if not node.startswith('__')]
+
+        # Get project nodes
+        for project in os.listdir(SimulationConfig.PROJECTS_DIR):
+            projectDir = os.listdir(f'{SimulationConfig.PROJECTS_DIR}{project}')
+            if ('nodes') in projectDir:
+                nodes = [f'{project}:{node.split(".")[0]}' for node in os.listdir(
+                    f'{SimulationConfig.PROJECTS_DIR}{project}/nodes') if not node.startswith('__')]
+                names.extend(nodes)
+
+        return names

@@ -202,7 +202,30 @@ def get_model_subsection_layout(request: HttpRequest):
         print(traceback.format_exc())
         return HttpResponse(status=500, content="See backend console for more details")
 
+def get_nodes_names(request):
+    return JsonResponse(ModelsSearchEngine.get_nodes_names(), safe=False)
 
+def get_node_subsection_layout(request: HttpRequest):
+    node_name = request.GET.get('node')
+
+    if (node_name is None):
+        return HttpResponse(status=400, content="Node name not provided")
+
+    try:
+        Node = ModelsSearchEngine.find_node_implementation(node_name)
+
+        return JsonResponse({
+            'defaultParameters': Node.default_parameters, 
+            'layout': (Node.form_subsection_layout if 'form_subsection_layout' in Node.__dict__ else FormSubSection(
+                    id=f"{node_name.replace(':', '_')}_parameters_subsection"
+                )).set_nested_paths(['node_parameters']).to_dict()
+            })
+    except ModuleNotFoundError as e:
+        return HttpResponse(status=404, content="Node not found")
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
+        return HttpResponse(status=500, content="See backend console for more details")
 
 
 def parse_value(value):
