@@ -1,18 +1,50 @@
 import { CheckboxField } from "@/components/form/fields/CheckboxField";
+import { ModelSelectField } from "@/components/form/fields/ModelSelectField";
 import { MultiSelectField } from "@/components/form/fields/MultiSelectField";
+import { NodeSelectField } from "@/components/form/fields/NodeSelectField";
 import { NumberField } from "@/components/form/fields/NumberField";
 import { NumberPairField } from "@/components/form/fields/NumberPairField";
 import { TextField } from "@/components/form/fields/TextField";
-import { Layout, Section } from "@/lib/fetchers";
+import { FieldType, Layout, Section } from "@/lib/fetchers";
 import { z } from "zod";
 
 export type LayoutWithNestedPaths = Layout & { nestedPaths?: string[] };
+export type BuildSchemaLayout = {
+    sections: {
+        subsections: {
+            lines: {
+                fields: {
+                    type: FieldType,
+                    name: string,
+                    nested_paths: string[]
+                }[]
+            }[]
+        }[]
+    }[]
+    nestedPaths?: string[]
+};
+
+export type GetLayoutValuesLayout = {
+    sections: {
+        subsections: {
+            lines: {
+                fields: {
+                    type: FieldType,
+                    name: string,
+                    value: unknown,
+                    nested_paths: string[]
+                }[]
+            }[]
+        }[]
+    }[];
+    nestedPaths?: string[]
+}
 
 export class FormLayoutHelper {
-    public static buildSchema(
-        layouts: LayoutWithNestedPaths[],
+    public static buildSchema<ReturnedSchema extends z.ZodObject<any>>(
+        layouts: BuildSchemaLayout[],
         defaultSchema: Record<string, z.ZodType> = {}
-    ) {
+    ): ReturnedSchema {
         const schema: Record<string, z.ZodType> = defaultSchema;
 
         for (const layout of layouts) {
@@ -48,7 +80,14 @@ export class FormLayoutHelper {
                                     base = z.number().max(100).min(0);
                                     break
                                 case 'model_select':
-                                    base = z.string();
+                                    base = (field as ModelSelectField).required ? z.string().min(1, "Model name is required!") : z.string();
+                                    break
+                                case 'node_select':
+                                    base = (field as NodeSelectField).required ? z.string().min(1, "Node name is required!") : z.string();
+                                    break
+                                case 'color':
+                                    base = z.string().length(7).startsWith('#')
+                                        .or(z.string().length(9).startsWith('#'));
                                     break
                                 default:
                                     throw new Error(`Unknown field type: ${field.type}`);
@@ -61,12 +100,7 @@ export class FormLayoutHelper {
                             if (nestedPaths.length) {
                                 const nestedSchema = FormLayoutHelper.buildSchema([{
                                     sections: [{
-                                        id: '',
-                                        title: '',
                                         subsections: [{
-                                            id: '',
-                                            title: '',
-                                            model_parameters: false,
                                             lines: [{ fields: [{ ...field, nested_paths: nestedPaths.slice(1) }] }]
                                         }]
                                     }]
@@ -85,10 +119,10 @@ export class FormLayoutHelper {
             }
         }
 
-        return z.object(schema);
+        return z.object(schema) as ReturnedSchema;
     }
 
-    public static getLayoutValues(layouts: LayoutWithNestedPaths[]) {
+    public static getLayoutValues(layouts: GetLayoutValuesLayout[]) {
         const values = {} as Record<string, any>;
 
         for (const layout of layouts) {
@@ -104,12 +138,7 @@ export class FormLayoutHelper {
 
                                 const nestedValues = FormLayoutHelper.getLayoutValues([{
                                     sections: [{
-                                        id: '',
-                                        title: '',
                                         subsections: [{
-                                            id: '',
-                                            title: '',
-                                            model_parameters: false,
                                             lines: [{ fields: [{ ...field, nested_paths: nestedPaths.slice(1) }] }]
                                         }]
                                     }]
