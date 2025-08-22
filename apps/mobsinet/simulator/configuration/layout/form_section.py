@@ -125,12 +125,14 @@ class FormSectionNumberField(FormSectionField):
                  required: bool = True,
                  informative: FormSectionFieldInformative | None = None,
                  min_value: float | int | None = None,
-                 max_value: float | int | None = None
+                 max_value: float | int | None = None,
+                 is_angle: Literal['rad', 'deg', False] = False
                  ):
         super().__init__(id, label, name, occuped_columns, required, informative)
         self.is_float: bool = is_float
         self.min_value = min_value
         self.max_value = max_value
+        self.is_angle = is_angle
         self.value: float | int | None = None
 
     def init(self, config_class):
@@ -175,7 +177,8 @@ class FormSectionNumberField(FormSectionField):
             'value': self.value,
             'nested_paths': self.nested_paths,
             'min_value': self.min_value,
-            'max_value': self.max_value
+            'max_value': self.max_value,
+            'is_angle': self.is_angle
         }
 
 
@@ -388,7 +391,8 @@ class FormSectionNumberPairField(FormSectionField):
                  max_left_value: float | int | None = None,
                  min_right_value: float | int | None = None,
                  max_right_value: float | int | None = None,
-                 right_should_be_gte_left: bool = False
+                 right_should_be_gte_left: bool = False,
+                 is_angle: Literal['rad', 'deg', False] = False
                  ):
         super().__init__(id, label, name, occuped_columns, required, informative)
         self.is_float: bool = is_float
@@ -397,6 +401,7 @@ class FormSectionNumberPairField(FormSectionField):
         self.min_right_value = min_right_value
         self.max_right_value = max_right_value
         self.right_should_be_gte_left = right_should_be_gte_left
+        self.is_angle = is_angle
         self.value: list[float | int] | None = None
 
     def to_dict(self):
@@ -415,7 +420,8 @@ class FormSectionNumberPairField(FormSectionField):
             'max_left_value': self.max_left_value,
             'min_right_value': self.min_right_value,
             'max_right_value': self.max_right_value,
-            'right_should_be_gte_left': self.right_should_be_gte_left
+            'right_should_be_gte_left': self.right_should_be_gte_left,
+            'is_angle': self.is_angle
         }
 
     def init(self, config_class):
@@ -457,7 +463,7 @@ class FormSectionNumberPairField(FormSectionField):
 
             if (self.right_should_be_gte_left and value[1] < value[0]):
                 raise Exception(f"Field {self.name} right value should be greater than or equal to left value")
-
+            
         self.value = value
         return self
 

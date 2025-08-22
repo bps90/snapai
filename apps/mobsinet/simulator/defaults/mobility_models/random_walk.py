@@ -5,7 +5,7 @@ from ...models.abc_mobility_model import AbcMobilityModel
 from ...models.nodes.abc_node import AbcNode
 from ...tools.position import Position
 from random import random
-
+from ...configuration.layout.form_section import FormSubSection, FormSectionNumberPairField, FormSectionFieldInformative, FormSectionNumberField, FormSectionCheckboxField, FormSectionLine
 
 class RandomWalkParameters(TypedDict):
     speed_range: list[float]
@@ -16,6 +16,76 @@ class RandomWalkParameters(TypedDict):
 
 
 class RandomWalk(AbcMobilityModel):
+    
+    form_subsection_layout = FormSubSection(id="random_walk_parameters_subsection").add_lines([
+        FormSectionLine().add_fields([
+            FormSectionNumberPairField(
+                id="random_walk_speed_range",
+                label="Speed Range",
+                name="speed_range",
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The range of speeds that the nodes can assume to move itself in units of length per second. (min, max)",
+                ),
+                min_left_value=0,
+                min_right_value=0,
+                right_should_be_gte_left=True,
+                occuped_columns=6
+            ),
+            FormSectionNumberPairField(
+                id="random_walk_direction_range",
+                label="Direction Range",
+                name="direction_range",
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The range of directions that the nodes can assume to move itself in radians. (min, max)",
+                ),
+                min_left_value=0,
+                max_left_value=pi * 2,
+                min_right_value=0,
+                max_right_value=pi * 2,
+                right_should_be_gte_left=True,
+                occuped_columns=6,
+                is_angle='rad'
+            ),
+        ]),
+        FormSectionLine().add_fields([
+            FormSectionNumberField(
+                id="random_walk_travel_distance",
+                label="Travel Distance",
+                name="travel_distance",
+                required=False,
+                informative=FormSectionFieldInformative(
+                    title="The maximum distance that the nodes can move itself in units of length.",
+                ),
+                is_float=True,
+                min_value=0,
+                occuped_columns=4
+            ),
+            FormSectionNumberField(
+                id="random_walk_travel_time",
+                label="Travel Time",
+                name="travel_time",
+                required=False,
+                informative=FormSectionFieldInformative(
+                    title="The maximum time that the nodes can move itself in seconds.",
+                ),
+                is_float=True,
+                min_value=0,
+                occuped_columns=4
+            ),
+            FormSectionCheckboxField(
+                id="random_walk_prioritize_speed",
+                label="Prioritize Speed",
+                name="prioritize_speed",
+                required=False,
+                informative=FormSectionFieldInformative(
+                    title="If checked, the node will prioritize speed over distance.",
+                ),
+                occuped_columns=4
+            )
+        ])
+    ])
 
     def __init__(self, parameters: RandomWalkParameters, *args, **kwargs):
         super().__init__(parameters, *args, **kwargs)

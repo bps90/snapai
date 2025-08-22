@@ -22,6 +22,12 @@ class PingPongNode(AbcNode):
             init_pingpong_timer = InitPingPongTimer()
             init_pingpong_timer.start_relative(1, self)
 
+    def check_parameters(self, parameters):
+        return True
+
+    def set_parameters(self, parameters):
+        pass
+
     def init_pingpong(self):
         if (not self.pingpong_inited):
             self.pingpong_inited = True

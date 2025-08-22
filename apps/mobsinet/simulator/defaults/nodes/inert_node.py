@@ -8,6 +8,12 @@ class InertNode(AbcNode):
         super().__init__(id, position, mobility_model,
                          connectivity_model, interference_model, reliability_model)
         self.size = 3
+        
+    def check_parameters(self, parameters):
+        return True
+
+    def set_parameters(self, parameters):
+        pass
 
     def check_requirements(self):
         pass

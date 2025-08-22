@@ -17,10 +17,10 @@ class FromTrace2DInMemory(AbcDistributionModel):
     Class to generate 2D distributions from a trace in memory.
     """
 
-    form_subsection_layout = FormSubSection('from_trace_2d_in_memory_parameters_subsection').add_line(
+    form_subsection_layout = FormSubSection('dist_from_trace_2d_in_memory_parameters_subsection').add_line(
         FormSectionLine().add_fields([
             FormSectionTextField(
-                id="from_trace_2d_in_memory_trace_file",
+                id="dist_from_trace_2d_in_memory_trace_file",
                 label="Trace File",
                 name="trace_file",
                 occuped_columns=4,
@@ -32,7 +32,7 @@ class FromTrace2DInMemory(AbcDistributionModel):
                 ),
             ),
             FormSectionCheckboxField(
-                id="from_trace_2d_in_memory_is_lat_long",
+                id="dist_from_trace_2d_in_memory_is_lat_long",
                 label="Is Latitude/Longitude",
                 name="is_lat_long",
                 occuped_columns=4,
@@ -41,7 +41,7 @@ class FromTrace2DInMemory(AbcDistributionModel):
                 ),
             ),
             FormSectionCheckboxField(
-                id="from_trace_2d_in_memory_addapt_to_dimensions",
+                id="dist_from_trace_2d_in_memory_addapt_to_dimensions",
                 label="Addapt to Simulation Dimensions",
                 name="addapt_to_dimensions",
                 occuped_columns=4,

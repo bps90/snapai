@@ -5,7 +5,7 @@ from ...tools.position import Position
 from random import random
 import math
 from typing import TypedDict, Tuple, Optional
-
+from ...configuration.layout.form_section import FormSubSection, FormSectionNumberPairField, FormSectionFieldInformative, FormSectionLine
 
 class RandomWaypointParameters(TypedDict):
     speed_range: list[float]
@@ -13,6 +13,38 @@ class RandomWaypointParameters(TypedDict):
 
 
 class RandomWaypoint(AbcMobilityModel):
+    form_subsection_layout = FormSubSection('random_waypoint_parameters_subsection').add_line(
+        FormSectionLine().add_fields([
+            FormSectionNumberPairField(
+                id='random_waypoint_speed_range',
+                label='Speed range',
+                name='speed_range',
+                informative=FormSectionFieldInformative(
+                    title='The range of speed that the node can assume to move in unit of length per time step. (min, max)',
+                ),
+                is_float=True,
+                min_left_value=0,
+                min_right_value=0,
+                occuped_columns=6,
+                right_should_be_gte_left=True,
+                required=True,
+            ),
+            FormSectionNumberPairField(
+                id='random_waypoint_waiting_time_range',
+                label='Waiting time range',
+                name='waiting_time_range',
+                informative=FormSectionFieldInformative(
+                    title='The range of waiting time that the node can assume to wait in a staypoint in unit of time steps. (min, max)',
+                ),
+                is_float=True,
+                min_left_value=0,
+                min_right_value=0,
+                occuped_columns=6,
+                right_should_be_gte_left=True,
+                required=True
+            )
+        ])
+    )
 
     def __init__(self, parameters: RandomWaypointParameters, *args, **kwargs):
         super().__init__(parameters, *args, **kwargs)

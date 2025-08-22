@@ -4,13 +4,32 @@ from ....tools.position import Position
 import random
 from math import cos, pi, sin
 from typing import TypedDict
-
+from ....configuration.layout.form_section import FormSubSection, FormSectionFieldInformative, FormSectionLine, FormSectionNumberPairField
 
 class MidPointOfOthersParameters(TypedDict):
     waypoint_radius_range: list[float]
 
 
 class MidPointOfOthers(AbcMobilityModel):
+    form_subsection_layout = FormSubSection(id="mid_point_of_others_parameters_subsection").add_line(
+        FormSectionLine().add_field(
+            FormSectionNumberPairField(
+                id="mid_point_of_others_waypoint_radius_range",
+                label="Waypoint radius range",
+                name="waypoint_radius_range",
+                is_float=True,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The range of waypoint radius that the node can assume to move in unit of length. (min, max)",
+                ),
+                min_left_value=0,
+                min_right_value=0,
+                right_should_be_gte_left=True,
+                occuped_columns=12
+            )
+        )
+    )
+    
     def __init__(self, parameters: MidPointOfOthersParameters, *args, **kwargs):
         super().__init__(parameters, *args, **kwargs)
         self.set_parameters(parameters)

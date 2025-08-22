@@ -5,7 +5,7 @@ from random import random
 import math
 from ....network_simulator import simulation
 from typing import TypedDict, Optional, Tuple
-
+from ....configuration.layout.form_section import FormSectionNumberPairField, FormSubSection, FormSectionLine, FormSectionFieldInformative
 
 class MidpointWaypointParameters(TypedDict):
     waypoint_radius_range: list[float]
@@ -14,6 +14,52 @@ class MidpointWaypointParameters(TypedDict):
 
 
 class MidpointWaypoint(AbcMobilityModel):
+    form_subsection_layout = FormSubSection(id="midpoint_waypoint_parameters_subsection").add_line(
+        FormSectionLine().add_fields([
+            FormSectionNumberPairField(
+                id="midpoint_waypoint_waypoint_radius_range",
+                label="Waypoint radius range",
+                name="waypoint_radius_range",
+                is_float=True,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The range of waypoint radius that the node can assume to move in unit of length. (min, max)",
+                ),
+                min_left_value=0,
+                min_right_value=0,
+                right_should_be_gte_left=True,
+                occuped_columns=4
+            ),
+            FormSectionNumberPairField(
+                id="midpoint_waypoint_speed_range",
+                label="Speed range",
+                name="speed_range",
+                is_float=True,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The range of speed that the node can assume to move in unit of length per time step. (min, max)",
+                ),
+                min_left_value=0,
+                min_right_value=0,
+                right_should_be_gte_left=True,
+                occuped_columns=4
+            ),
+            FormSectionNumberPairField(
+                id="midpoint_waypoint_waiting_time_range",
+                label="Waiting time range",
+                name="waiting_time_range",
+                is_float=True,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The range of waiting time that the node can assume to wait in a station in unit of time steps. (min, max)",
+                ),
+                min_left_value=0,
+                min_right_value=0,
+                right_should_be_gte_left=True,
+                occuped_columns=4
+            )
+        ])
+    )
 
     def __init__(self, parameters: MidpointWaypointParameters, *args, **kwargs):
         super().__init__(parameters, *args, **kwargs)

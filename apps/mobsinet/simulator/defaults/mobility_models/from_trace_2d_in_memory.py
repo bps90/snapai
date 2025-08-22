@@ -5,6 +5,7 @@ from ...global_vars import Global
 from ...configuration.sim_config import SimulationConfig
 from ...tools.position import Position
 import utm  # type: ignore
+from ...configuration.layout.form_section import FormSubSection, FormSectionLine, FormSectionTextField, FormSectionCheckboxField, FormSectionFieldInformative
 
 
 class FromTrace2DInMemoryParameters(TypedDict):
@@ -14,6 +15,42 @@ class FromTrace2DInMemoryParameters(TypedDict):
 
 
 class FromTrace2DInMemory(AbcMobilityModel):
+    form_subsection_layout = FormSubSection('mob_from_trace_2d_in_memory_parameters_subsection').add_line(
+        FormSectionLine().add_fields([
+            FormSectionTextField(
+                id="mob_from_trace_2d_in_memory_trace_file",
+                label="Trace File",
+                name="trace_file",
+                occuped_columns=4,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The trace file to be used for move the nodes.",
+                    help_text="The trace file to be user for move the nodes.<br/>The trace file should be a CSV file with the following format: `timestamp, x, y, id` or `timestamp, lat, long, id`.<br/>You can use full path or relative path from the project's root folder.",
+                    as_html=True,
+                ),
+            ),
+            FormSectionCheckboxField(
+                id="mob_from_trace_2d_in_memory_is_lat_long",
+                label="Is Latitude/Longitude",
+                name="is_lat_long",
+                occuped_columns=4,
+                informative=FormSectionFieldInformative(
+                    title="Whether the trace file contains latitude and longitude coordinates.",
+                ),
+            ),
+            FormSectionCheckboxField(
+                id="mob_from_trace_2d_in_memory_addapt_to_dimensions",
+                label="Addapt to Simulation Dimensions",
+                name="addapt_to_dimensions",
+                occuped_columns=4,
+                informative=FormSectionFieldInformative(
+                    title="Whether to addapt the trace to the simulation dimensions.",
+                ),
+            ),
+        ])
+    )
+
+    
     __traces: dict[str, tuple[list[list[float]],
                               Optional[float], Optional[float], Optional[float], Optional[float]]] = {}
 

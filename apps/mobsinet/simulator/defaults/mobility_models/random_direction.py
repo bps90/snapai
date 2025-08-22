@@ -5,7 +5,7 @@ from ...tools.position import Position
 from ...models.abc_mobility_model import AbcMobilityModel
 from ...models.nodes.abc_node import AbcNode
 from typing import TypedDict, Optional
-
+from ...configuration.layout.form_section import FormSubSection, FormSectionLine, FormSectionFieldInformative, FormSectionNumberPairField
 
 class RandomDirectionParameters(TypedDict):
     speed_range: list[float]
@@ -14,6 +14,53 @@ class RandomDirectionParameters(TypedDict):
 
 
 class RandomDirection(AbcMobilityModel):
+    form_subsection_layout = FormSubSection('random_direction_parameters_subsection').add_line(
+        FormSectionLine().add_fields([
+            FormSectionNumberPairField(
+                id="random_direction_speed_range",
+                label="Speed Range",
+                name="speed_range",
+                is_float=True,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The speed that the node can move in unit of length per time step. (min, max)",
+                ),
+                min_left_value=0,
+                min_right_value=0,
+                right_should_be_gte_left=True,
+                occuped_columns=4
+            ),
+            FormSectionNumberPairField(
+                id="random_direction_waiting_time_range",
+                label="Waiting Time Range",
+                name="waiting_time_range",
+                is_float=True,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The waiting time that the node can wait in a station in unit of time steps. (min, max)",
+                ),
+                min_left_value=0,
+                min_right_value=0,
+                right_should_be_gte_left=True,
+                occuped_columns=4
+            ),
+            FormSectionNumberPairField(
+                id="random_direction_move_time_range",
+                label="Move Time Range",
+                name="move_time_range",
+                is_float=True,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The move time that the node can move in the same direction in unit of time steps. (min, max)",
+                ),
+                min_left_value=0,
+                min_right_value=0,
+                right_should_be_gte_left=True,
+                occuped_columns=4
+            )
+        ])
+    )
+    
     def __init__(self, parameters: RandomDirectionParameters, *args, **kwargs):
         super().__init__(parameters, *args, **kwargs)
         self.set_parameters(parameters)

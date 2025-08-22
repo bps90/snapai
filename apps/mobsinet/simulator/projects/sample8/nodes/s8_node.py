@@ -15,6 +15,12 @@ class S8Node(AbcNode):
         super().__init__(*args, **kwargs)
         self.size = 3
 
+    def check_parameters(self, parameters):
+        return True
+
+    def set_parameters(self, parameters):
+        pass
+
     def handle_messages(self, inbox):
 
         if (inbox.single_packet is not None):

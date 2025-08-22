@@ -43,6 +43,12 @@ class S9Node(AbcNode):
         self.command = command
         self.comm_channels = comm_channels
         self.size = 3
+        
+    def check_parameters(self, parameters):
+        return True
+    
+    def set_parameters(self, parameters):
+        pass
 
     def check_requirements(self):
         pass
