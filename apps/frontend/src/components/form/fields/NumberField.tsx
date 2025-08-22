@@ -29,7 +29,7 @@ export default function NumberField({
     nestedPaths
 }: NumberFieldProps) {
     const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
-    const state = useFormState({ control, name: nameAsArray.join('.') });
+    const error = control.getFieldState(nameAsArray.join('.'))?.error?.message;
 
     return (<div
         key={field.id + fieldIndex}
@@ -41,7 +41,7 @@ export default function NumberField({
                 variant='outlined'
                 label={field.label}
                 type={field.type}
-                helperText={state.errors[nameAsArray.join('.')]?.message?.toString()}
+                helperText={error}
                 slotProps={{
                     htmlInput: {
                         step: field.is_float ? 'any' : '1',

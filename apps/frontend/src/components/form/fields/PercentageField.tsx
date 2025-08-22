@@ -20,9 +20,11 @@ export default function PercentageField({
     containerAttr,
     formControlAttr,
     inputAttr,
+    control,
     nestedPaths
 }: PercentageFieldProps) {
     const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
+    const error = control.getFieldState(nameAsArray.join('.'))?.error?.message;
 
     return (<div
         key={field.id + fieldIndex}
@@ -35,6 +37,7 @@ export default function PercentageField({
                 label={field.label}
                 type={'number'}
                 slotProps={{
+                    formHelperText: { error: true },
                     htmlInput: { step: field.is_float ? 'any' : '1', min: field.min_value, max: field.max_value },
                     input: {
                         endAdornment: (<>
@@ -56,6 +59,7 @@ export default function PercentageField({
                         </>)
                     }
                 }}
+                helperText={error}
                 id={field.id}
                 required={field.required}
                 {...register(nameAsArray.join('.'), { valueAsNumber: true, onChange: (e) => field.afterChange?.(Number(e.target.value)) })}

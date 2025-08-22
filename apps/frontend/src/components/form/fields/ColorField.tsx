@@ -27,7 +27,7 @@ function ColorField({
     register
 }: ColorFieldProps) {
     const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
-    const error = useFormState({ name: nameAsArray.join('.'), control }).errors[nameAsArray.join('.')];
+    const error = control.getFieldState(nameAsArray.join('.'))?.error?.message;
 
     return <div
         key={field.id + fieldIndex}
@@ -40,7 +40,7 @@ function ColorField({
                 label={field.label}
                 type={field.type}
                 id={field.id}
-                helperText={error?.message?.toString()}
+                helperText={error}
                 required={field.required}
                 slotProps={{
                     formHelperText: {

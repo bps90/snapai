@@ -1,6 +1,6 @@
 import { Field } from "@/lib/fetchers"
 import { FormFieldProps } from "./FormField"
-import { FormControl, FormControlProps, IconButton, InputAdornment, InputLabel, MenuItem, Select, SelectProps, Tooltip } from "@mui/material"
+import { FormControl, FormControlProps, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Select, SelectProps, Tooltip } from "@mui/material"
 import { Controller } from "react-hook-form"
 import clsx from "clsx"
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
@@ -44,7 +44,7 @@ export default function MultiSelectField({
                     control={control}
                     defaultValue={field.value ?? []}
                     rules={{ required: field.required }}
-                    render={({ field: controllerField }) => (
+                    render={({ field: controllerField, fieldState: { error } }) => (<>
                         <Select
                             labelId={name + '__label'}
                             multiple
@@ -84,7 +84,8 @@ export default function MultiSelectField({
                                 </MenuItem>
                             ))}
                         </Select>
-                    )}
+                        {error && <FormHelperText error>{error.message}</FormHelperText>}
+                    </>)}
                 />
             </FormControl>
         </div>

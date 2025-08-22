@@ -43,7 +43,7 @@ export default function NumberPairField({
             name={nameAsArray.join('.')}
             defaultValue={field.value}
 
-            render={({ field: renderField, fieldState }) => {
+            render={({ field: renderField, fieldState: { error } }) => {
                 const [min, max] = renderField.value ?? [0, 0] as [number, number];
                 const setMin = (val: number) => {
                     renderField.onChange([val, max]);
@@ -87,7 +87,7 @@ export default function NumberPairField({
                             }}
                             slotProps={{ htmlInput: { min: field.min_left_value, max: field.max_left_value } }}
                             onChange={(e) => setMin(Number(e.target.value))}
-                            error={!!fieldState.error}
+                            error={!!error}
                             {...inputsAttr}
                         />
                         <Divider orientation="vertical" flexItem />
@@ -123,13 +123,13 @@ export default function NumberPairField({
                                 }
                             }}
                             onChange={(e) => setMax(Number(e.target.value))}
-                            error={!!fieldState.error}
+                            error={!!error}
                             {...inputsAttr}
                         />
                     </Box>
-                    {fieldState.error?.message && (
+                    {error?.message && (
                         <FormHelperText className="block w-full" error>
-                            {fieldState.error.message}
+                            {error.message}
                         </FormHelperText>
                     )}
                 </>

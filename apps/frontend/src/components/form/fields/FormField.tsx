@@ -17,8 +17,8 @@ export type FormFieldProps = {
     field: Field
     fieldIndex: number;
     containerAttr?: HTMLAttributes<HTMLDivElement>;
-    register: UseFormRegister<ConfigFormSchema>;
-    control: Control<ConfigFormSchema>;
+    register: UseFormRegister<any>;
+    control: Control<any>;
     disabled?: boolean;
     nestedPaths?: string[]
     [key: string]: unknown

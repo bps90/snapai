@@ -43,7 +43,7 @@ export default function NodeSelectField({
                     control={control}
                     defaultValue={field.value ?? ''}
                     rules={{ required: field.required }}
-                    render={({ field: controllerField, fieldState }) => (<>
+                    render={({ field: controllerField, fieldState: { error } }) => (<>
                         <Select
                             labelId={name + '__label'}
                             variant="outlined"
@@ -83,7 +83,7 @@ export default function NodeSelectField({
                                 </MenuItem>
                             ))}
                         </Select>
-                        {fieldState.error && <FormHelperText error>{fieldState.error.message}</FormHelperText>}
+                        {error && <FormHelperText error>{error.message}</FormHelperText>}
                     </>)}
                 />
             </FormControl>

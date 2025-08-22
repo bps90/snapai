@@ -1,9 +1,10 @@
 import { Field } from "@/lib/fetchers";
 import { FormFieldProps } from "./FormField";
-import { Checkbox, CheckboxProps, FormControl, FormControlLabel, FormControlLabelProps, FormControlProps, IconButton, Tooltip } from "@mui/material";
+import { Checkbox, CheckboxProps, FormControl, FormControlLabel, FormControlLabelProps, FormControlProps, FormHelperText, IconButton, Tooltip } from "@mui/material";
 import clsx from "clsx";
-import { Controller } from "react-hook-form";
+import { Controller, useFormState } from "react-hook-form";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import { useState } from "react";
 
 export type CheckboxField = Field & {
     type: 'checkbox',
@@ -28,6 +29,7 @@ export default function CheckboxField({
     control
 }: CheckboxFieldProps) {
     const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
+    const error = control.getFieldState(nameAsArray.join('.'))?.error?.message;
 
     return (
         <div
@@ -58,25 +60,27 @@ export default function CheckboxField({
                 <Controller
                     name={nameAsArray.join('.')}
                     control={control}
-                    render={({ field: controllerField }) => (
-                        <FormControlLabel
-                            title={field.informative?.title}
-                            control={
-                                <Checkbox
-                                    required={field.required}
-                                    id={field.id}
-                                    checked={controllerField.value ?? false}
-                                    onChange={(e) => {
-                                        controllerField.onChange(e.target.checked);
-                                        field.afterChange?.(e.target.checked);
-                                    }}
-                                    {...checkboxAttr}
-                                />
-                            }
-                            label={field.label}
-                            {...formControlLabelAttr}
-                        />
-                    )}
+                    render={({ field: controllerField, fieldState: { error } }) => {
+                        return (
+                            <FormControlLabel
+                                title={field.informative?.title}
+                                control={
+                                    <Checkbox
+                                        required={field.required}
+                                        id={field.id}
+                                        checked={controllerField.value ?? false}
+                                        onChange={(e) => {
+                                            controllerField.onChange(e.target.checked);
+                                            field.afterChange?.(e.target.checked);
+                                        }}
+                                        {...checkboxAttr}
+                                    />
+                                }
+                                label={<>{field.label}{field.required && <span className="opacity-60">*</span>}</>}
+                                {...formControlLabelAttr}
+                            />
+                        )
+                    }}
                 />
                 {field.informative?.help_text &&
                     <Tooltip
@@ -90,6 +94,7 @@ export default function CheckboxField({
                         </IconButton>
                     </Tooltip>}
             </FormControl>
+            {error && <FormHelperText error>{error}</FormHelperText>}
         </div>
     )
 }

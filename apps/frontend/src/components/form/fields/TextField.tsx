@@ -23,9 +23,11 @@ function TextField({
     containerAttr,
     formControlAttr,
     nestedPaths,
+    control,
     register
 }: TextFieldProps) {
     const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
+    const error = control.getFieldState(nameAsArray.join('.')).error?.message;
 
     return <div
         key={field.id + fieldIndex}
@@ -38,8 +40,10 @@ function TextField({
                 label={field.label}
                 type={field.type}
                 id={field.id}
+                helperText={error}
                 required={field.required}
                 slotProps={{
+                    formHelperText: { error: true },
                     htmlInput: {
                         minLength: field.min_length,
                         maxLength: field.max_length

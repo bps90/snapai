@@ -44,7 +44,7 @@ export default function ModelSelectField({
                     control={control}
                     defaultValue={field.value ?? ''}
                     rules={{ required: field.required }}
-                    render={({ field: controllerField, fieldState }) => (<>
+                    render={({ field: controllerField, fieldState: { error } }) => (<>
                         <Select
                             labelId={name + '__label'}
                             variant="outlined"
@@ -84,7 +84,7 @@ export default function ModelSelectField({
                                 </MenuItem>
                             ))}
                         </Select>
-                        {fieldState.error && <FormHelperText error>{fieldState.error.message}</FormHelperText>}
+                        {error && <FormHelperText error>{error.message}</FormHelperText>}
 
                     </>)}
                 />
