@@ -12,6 +12,8 @@ urlpatterns = [
     path('graph/update_config/', views.update_config, name='update_config'),
     path('graph/get_config_form_layout/',
          views.get_config_form_layout, name='get_config_form_layout'),
+    path('graph/get_models_names/',
+         views.get_models_names, name='get_models_names'),
     path('graph/get_model_subsection_layout/',
          views.get_model_subsection_layout, name='get_model_subsection_layout'),
     path('graph/get_nodes_names/',

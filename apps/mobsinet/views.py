@@ -177,6 +177,12 @@ def get_config_form_layout(request: HttpRequest):
         print(traceback.format_exc())
         return HttpResponse(status=500, content="See backend console for more details")
 
+def get_models_names(request: HttpRequest):
+    model_type = request.GET.get('model_type')
+
+    if (model_type is None or model_type not in ['connectivity', 'mobility', 'interference', 'reliability', 'distribution', 'message_transmission']):
+        return HttpResponse(status=400, content="Invalid model type")
+    return JsonResponse(ModelsSearchEngine.get_models_names(cast(Literal['connectivity', 'mobility', 'interference', 'reliability', 'distribution', 'message_transmission'], model_type)), safe=False)
 
 def get_model_subsection_layout(request: HttpRequest):
     model_name = request.GET.get('model')

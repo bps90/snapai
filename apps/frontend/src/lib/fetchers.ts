@@ -8,7 +8,7 @@ export type FieldInformative = {
     as_html: boolean
 }
 
-export type FieldType = 'text' | 'number' | 'percentage' | 'select' | 'multiselect' | 'checkbox' | 'number_pair' | 'model_select';
+export type FieldType = 'text' | 'number' | 'percentage' | 'select' | 'multiselect' | 'checkbox' | 'number_pair' | 'model_select' | 'node_select' | 'color';
 
 export type Field = {
     id: string,
@@ -19,7 +19,8 @@ export type Field = {
     occuped_columns: number,
     informative: FieldInformative | null,
     nested_paths: string[],
-    value: unknown
+    value: unknown,
+    afterChange?: (value: unknown) => void;
 }
 
 export type Line = {
@@ -35,7 +36,7 @@ export type Subsection = {
 
 export type Section = {
     id: string,
-    title: string,
+    title?: string,
     subsections: Subsection[],
     model?: string,
     model_type?: string,
@@ -155,4 +156,25 @@ export const initSimulation = async (project: string): Promise<void> => {
     await axios.post(`${API_BASE_URL}/graph/init_simulation/`, {}, {
         params: { project },
     });
+}
+
+export const fetchNodeSubsectionLayout = async (
+    node: string,
+): Promise<{ layout: Subsection, defaultParameters: boolean }> => {
+    const response = await axios.get(`${API_BASE_URL}/graph/get_node_subsection_layout/`, {
+        params: { node },
+    });
+    return response.data;
+}
+
+export const fetchNodesNames = async (): Promise<string[]> => {
+    const response = await axios.get<string[]>(`${API_BASE_URL}/graph/get_nodes_names/`);
+    return response.data;
+}
+
+export const fetchModelsNames = async (modelType: string): Promise<string[]> => {
+    const response = await axios.get<string[]>(`${API_BASE_URL}/graph/get_models_names/`, {
+        params: { model_type: modelType }
+    });
+    return response.data;
 }
