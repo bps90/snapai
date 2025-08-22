@@ -1,5 +1,5 @@
 import { FormFieldProps } from "./FormField"
-import { FormControl, FormControlProps, IconButton, InputAdornment, InputLabel, MenuItem, Select, SelectProps, Tooltip } from "@mui/material"
+import { FormControl, FormControlProps, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, Select, SelectProps, Tooltip } from "@mui/material"
 import { SelectField } from "./SelectField"
 import { Controller } from "react-hook-form"
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
@@ -43,7 +43,7 @@ export default function NodeSelectField({
                     control={control}
                     defaultValue={field.value ?? ''}
                     rules={{ required: field.required }}
-                    render={({ field: controllerField }) => (
+                    render={({ field: controllerField, fieldState }) => (<>
                         <Select
                             labelId={name + '__label'}
                             variant="outlined"
@@ -83,7 +83,8 @@ export default function NodeSelectField({
                                 </MenuItem>
                             ))}
                         </Select>
-                    )}
+                        {fieldState.error && <FormHelperText error>{fieldState.error.message}</FormHelperText>}
+                    </>)}
                 />
             </FormControl>
         </div>

@@ -2,6 +2,7 @@ import { FormControl, FormControlProps, IconButton, InputAdornment, TextField, T
 import { FormFieldProps } from "./FormField";
 import { Field } from '@/lib/fetchers';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import { useFormState } from "react-hook-form";
 
 export type NumberField = Field & {
     type: 'number',
@@ -24,9 +25,11 @@ export default function NumberField({
     containerAttr,
     formControlAttr,
     inputAttr,
+    control,
     nestedPaths
 }: NumberFieldProps) {
     const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
+    const state = useFormState({ control, name: nameAsArray.join('.') });
 
     return (<div
         key={field.id + fieldIndex}
@@ -38,11 +41,15 @@ export default function NumberField({
                 variant='outlined'
                 label={field.label}
                 type={field.type}
+                helperText={state.errors[nameAsArray.join('.')]?.message?.toString()}
                 slotProps={{
                     htmlInput: {
                         step: field.is_float ? 'any' : '1',
                         min: field.min_value,
                         max: field.max_value
+                    },
+                    formHelperText: {
+                        error: true,
                     },
                     input: {
                         endAdornment: (

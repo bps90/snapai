@@ -1,7 +1,8 @@
 import { Field } from '@/lib/fetchers';
-import { FormControl, FormControlProps, IconButton, InputAdornment, TextField as MaterialTextField, TextFieldProps as MaterialTextFieldProps, TextField as ColorField, Tooltip } from '@mui/material';
+import { FormControl, FormControlProps, IconButton, InputAdornment, TextField as MaterialTextField, TextFieldProps as MaterialTextFieldProps, TextField as ColorField, Tooltip, FormHelperText } from '@mui/material';
 import { FormFieldProps } from './FormField';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import { useFormState } from 'react-hook-form';
 
 export type ColorField = Field & {
     type: 'color'
@@ -22,9 +23,11 @@ function ColorField({
     containerAttr,
     formControlAttr,
     nestedPaths,
+    control,
     register
 }: ColorFieldProps) {
     const nameAsArray = [...(nestedPaths ?? []), ...field.nested_paths, field.name];
+    const error = useFormState({ name: nameAsArray.join('.'), control }).errors[nameAsArray.join('.')];
 
     return <div
         key={field.id + fieldIndex}
@@ -37,8 +40,12 @@ function ColorField({
                 label={field.label}
                 type={field.type}
                 id={field.id}
+                helperText={error?.message?.toString()}
                 required={field.required}
                 slotProps={{
+                    formHelperText: {
+                        error: true,
+                    },
                     input: {
                         endAdornment: field.informative?.help_text && (
                             <InputAdornment position="end">
