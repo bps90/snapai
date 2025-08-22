@@ -62,7 +62,7 @@ export class FormLayoutHelper {
                                     base = ((field as NumberField).is_float ? z.number() : z.number().int()).min((field as NumberField).min_value || -Infinity).max((field as NumberField).max_value || Infinity);
                                     break;
                                 case 'checkbox':
-                                    base = (field as CheckboxField).required ? z.literal(true) : z.boolean();
+                                    base = (field as CheckboxField).required ? z.literal(true) : z.preprocess((value) => Boolean(value), z.boolean());
                                     break;
                                 case 'number_pair':
                                     base = z.tuple([
