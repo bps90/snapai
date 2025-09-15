@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Literal, Any, cast
 from abc import ABC, abstractmethod
+import re
 
 if TYPE_CHECKING:
     from ..base_config import BaseConfig
@@ -467,6 +468,53 @@ class FormSectionNumberPairField(FormSectionField):
         self.value = value
         return self
 
+
+class FormSectionColorField(FormSectionField):
+    def __init__(self,
+                 id: str,
+                 label: str,
+                 name: str,
+                 occuped_columns: int,
+                 required: bool = True,
+                 informative: FormSectionFieldInformative | None = None,
+                 ):
+        super().__init__(id, label, name, occuped_columns, required, informative)
+        self.value: str | None = None
+
+    def init(self, config_class):
+        working_config = config_class.to_dict()
+
+        for path in self.nested_paths:
+            working_config = working_config[path]
+
+        if self.name not in working_config:
+            raise Exception(f"Field {self.name} not found in config class")
+
+        value = working_config[self.name]
+        if value is None and self.required:
+            raise Exception(f"Field {self.name} is required")
+
+        if value is not None and not isinstance(value, str):
+            raise Exception(f"Field {self.name} is not a string")
+    
+        if value is not None and not re.match(r'^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$', value):
+            raise Exception(f"Field {self.name} is not a valid hex color")
+
+        self.value = value
+        return self
+
+    def to_dict(self):
+        return {
+            'type': 'color',
+            'id': self.id,
+            'label': self.label,
+            'name': self.name,
+            'occuped_columns': self.occuped_columns,
+            'required': self.required,
+            'informative': self.informative.to_dict() if self.informative else None,
+            'value': self.value,
+            'nested_paths': self.nested_paths,
+        }
 
 class FormSectionLine:
     def __init__(self):
