@@ -5,9 +5,10 @@ from ...sample1.timers.init_pingpong_timer import InitPingPongTimer
 from ....tools.color import Color
 from random import randint
 from ....network_simulator import simulation
-from ....configuration.layout.form_section import FormSubSection, FormSectionLine, FormSectionNumberField, FormSectionFieldInformative
+from ....configuration.layout.form_section import FormSubSection, FormSectionLine, FormSectionColorField, FormSectionNumberField, FormSectionFieldInformative
 from typing import TypedDict, TYPE_CHECKING
 from ....tools.position import Position
+import math
 
 if TYPE_CHECKING:
     from ....models.abc_mobility_model import AbcMobilityModel
@@ -15,26 +16,67 @@ if TYPE_CHECKING:
     from ....models.abc_interference_model import AbcInterferenceModel
     from ....models.abc_reliability_model import AbcReliabilityModel
 
+
 class ParamizedNodeParameters(TypedDict):
     border_color: int
 
+
 class ParamizedNode(AbcNode):
     form_subsection_layout = FormSubSection("paramized_node_parameters_subsection").add_line(
-        FormSectionLine().add_field(
-            FormSectionNumberField(
-            id="border_color",
-            name="border_color",
-            label="Border Color",
-            occuped_columns=4,
-            is_float=False,
-            required=True,
-            informative=FormSectionFieldInformative(
-                title="The border color of the node.",
+        FormSectionLine().add_fields([
+            FormSectionColorField(
+                id="border_color",
+                name="border_color",
+                label="Border Color",
+                occuped_columns=4,
+                required=True,
+                informative=FormSectionFieldInformative(
+                    title="The border color of the node.",
+                ),
             ),
-            min_value=0,
-            max_value=255
-            
-        ))
+            FormSectionNumberField(
+                id="max_simultaneous_connections",
+                name="max_simultaneous_connections",
+                label="Max Simultaneous Connections",
+                occuped_columns=1,
+                informative=FormSectionFieldInformative(
+                    title="The max simultaneous connections of the node.",
+                    help_text="The max simultaneous connections of the node.<br>By default, it is infinite.",
+                    as_html=True
+                ),
+                is_float=True,
+                required=False,
+                min_value=0,
+            ),
+            FormSectionNumberField(
+                id="border_angle",
+                name="border_angle",
+                is_angle='deg',
+                informative=FormSectionFieldInformative(
+                    title="The border angle of the node.",
+                ),
+                is_float=True,
+                label="Border Angle",
+                occuped_columns=3,
+                required=True,
+                min_value=0,
+                max_value=360
+            ),
+            FormSectionNumberField(
+                id="other_angle",
+                name="other_angle",
+                is_angle='rad',
+                informative=FormSectionFieldInformative(
+                    title="The other angle of the node.",
+                ),
+                is_float=False,
+                label="Other Angle",
+                occuped_columns=4,
+                required=True,
+                min_value=math.pi/5,
+                max_value=math.pi*2
+            )
+        ])
     )
     default_parameters = True
 
@@ -54,9 +96,9 @@ class ParamizedNode(AbcNode):
         self.__local_g: int = 0
         self.__local_b: int = 0
         self.size = 10
-        
+
         self.set_parameters(parameters)
-        
+
         if (len(simulation.nodes()) == 0):
             init_pingpong_timer = InitPingPongTimer()
             init_pingpong_timer.start_relative(1, self)
@@ -93,11 +135,11 @@ class ParamizedNode(AbcNode):
                 timer.start_relative(1, self)
 
                 received_from.append(packet.origin)
-            
+
     def check_parameters(self, parameters):
         if (
             'border_color' not in parameters or
-            not isinstance(parameters['border_color'], int)):
+                not isinstance(parameters['border_color'], int)):
             return False
 
         return True
@@ -108,7 +150,6 @@ class ParamizedNode(AbcNode):
 
         parsed_parameters: ParamizedNodeParameters = parameters
         self.border_color: float = parsed_parameters['border_color']
-
 
     def check_requirements(self):
         pass
