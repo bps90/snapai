@@ -60,7 +60,7 @@ export default function CheckboxField({
                 <Controller
                     name={nameAsArray.join('.')}
                     control={control}
-                    render={({ field: controllerField, fieldState: { error } }) => {
+                    render={({ field: controllerField }) => {
                         return (
                             <FormControlLabel
                                 title={field.informative?.title}

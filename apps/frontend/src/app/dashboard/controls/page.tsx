@@ -12,6 +12,7 @@ import NodeInfo from "@/components/NodeInfo";
 import Logs from "@/components/Logs";
 import { useQueryState } from 'nuqs';
 import LinkWithQuery from "@/components/LinkWithQuery";
+import AddNodeFormDialog from "@/components/AddNodesFormDialog";
 
 // Importa sem SSR
 const GraphViewer = dynamic(() => import("@/components/GraphViewer"), { ssr: false });
@@ -48,6 +49,10 @@ export default function DashboardControls() {
         showIds, showArrows, graphData, setGraphData, mouseInNode,
         setIsRunning, selectedProject
     } = useSimulationContext();
+    const [addNodesDialogOpen, setAddNodesDialogOpen] = useQueryState('add_nodes_form_open', {
+        defaultValue: false,
+        parse: (s) => s === 'true',
+    });
 
     const onPlay = (data: PreRunFormSchema) => {
         console.log(data);
@@ -57,6 +62,10 @@ export default function DashboardControls() {
     const onPause = () => {
         setIsRunning(false);
     };
+
+    const closeAddNodesDialog = () => {
+        setAddNodesDialogOpen(false);
+    }
 
     useEffect(() => {
         setGraphData(mockData);
@@ -75,55 +84,62 @@ export default function DashboardControls() {
         )
 
     return (
-        <div className="flex gap-2 flex-col w-full justify-center min-h-dvh max-h-dvh px-4">
-            <ControlBar
-                onPlay={onPlay}
-                onPauseButtonClick={onPause}
-                onResetCamButtonClick={() => graphViewerRef.current?.resetCam()}
-                onDownloadGraphButtonClick={() => graphViewerRef.current?.toImage()}
-            />
-            <Divider variant="middle" />
-            <div className="grid grid-cols-2 gap-2 controls-and-graph">
-                <div className="flex flex-col gap-2 p-4 bg-gray-50 w-full overflow-y-auto" style={{ height: "90dvh" }}>
-                    <div className="flex w-full flex-col h-full gap-2">
-                        <SimulationInfoBar
-                            cards={[
-                                { type: 'time', value: 156423 },
-                                { type: 'totalMsgSent', value: 540198946 },
-                                { type: 'msgSentOnRound', value: 5465 },
-                            ]}
-                        />
-                        <SimulationInfoBar
-                            cards={[
-                                { type: 'nodes', value: graphData.nodes.length },
-                                { type: 'edges', value: graphData.links.length },
-                                { type: 'remainingEvents', value: '----' },
-                            ]}
-                        />
-                        <Divider variant="middle" />
-                        <NodeInfo node={mouseInNode ?? undefined} />
-                        <Logs logs={[
-                            'log1',
-                            'log2',
-                            'log3 Lorem, ipsum dolor sit amet consectetur adipisicing elit. ',
-                            'log4 Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore excepturi ex, impedit perferendis tempora, vero mollitia consectetur eveniet neque adipisci libero aut laudantium necessitatibus praesentium delectus ratione voluptates sed distinctio.',
-                        ]} />
+        <>
+            <div className="flex gap-2 flex-col w-full justify-center min-h-dvh max-h-dvh px-4">
+                <ControlBar
+                    onPlay={onPlay}
+                    onPauseButtonClick={onPause}
+                    onResetCamButtonClick={() => graphViewerRef.current?.resetCam()}
+                    onDownloadGraphButtonClick={() => graphViewerRef.current?.toImage()}
+                    onAddNodesButtonClick={() => setAddNodesDialogOpen(true)}
+                />
+                <Divider variant="middle" />
+                <div className="grid grid-cols-2 gap-2 controls-and-graph">
+                    <div className="flex flex-col gap-2 p-4 bg-gray-50 w-full overflow-y-auto" style={{ height: "90dvh" }}>
+                        <div className="flex w-full flex-col h-full gap-2">
+                            <SimulationInfoBar
+                                cards={[
+                                    { type: 'time', value: 156423 },
+                                    { type: 'totalMsgSent', value: 540198946 },
+                                    { type: 'msgSentOnRound', value: 5465 },
+                                ]}
+                            />
+                            <SimulationInfoBar
+                                cards={[
+                                    { type: 'nodes', value: graphData.nodes.length },
+                                    { type: 'edges', value: graphData.links.length },
+                                    { type: 'remainingEvents', value: '----' },
+                                ]}
+                            />
+                            <Divider variant="middle" />
+                            <NodeInfo node={mouseInNode ?? undefined} />
+                            <Logs logs={[
+                                'log1',
+                                'log2',
+                                'log3 Lorem, ipsum dolor sit amet consectetur adipisicing elit. ',
+                                'log4 Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore excepturi ex, impedit perferendis tempora, vero mollitia consectetur eveniet neque adipisci libero aut laudantium necessitatibus praesentium delectus ratione voluptates sed distinctio.',
+                            ]} />
 
+                        </div>
+                    </div>
+
+                    <div className="graph-container" style={{ minWidth: "90dvh", width: "90dvh", height: "90dvh" }} >
+                        <GraphViewer
+                            ref={graphViewerRef}
+                            dimensions={{ x: [0, 100], y: [0, 100] }}
+                            data={graphData}
+                            arrowHeadSize={1.5}
+                            renderLabels={showIds}
+                            showArrows={showArrows}
+                        />
                     </div>
                 </div>
 
-                <div className="graph-container" style={{ minWidth: "90dvh", width: "90dvh", height: "90dvh" }} >
-                    <GraphViewer
-                        ref={graphViewerRef}
-                        dimensions={{ x: [0, 100], y: [0, 100] }}
-                        data={graphData}
-                        arrowHeadSize={1.5}
-                        renderLabels={showIds}
-                        showArrows={showArrows}
-                    />
-                </div>
             </div>
-
-        </div>
-    );
+            <AddNodeFormDialog
+                onClose={closeAddNodesDialog}
+                onSubmit={closeAddNodesDialog}
+                open={addNodesDialogOpen}
+            />
+        </>);
 }

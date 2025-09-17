@@ -10,7 +10,7 @@ type MenuItem = {
     href: string,
     label: string,
     icon: string,
-    enabler?: (simulationContext: SimulationContextProps, currentPathname: string) => boolean,
+    enabler?: (simulationContext: SimulationContextProps, currentPathname: string) => boolean | string,
 }
 
 const menuItems: MenuItem[] = [
@@ -20,7 +20,7 @@ const menuItems: MenuItem[] = [
         label: 'Controls',
         icon: '🎮',
         enabler: (simulationContext, currentPathname) => {
-            return !!simulationContext.selectedProject
+            return simulationContext.selectedProject ? true : "Select a project first";
         }
     },
 ]
@@ -34,6 +34,7 @@ function MenuItem({ item, currentPathname }: MenuItemProps) {
     const simulationContext = useSimulationContext();
     const [isActive, setIsActive] = useState(false);
     const [isEnabled, setIsEnabled] = useState(false);
+    const [tooltipText, setTooltipText] = useState<string | null>(null);
 
     const verifyActive = () => {
         setIsActive(item.href === currentPathname)
@@ -42,24 +43,30 @@ function MenuItem({ item, currentPathname }: MenuItemProps) {
     useEffect(verifyActive, [item.href, currentPathname])
     useEffect(() => {
         if (item.enabler) {
-            setIsEnabled(item.enabler(simulationContext, currentPathname));
+            const enabled = item.enabler(simulationContext, currentPathname);
+            setIsEnabled(enabled === true);
+            if (typeof enabled === "string")
+                setTooltipText(enabled);
         } else {
             setIsEnabled(true);
+            setTooltipText(null);
         }
     })
 
     return (
-        <LinkWithQuery
-            href={isEnabled ? item.href : ""}
-            style={{
-                cursor: isEnabled ? "pointer" : "not-allowed",
-                opacity: isEnabled ? 1 : 0.5
-            }}
-            className={"px-4 py-2 block" + (isActive ? " bg-blue-600 text-white" : "")}
-        >
-            <span>{item.icon}</span>
-            <span className="aside-item-label ml-4">{item.label}</span>
-        </LinkWithQuery>
+        <Tooltip title={tooltipText}>
+            <LinkWithQuery
+                href={isEnabled ? item.href : ""}
+                style={{
+                    cursor: isEnabled ? "pointer" : "not-allowed",
+                    opacity: isEnabled ? 1 : 0.5
+                }}
+                className={"px-4 py-2 block" + (isActive ? " bg-blue-600 text-white" : "")}
+            >
+                <span>{item.icon}</span>
+                <span className="aside-item-label ml-4">{item.label}</span>
+            </LinkWithQuery>
+        </Tooltip>
     )
 }
 

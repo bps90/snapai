@@ -27,13 +27,15 @@ export type ControlBarProps = {
     onDownloadGraphButtonClick?: () => void;
     onPlay?: (data: PreRunFormSchema) => void;
     onPauseButtonClick?: () => void;
+    onAddNodesButtonClick?: () => void;
 }
 
 const ControlBar = forwardRef<ControlBarRef, ControlBarProps>(({
     onResetCamButtonClick,
     onDownloadGraphButtonClick,
     onPlay,
-    onPauseButtonClick
+    onPauseButtonClick,
+    onAddNodesButtonClick
 }, ref) => {
     const [initializeButtonLoading, setInitializeButtonLoading] = useState(false);
     const [initializeButtonDisabled, setInitializeButtonDisabled] = useState(false);
@@ -94,6 +96,7 @@ const ControlBar = forwardRef<ControlBarRef, ControlBarProps>(({
                 label="Add Nodes"
                 icon={<AddCircleRoundedIcon style={{ color: "#2867CE" }} />}
                 helpText="Open form to add nodes to the network."
+                onClick={onAddNodesButtonClick}
             />
             <ControlButton
                 label="Reevaluate Connections"

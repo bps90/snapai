@@ -1,8 +1,12 @@
 "use client";
+import { AddNodesFormSchema } from '@/components/form/AddNodesForm';
 import { GraphData } from '@/components/GraphViewer';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryState } from 'nuqs';
 import React, { createContext, useState, useContext } from 'react';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import { CameraState } from 'sigma/types';
+import { z } from 'zod';
 
 export type SimulationContextProps = {
     selectedProject: string | null;

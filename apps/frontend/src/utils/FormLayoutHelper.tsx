@@ -4,6 +4,7 @@ import { MultiSelectField } from "@/components/form/fields/MultiSelectField";
 import { NodeSelectField } from "@/components/form/fields/NodeSelectField";
 import { NumberField } from "@/components/form/fields/NumberField";
 import { NumberPairField } from "@/components/form/fields/NumberPairField";
+import { SelectField } from "@/components/form/fields/SelectField";
 import { TextField } from "@/components/form/fields/TextField";
 import { FieldType, Layout, Section } from "@/lib/fetchers";
 import { z } from "zod";
@@ -71,7 +72,9 @@ export class FormLayoutHelper {
                                     ]).refine(([left, right]) => (field as NumberPairField).right_should_be_gte_left ? left <= right : true, { message: 'Right value should be greater than or equal to left value' });
                                     break;
                                 case 'select':
-                                    base = z.any();
+                                    base = (field as SelectField).required ?
+                                        z.any().refine((val) => (field as SelectField).options.map(opt => opt.value).includes(val)) :
+                                        z.any();
                                     break;
                                 case 'multiselect':
                                     base = z.array(z.any()).min((field as MultiSelectField).min_selected).max((field as MultiSelectField).max_selected || Infinity);

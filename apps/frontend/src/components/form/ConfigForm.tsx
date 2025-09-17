@@ -203,7 +203,7 @@ export default function ConfigForm({
             .map((superSection) => superSection.layout ? ({ ...superSection.layout, nestedPaths: superSection.nestedPaths! }) : undefined)
             .filter((x) => x) as LayoutWithNestedPaths[];
 
-        setConfigFormSchema(FormLayoutHelper.buildSchema(layouts) as unknown as z.ZodObject<ConfigFormSchema>);
+        setConfigFormSchema(FormLayoutHelper.buildSchema<z.ZodObject<ConfigFormSchema>>(layouts));
 
         reset({ ...config, ...watch(), project_config: { ...config?.project_config, ...watch().project_config } });
     }, [superSections]);
@@ -277,7 +277,7 @@ export default function ConfigForm({
                     <div
                         key={superSection.id}
                         id={superSection.id}
-                        className={clsx(superSection.id, 'w-full', 'p-4', 'rounded-md', 'shadow-lg', ...superSection.styleClasses.superSection)}
+                        className={clsx(superSection.id, 'w-full', 'p-4', 'rounded-md', 'shadow-lg', 'bg-stone-50', ...superSection.styleClasses.superSection)}
                     >
                         <h2
                             className={clsx('text-3xl', 'mb-2', ...superSection.styleClasses.superSectionTitle)}

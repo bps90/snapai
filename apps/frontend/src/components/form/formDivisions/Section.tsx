@@ -29,9 +29,11 @@ export default function Section({
             id={`${superSection?.prefix ?? ''}_section_${section.id}`}
             className={clsx(
                 `${superSection?.prefix ?? ''}_section_${section.id}`,
-                'border',
+                // 'border',
                 'rounded-md',
-                'border-gray-200',
+                // 'border-gray-200',
+                'bg-white',
+                'shadow-md',
                 'p-2',
                 'mb-2',
                 'flex',
