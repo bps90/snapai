@@ -1,0 +1,33 @@
+{
+  "distribution_model": "random_dist",
+  "distribution_model_parameters": {
+    "radius": 0,
+    "rotation_direction": "clockwise",
+    "midpoint": null,
+    "number_of_nodes": 0
+  },
+  "node": "sample1:pingpong_node",
+  "number_of_nodes": 50,
+  "node_color": "#1858d8",
+  "node_size": 1,
+  "mobility_model": "random_waypoint",
+  "mobility_model_parameters": {
+    "speed_range": [
+      0,
+      1
+    ],
+    "waiting_time_range": [
+      15,
+      20
+    ]
+  },
+  "connectivity_model": "udg_connectivity",
+  "connectivity_model_parameters": {
+    "sure_connection_radius": 100,
+    "unsure_connection_radius": 300,
+    "unsure_radius_probability": 0.7,
+    "radius": 50
+  },
+  "interference_model": "no_interference",
+  "reliability_model": "no_reliability"
+}

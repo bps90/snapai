@@ -1,3 +1,4 @@
+import { AddNodesFormSchema } from '@/components/form/AddNodesForm';
 import axios from 'axios';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -152,10 +153,11 @@ export const getData = async (withLogs: boolean): Promise<GraphData> => {
     return response.data;
 }
 
-export const initSimulation = async (project: string): Promise<void> => {
-    await axios.post(`${API_BASE_URL}/graph/init_simulation/`, {}, {
+export const initSimulation = async (project: string): Promise<{ dimensions: { x: [number, number]; y: [number, number]; z: [number, number]; } }> => {
+    const response = await axios.post(`${API_BASE_URL}/graph/init_simulation/`, {}, {
         params: { project },
     });
+    return response.data;
 }
 
 export const fetchNodeSubsectionLayout = async (
@@ -175,6 +177,19 @@ export const fetchNodesNames = async (): Promise<string[]> => {
 export const fetchModelsNames = async (modelType: string): Promise<string[]> => {
     const response = await axios.get<string[]>(`${API_BASE_URL}/graph/get_models_names/`, {
         params: { model_type: modelType }
+    });
+    return response.data;
+}
+
+export const addNodes = async (formData: AddNodesFormSchema): Promise<void> => {
+    const response = await axios.post(`${API_BASE_URL}/graph/add_nodes/`, formData);
+
+    return response.data;
+}
+
+export const runSimulation = async (rounds: number, refreshRate: number): Promise<void> => {
+    const response = await axios.get(`${API_BASE_URL}/graph/run_simulation/`, {
+        params: { rounds, refresh_rate: refreshRate },
     });
     return response.data;
 }

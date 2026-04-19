@@ -23,6 +23,16 @@ export type SimulationContextProps = {
     setCameraState: React.Dispatch<React.SetStateAction<CameraState | null>>;
     isRunning: boolean;
     setIsRunning: React.Dispatch<React.SetStateAction<boolean>>;
+    logs: string[];
+    setLogs: React.Dispatch<React.SetStateAction<string[]>>;
+    time: number;
+    setTime: React.Dispatch<React.SetStateAction<number>>;
+    numberOfMessagesInThisRound: number;
+    setNumberOfMessagesInThisRound: React.Dispatch<React.SetStateAction<number>>;
+    numberOfMessagesOverAll: number;
+    setNumberOfMessagesOverAll: React.Dispatch<React.SetStateAction<number>>;
+    dimensions: { x: [number, number]; y: [number, number]; };
+    setDimensions: React.Dispatch<React.SetStateAction<{ x: [number, number]; y: [number, number]; }>>;
 }
 
 const SimulationContext = createContext<SimulationContextProps | undefined>(undefined);
@@ -48,6 +58,11 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
     });
     const [cameraState, setCameraState] = useState<CameraState | null>(null);
     const [isRunning, setIsRunning] = useState(false);
+    const [logs, setLogs] = useState<string[]>([]);
+    const [time, setTime] = useState(0);
+    const [numberOfMessagesInThisRound, setNumberOfMessagesInThisRound] = useState(0);
+    const [numberOfMessagesOverAll, setNumberOfMessagesOverAll] = useState(0);
+    const [dimensions, setDimensions] = useState<{ x: [number, number]; y: [number, number]; }>({ x: [0, 0], y: [0, 0] });
 
     return (
         <SimulationContext.Provider value={{
@@ -57,7 +72,12 @@ export const SimulationProvider = ({ children }: SimulationProviderProps) => {
             mouseInNode, setMouseInNode,
             graphData, setGraphData,
             cameraState, setCameraState,
-            isRunning, setIsRunning
+            isRunning, setIsRunning,
+            logs, setLogs,
+            time, setTime,
+            numberOfMessagesInThisRound, setNumberOfMessagesInThisRound,
+            numberOfMessagesOverAll, setNumberOfMessagesOverAll,
+            dimensions, setDimensions
         }}>
             {children}
         </SimulationContext.Provider>

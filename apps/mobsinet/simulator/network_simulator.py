@@ -33,6 +33,7 @@ class NetworkSimulator(object):
         self.event_queue: EventQueue = EventQueue()
 
     def __init__(self):
+        
         self._init_instance_variables()
 
     def reset(self):
@@ -111,53 +112,60 @@ class NetworkSimulator(object):
         -------
         None
         """
-        if (isinstance(distribution_model_arg, str)):
-            distribution_model = ModelsSearchEngine.find_distribution_model(
-                distribution_model_arg)(distribution_model_parameters)
-        if (isinstance(node_arg, str)):
-            node_constructor = ModelsSearchEngine.find_node_implementation(
-                node_arg)
-        if (isinstance(mobility_model_arg, str)):
-            mobility_model = ModelsSearchEngine.find_mobility_model(
-                mobility_model_arg)(mobility_model_parameters)
-        if (isinstance(connectivity_model_arg, str)):
-            connectivity_model = ModelsSearchEngine.find_connectivity_model(
-                connectivity_model_arg)(connectivity_model_parameters)
-        if (isinstance(interference_model_arg, str)):
-            interference_model = ModelsSearchEngine.find_interference_model(
-                interference_model_arg)(interference_model_parameters)
-        if (isinstance(reliability_model_arg, str)):
-            reliability_model = ModelsSearchEngine.find_reliability_model(
-                reliability_model_arg)(reliability_model_parameters)
+        
 
-        if (isinstance(distribution_model_arg, AbcDistributionModel)):
-            distribution_model = distribution_model_arg
-        if (isinstance(mobility_model_arg, AbcMobilityModel)):
-            mobility_model = mobility_model_arg
-        if (isinstance(connectivity_model_arg, AbcConnectivityModel)):
-            connectivity_model = connectivity_model_arg
-        if (isinstance(interference_model_arg, AbcInterferenceModel)):
-            interference_model = interference_model_arg
-        if (isinstance(reliability_model_arg, AbcReliabilityModel)):
-            reliability_model = reliability_model_arg
+        
 
-        if (inspect.isclass(distribution_model_arg)):
-            distribution_model = distribution_model_arg(
-                distribution_model_parameters)
-        if (inspect.isclass(mobility_model_arg)):
-            mobility_model = mobility_model_arg(
-                mobility_model_parameters)
-        if (inspect.isclass(connectivity_model_arg)):
-            connectivity_model = connectivity_model_arg(
-                connectivity_model_parameters)
-        if (inspect.isclass(interference_model_arg)):
-            interference_model = interference_model_arg(
-                interference_model_parameters)
-        if (inspect.isclass(reliability_model_arg)):
-            reliability_model = reliability_model_arg(
-                reliability_model_parameters)
+        for i in range(num_nodes):
 
-        Global.log.info(f'''Adding {num_nodes} nodes with the following configuration:
+            if (isinstance(distribution_model_arg, str)):
+                distribution_model = ModelsSearchEngine.find_distribution_model(
+                    distribution_model_arg)(distribution_model_parameters)
+            if (isinstance(node_arg, str)):
+                node_constructor = ModelsSearchEngine.find_node_implementation(
+                    node_arg)
+            if (isinstance(mobility_model_arg, str)):
+                mobility_model = ModelsSearchEngine.find_mobility_model(
+                    mobility_model_arg)(mobility_model_parameters)
+            if (isinstance(connectivity_model_arg, str)):
+                connectivity_model = ModelsSearchEngine.find_connectivity_model(
+                    connectivity_model_arg)(connectivity_model_parameters)
+            if (isinstance(interference_model_arg, str)):
+                interference_model = ModelsSearchEngine.find_interference_model(
+                    interference_model_arg)(interference_model_parameters)
+            if (isinstance(reliability_model_arg, str)):
+                reliability_model = ModelsSearchEngine.find_reliability_model(
+                    reliability_model_arg)(reliability_model_parameters)
+
+            if (isinstance(distribution_model_arg, AbcDistributionModel)):
+                distribution_model = distribution_model_arg
+            if (isinstance(mobility_model_arg, AbcMobilityModel)):
+                mobility_model = mobility_model_arg
+            if (isinstance(connectivity_model_arg, AbcConnectivityModel)):
+                connectivity_model = connectivity_model_arg
+            if (isinstance(interference_model_arg, AbcInterferenceModel)):
+                interference_model = interference_model_arg
+            if (isinstance(reliability_model_arg, AbcReliabilityModel)):
+                reliability_model = reliability_model_arg
+
+            if (inspect.isclass(distribution_model_arg)):
+                distribution_model = distribution_model_arg(
+                    distribution_model_parameters)
+            if (inspect.isclass(mobility_model_arg)):
+                mobility_model = mobility_model_arg(
+                    mobility_model_parameters)
+            if (inspect.isclass(connectivity_model_arg)):
+                connectivity_model = connectivity_model_arg(
+                    connectivity_model_parameters)
+            if (inspect.isclass(interference_model_arg)):
+                interference_model = interference_model_arg(
+                    interference_model_parameters)
+            if (inspect.isclass(reliability_model_arg)):
+                reliability_model = reliability_model_arg(
+                    reliability_model_parameters)
+
+            if (i == 0):
+                Global.log.info(f'''Adding {num_nodes} nodes with the following configuration:
                         Node Constructor: {node_constructor.__name__}
                         Distribution Model: {distribution_model.__class__.__name__}
                         Mobility Model: {mobility_model.__class__.__name__}
@@ -165,10 +173,8 @@ class NetworkSimulator(object):
                         Interference Model: {interference_model.__class__.__name__}
                         Reliability Model: {reliability_model.__class__.__name__}''')
 
-        for _ in range(num_nodes):
-
             node = node_constructor(
-                self._gen_node_id(),
+                id=self._gen_node_id(),
                 mobility_model=mobility_model,
                 connectivity_model=connectivity_model,
                 interference_model=interference_model,
@@ -176,6 +182,8 @@ class NetworkSimulator(object):
                 color=Color(hex_str=node_color),
                 size=node_size
             )
+            
+            print(node.__dict__)
 
             position = distribution_model.get_position()
 

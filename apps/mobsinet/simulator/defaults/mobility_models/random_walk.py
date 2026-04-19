@@ -45,6 +45,7 @@ class RandomWalk(AbcMobilityModel):
                 min_right_value=0,
                 max_right_value=pi * 2,
                 right_should_be_gte_left=True,
+                is_float=True,
                 occuped_columns=6,
                 is_angle='rad'
             ),

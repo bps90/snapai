@@ -101,7 +101,7 @@ def init_simulation(request: HttpRequest):
 
         Main.init(project)
 
-        return HttpResponse(status=200)
+        return JsonResponse({"dimensions": {'x':SimulationConfig.dim_x, 'y': SimulationConfig.dim_y, 'z':SimulationConfig.dim_z}})
 
     return HttpResponse(status=405)
 
@@ -395,10 +395,10 @@ def add_nodes(request):
     if request.method == "POST":
 
         # Carrega os dados enviados no formulário
-        form_data = parse_nested_dict(request.POST.dict())
+        form_data = json.loads( request.body.decode('utf-8'))
 
         simulation.add_nodes(
-            num_nodes=int(form_data['num_nodes']),
+            num_nodes=int(form_data['number_of_nodes']),
             distribution_model_arg=form_data['distribution_model'],
             node_arg=form_data['node'],
             mobility_model_arg=form_data['mobility_model'],

@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import ControlBar, { PreRunFormSchema } from "@/components/ControlBar";
 import { useEffect, useRef } from "react";
 import { Divider } from "@mui/material";
-import { GraphData, GraphViewerRef } from "@/components/GraphViewer";
+import { GraphData, GraphViewerLink, GraphViewerNode, GraphViewerRef } from "@/components/GraphViewer";
 
 import SimulationInfoBar from "@/components/SimulationInfoBar";
 import { useSimulationContext } from "@/contexts/SimulationContext";
@@ -13,6 +13,9 @@ import Logs from "@/components/Logs";
 import { useQueryState } from 'nuqs';
 import LinkWithQuery from "@/components/LinkWithQuery";
 import AddNodeFormDialog from "@/components/AddNodesFormDialog";
+import { startZmqListener } from "@/utils/zmqListener";
+import { runSimulation } from "@/lib/fetchers";
+import SimulationSideInfoBar from "@/components/SimulationSideInfoBar";
 
 // Importa sem SSR
 const GraphViewer = dynamic(() => import("@/components/GraphViewer"), { ssr: false });
@@ -46,7 +49,7 @@ export default function DashboardControls() {
     });
     const graphViewerRef = useRef<GraphViewerRef>(null);
     const {
-        showIds, showArrows, graphData, setGraphData, mouseInNode,
+        showIds, showArrows,
         setIsRunning, selectedProject
     } = useSimulationContext();
     const [addNodesDialogOpen, setAddNodesDialogOpen] = useQueryState('add_nodes_form_open', {
@@ -55,8 +58,10 @@ export default function DashboardControls() {
     });
 
     const onPlay = (data: PreRunFormSchema) => {
-        console.log(data);
         setIsRunning(true);
+        if (data.refreshRate === undefined || data.rounds === undefined)
+            return console.error('refreshRate e rounds são obrigatórios');
+        runSimulation(data.rounds, data.refreshRate);
     };
 
     const onPause = () => {
@@ -67,9 +72,7 @@ export default function DashboardControls() {
         setAddNodesDialogOpen(false);
     }
 
-    useEffect(() => {
-        setGraphData(mockData);
-    }, []);
+
 
     if (!selectedProject && !bypass.includes("projectValidation"))
         return (
@@ -96,38 +99,12 @@ export default function DashboardControls() {
                 <Divider variant="middle" />
                 <div className="grid grid-cols-2 gap-2 controls-and-graph">
                     <div className="flex flex-col gap-2 p-4 bg-gray-50 w-full overflow-y-auto" style={{ height: "90dvh" }}>
-                        <div className="flex w-full flex-col h-full gap-2">
-                            <SimulationInfoBar
-                                cards={[
-                                    { type: 'time', value: 156423 },
-                                    { type: 'totalMsgSent', value: 540198946 },
-                                    { type: 'msgSentOnRound', value: 5465 },
-                                ]}
-                            />
-                            <SimulationInfoBar
-                                cards={[
-                                    { type: 'nodes', value: graphData.nodes.length },
-                                    { type: 'edges', value: graphData.links.length },
-                                    { type: 'remainingEvents', value: '----' },
-                                ]}
-                            />
-                            <Divider variant="middle" />
-                            <NodeInfo node={mouseInNode ?? undefined} />
-                            <Logs logs={[
-                                'log1',
-                                'log2',
-                                'log3 Lorem, ipsum dolor sit amet consectetur adipisicing elit. ',
-                                'log4 Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore excepturi ex, impedit perferendis tempora, vero mollitia consectetur eveniet neque adipisci libero aut laudantium necessitatibus praesentium delectus ratione voluptates sed distinctio.',
-                            ]} />
-
-                        </div>
+                        <SimulationSideInfoBar />
                     </div>
 
                     <div className="graph-container" style={{ minWidth: "90dvh", width: "90dvh", height: "90dvh" }} >
                         <GraphViewer
                             ref={graphViewerRef}
-                            dimensions={{ x: [0, 100], y: [0, 100] }}
-                            data={graphData}
                             arrowHeadSize={1.5}
                             renderLabels={showIds}
                             showArrows={showArrows}

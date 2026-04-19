@@ -12,7 +12,7 @@
     "connectivity_enabled": true,
     "interference_enabled": true,
     "nack_messages_enabled": false,
-    "save_trace": true,
+    "save_trace": false,
     "message_transmission_model": "random_time",
     "message_transmission_model_parameters": {
         "time_range": [

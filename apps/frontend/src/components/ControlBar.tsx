@@ -41,7 +41,7 @@ const ControlBar = forwardRef<ControlBarRef, ControlBarProps>(({
     const [initializeButtonDisabled, setInitializeButtonDisabled] = useState(false);
     const [initializeButtonState, setInitializeButtonState] = useState<'success' | 'error' | 'idle'>('idle');
     const [initializeButtonBg, setInitializeButtonBg] = useState<string | undefined>(undefined);
-    const { showArrows, showIds, setShowArrows, setShowIds, selectedProject } = useSimulationContext();
+    const { showArrows, showIds, setShowArrows, setShowIds, selectedProject, setDimensions } = useSimulationContext();
 
     const { register, handleSubmit, formState: { errors } } = useForm<PreRunFormSchema>({
         resolver: zodResolver(preRunFormSchema)
@@ -63,7 +63,12 @@ const ControlBar = forwardRef<ControlBarRef, ControlBarProps>(({
         if (!selectedProject) return;
         setInitializeButtonLoading(true);
         await initSimulation(selectedProject)
-            .then(() => setInitializeButtonState('success'),
+            .then(({ dimensions }) => {
+                setInitializeButtonState('success');
+                console.log(dimensions);
+                setDimensions(dimensions);
+                (window as Window & typeof globalThis & { electron: any }).electron.send('initialize');
+            },
                 () => setInitializeButtonState('error'));
         setTimeout(() => {
             setInitializeButtonState('idle');

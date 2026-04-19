@@ -9,7 +9,7 @@
         6430000,
         6490000
     ],
-    "connectivity_enabled": false,
+    "connectivity_enabled": true,
     "interference_enabled": false,
     "nack_messages_enabled": false,
     "save_trace": true,

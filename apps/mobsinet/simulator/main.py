@@ -76,18 +76,28 @@ class Main:
 
     @staticmethod
     def __config_logging():
+        
         if Global.log:
             Global.log.handlers.clear()
+            Global.log.setLevel(logging.DEBUG)
 
+            formatter = logging.Formatter('[%(levelname)s:%(name)s] %(message)s')
+
+            # Console handler
             console_handler = logging.StreamHandler()
             console_handler.setLevel(logging.DEBUG)
-            formatter = logging.Formatter(
-                '[%(levelname)s:%(name)s] %(message)s')
             console_handler.setFormatter(formatter)
-            logging.basicConfig(filename='example.log',
-                                encoding='utf-8', level=logging.DEBUG, filemode='w')
 
+            # File handler
+            file_handler = logging.FileHandler(
+                'example.log', mode='w', encoding='utf-8')
+            file_handler.setLevel(logging.DEBUG)
+            file_handler.setFormatter(formatter)
+
+            # Adiciona ambos
             Global.log.addHandler(console_handler)
+            Global.log.addHandler(file_handler)
+        
 
 
 if __name__ == "__main__":

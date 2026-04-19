@@ -7,6 +7,14 @@ from .network_simulator import simulation
 import time
 from .configuration.sim_config import SimulationConfig
 from typing import Optional
+import zmq
+import json
+import time
+from networkx.readwrite import json_graph
+
+ctx = zmq.Context()
+socket = ctx.socket(zmq.PUSH)
+socket.connect("tcp://127.0.0.1:5555")
 
 
 class SynchronousThread(Thread):
@@ -15,6 +23,8 @@ class SynchronousThread(Thread):
         self.number_of_rounds = number_of_rounds
         self.refresh_rate = refresh_rate    # Taxa de atualização da GUI
         self.__should_stop = False  # Controle local para parar a thread
+        self.__round_added_edges: list[list[int]] = []
+        self.__round_removed_edges: list[list[int]] = []
 
     def stop(self):
         self.__should_stop = True
@@ -53,6 +63,41 @@ class SynchronousThread(Thread):
             # print(f'{time.time() - ts} s for round')
 
             Global.number_of_messages_over_all += Global.number_of_messages_in_this_round
+
+            node_link_data = json_graph.node_link_data(
+                simulation.graph, edges="edges")  # type: ignore
+
+            # [id, x, y, z, size, color]
+            nodes = list(map(lambda node: [node['id'].id,
+                                        node['id'].position.x,
+                                        node['id'].position.y,
+                                        node['id'].position.z,
+                                        node['id'].size,
+                                        node['id'].node_color.get_hex()],
+                            node_link_data.get('nodes')))
+            # links: list[list[int]] = []
+
+            # for link in node_link_data.get('edges'):
+            #     # [source, target, bidirectional]
+            #     opposite = [link['target'].id, link['source'].id, 0]
+            #     try:
+            #         opposite_index = links.index(opposite)
+            #         links[opposite_index][2] = 1
+            #     except ValueError:
+            #         links.append([link['source'].id, link['target'].id, 0])
+
+            graph_data = {
+                'msg_r': Global.number_of_messages_in_this_round,
+                'msg_a': Global.number_of_messages_over_all,
+                't': Global.current_time,
+                'r': Global.is_running,
+                'n': nodes,
+                'a_l': self.__round_added_edges,
+                'r_l': self.__round_removed_edges,
+                'logs': Global.round_logs,
+            }
+            
+            socket.send_string(json.dumps(graph_data))
 
             if (Global.custom_global.has_terminated()):
                 break
@@ -115,6 +160,8 @@ class SynchronousThread(Thread):
         if SimulationConfig.connectivity_enabled == False:
             return
         # TODO: Criar logging para conexão
+        self.__round_added_edges = []
+        self.__round_removed_edges = []
         for node in simulation.nodes():
             # reset neighboorhood_changed flag
             node.neighborhood_changed = False
@@ -132,6 +179,7 @@ class SynchronousThread(Thread):
 
                 if (is_connected and not has_edge):
                     simulation.add_edge(node, possible_neighbor)
+                    self.__round_added_edges.append([node.id, possible_neighbor.id])
                     node.neighborhood_changed = True
                     connections += 1
 
@@ -139,6 +187,7 @@ class SynchronousThread(Thread):
                     simulation.remove_edge(node, possible_neighbor)
                     simulation.packets_in_the_air.denyFromEdge(
                         node, possible_neighbor)
+                    self.__round_removed_edges.append([node.id, possible_neighbor.id])
                     node.neighborhood_changed = True
                     disconnections += 1
 
